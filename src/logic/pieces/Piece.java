@@ -1,16 +1,14 @@
-package chess.logic;
+package chess.logic.pieces;
 
+import chess.logic.board.*;
+import chess.logic.moves.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class Piece implements Serializable {
-    protected PositionValue ps = new PositionValue();
     protected boolean hasMoved = false;
     
-    public abstract double getWeight();
-    public abstract double[][] getPosVal();
     public abstract PieceType getType();
     public abstract Player getColor();
     public abstract Piece copy();
@@ -55,10 +53,12 @@ public abstract class Piece implements Serializable {
     }
     
     public boolean canCaptureOpponentKing(Position from, Board board) {
-        return getMoves(from, board).stream()
-                .anyMatch(move -> {
-                    Piece piece = board.getPiece(move.getToPos());
-                    return piece != null && piece.getType() == PieceType.KING;
-                });
+        for (Move move : getMoves(from, board)) {
+            Piece piece = board.getPiece(move.getToPos());
+            if (piece != null && piece.getType() == PieceType.KING) {
+                return true;
+            }
+        }
+        return false;
     }
 }

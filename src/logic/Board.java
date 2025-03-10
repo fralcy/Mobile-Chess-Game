@@ -1,35 +1,17 @@
 package chess.logic;
 
+import chess.logic.pieces.*;
+import chess.logic.moves.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class Board implements Serializable {
     private final Piece[][] pieces = new Piece[8][8];
-    private double boardValue = 0;
     private final Map<Player, Position> pawnSkipPositions = new HashMap<>();
     
     public Board() {
         pawnSkipPositions.put(Player.WHITE, null);
         pawnSkipPositions.put(Player.BLACK, null);
-    }
-    
-    public void setValue() {
-        boardValue = 0;
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (pieces[i][j] != null) {
-                    boardValue += pieces[i][j].getWeight() + pieces[i][j].getPosVal()[7 - i][j];
-                }
-            }
-        }
-    }
-    
-    public double getBoardValue() {
-        return boardValue;
     }
     
     public Piece getPiece(int row, int col) {
@@ -133,6 +115,76 @@ public class Board implements Serializable {
         return copy;
     }
     
-    // Space for more methods
+    // Castle rights methods
+    public boolean canCastleKingSide(Player player) {
+        if (player == Player.WHITE) {
+            return isUnmovedKingAndRook(new Position(7, 4), new Position(7, 7));
+        } else if (player == Player.BLACK) {
+            return isUnmovedKingAndRook(new Position(0, 4), new Position(0, 7));
+        }
+        return false;
+    }
     
+    public boolean canCastleQueenSide(Player player) {
+        if (player == Player.WHITE) {
+            return isUnmovedKingAndRook(new Position(7, 4), new Position(7, 0));
+        } else if (player == Player.BLACK) {
+            return isUnmovedKingAndRook(new Position(0, 4), new Position(0, 0));
+        }
+        return false;
+    }
+    
+    private boolean isUnmovedKingAndRook(Position kingPos, Position rookPos) {
+        if (isEmpty(kingPos) || isEmpty(rookPos)) {
+            return false;
+        }
+        
+        Piece king = getPiece(kingPos);
+        Piece rook = getPiece(rookPos);
+        
+        return king.getType() == PieceType.KING && rook.getType() == PieceType.ROOK
+                && !king.getHasMoved() && !rook.getHasMoved();
+    }
+    
+    // En passant methods
+    public boolean canCaptureEnPassant(Player player) {
+        Position skipPos = getPawnSkipPosition(player.getOpponent());
+        
+        if (skipPos == null) {
+            return false;
+        }
+        
+        Position[] pawnPositions;
+        if (player == Player.WHITE) {
+            pawnPositions = new Position[] {
+                skipPos.plus(Direction.SOUTH_WEST),
+                skipPos.plus(Direction.SOUTH_EAST)
+            };
+        } else {
+            pawnPositions = new Position[] {
+                skipPos.plus(Direction.NORTH_WEST),
+                skipPos.plus(Direction.NORTH_EAST)
+            };
+        }
+        
+        return hasPawnInPosition(player, pawnPositions, skipPos);
+    }
+    
+    private boolean hasPawnInPosition(Player player, Position[] pawnPositions, Position skipPos) {
+        for (Position pos : pawnPositions) {
+            if (!isInside(pos)) continue;
+            
+            Piece piece = getPiece(pos);
+            if (piece == null || piece.getColor() != player || piece.getType() != PieceType.PAWN) {
+                continue;
+            }
+            
+            EnPassant move = new EnPassant(pos, skipPos);
+            if (move.isLegal(this)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 }
