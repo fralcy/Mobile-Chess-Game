@@ -187,4 +187,63 @@ public class Board implements Serializable {
         
         return false;
     }
+    // Counting methods
+    public Counting countPieces() {
+        Counting counting = new Counting();
+        for (Position pos : getPiecePositions()) {
+            Piece piece = getPiece(pos);
+            counting.increment(piece.getColor(), piece.getType());
+        }
+        return counting;
+    }
+    
+    public boolean hasInsufficientMaterial() {
+        Counting counting = countPieces();
+        return isKingVKing(counting) || 
+               isKingBishopVKing(counting) || 
+               isKingKnightVKing(counting) || 
+               isKingBishopVKingBishop(counting);
+    }
+    
+    private boolean isKingVKing(Counting counting) {
+        return counting.getTotalCount() == 2;
+    }
+    
+    private boolean isKingBishopVKing(Counting counting) {
+        return counting.getTotalCount() == 3 && 
+              (counting.getWhite(PieceType.BISHOP) == 1 || 
+               counting.getBlack(PieceType.BISHOP) == 1);
+    }
+    
+    private boolean isKingKnightVKing(Counting counting) {
+        return counting.getTotalCount() == 3 && 
+              (counting.getWhite(PieceType.KNIGHT) == 1 || 
+               counting.getBlack(PieceType.KNIGHT) == 1);
+    }
+    
+    private boolean isKingBishopVKingBishop(Counting counting) {
+        if (counting.getTotalCount() != 4) {
+            return false;
+        }
+        
+        if (counting.getWhite(PieceType.BISHOP) != 1 || 
+            counting.getBlack(PieceType.BISHOP) != 1) {
+            return false;
+        }
+        
+        Position wBishopPos = findPiece(Player.WHITE, PieceType.BISHOP);
+        Position bBishopPos = findPiece(Player.BLACK, PieceType.BISHOP);
+        
+        return wBishopPos.getSquareColor() == bBishopPos.getSquareColor();
+    }
+    
+    private Position findPiece(Player color, PieceType type) {
+        for (Position pos : getPiecePositionsFor(color)) {
+            if (getPiece(pos).getType() == type) {
+                return pos;
+            }
+        }
+        
+        return null; // Should never happen
+    }
 }
