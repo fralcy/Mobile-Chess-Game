@@ -20,19 +20,21 @@ public class Counting {
     
     public void increment(Player color, PieceType type) {
         if (color == Player.WHITE) {
-            whiteCount.put(type, whiteCount.get(type) + 1);
+            whiteCount.put(type, this.getWhite(type) + 1);
         } else if (color == Player.BLACK) {
-            blackCount.put(type, blackCount.get(type) + 1);
+            blackCount.put(type, this.getBlack(type) + 1);
         }
         totalCount++;
     }
-    
+
     public int getWhite(PieceType type) {
-        return whiteCount.get(type);
+        Integer count = whiteCount.get(type);
+        return count != null ? count : 0;  // Prevents NullPointerException
     }
-    
+
     public int getBlack(PieceType type) {
-        return blackCount.get(type);
+        Integer count = blackCount.get(type);
+        return count != null ? count : 0;  // Prevents NullPointerException
     }
     
     public int getTotalCount() {

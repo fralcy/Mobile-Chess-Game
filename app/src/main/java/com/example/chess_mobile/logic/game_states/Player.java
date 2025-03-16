@@ -6,10 +6,10 @@ public enum Player {
     BLACK;
     
     public Player getOpponent() {
-        switch (this) {
-            case WHITE: return BLACK;
-            case BLACK: return WHITE;
-            default: return NONE;
-        }
+        return switch (this) {
+            case WHITE -> BLACK;
+            case BLACK -> WHITE;
+            default -> NONE;
+        };
     }
 }

@@ -34,16 +34,13 @@ public class PawnPromotion extends Move {
     }
     
     private Piece createPromotionPiece(Player color) {
-        switch (newType) {
-            case KNIGHT:
-                return new Knight(color);
-            case BISHOP:
-                return new Bishop(color);
-            case ROOK:
-                return new Rook(color);
-            default:  // QUEEN
-                return new Queen(color);
-        }
+        return switch (newType) {
+            case KNIGHT -> new Knight(color);
+            case BISHOP -> new Bishop(color);
+            case ROOK -> new Rook(color);
+            default ->  // QUEEN
+                    new Queen(color);
+        };
     }
     
     @Override
