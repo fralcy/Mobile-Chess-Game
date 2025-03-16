@@ -1,6 +1,7 @@
-package chess.logic;
+package com.example.chess_mobile.logic.game_states;
 
-import chess.logic.moves.Move;
+import com.example.chess_mobile.logic.moves.Move;
+import com.example.chess_mobile.logic.pieces.Piece;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -18,11 +19,10 @@ public class GameState implements Serializable {
     private final Map<String, Integer> stateHistory = new HashMap<>();
     private Duration whiteTimer;
     private Duration blackTimer;
-    
     public GameState(Player player, Board board) {
         this(player, board, Duration.ofMinutes(10));
     }
-    
+
     public GameState(Player player, Board board, Duration timePerPlayer) {
         this.currentPlayer = player;
         this.board = board;
@@ -169,16 +169,16 @@ public class GameState implements Serializable {
     // check if white timer is zero
     public void whiteTimerTick() {
         whiteTimer = whiteTimer.minusSeconds(1);
-        
-        if (whiteTimer.isZero() || whiteTimer.isNegative()) {
+
+        if (whiteTimer.getSeconds() <= 0) {
             result = Result.win(Player.BLACK, EndReason.TIMEOUT);
         }
     }
-    
+
     // check if black timer is zero
     public void blackTimerTick() {
         blackTimer = blackTimer.minusSeconds(1);
-        
+
         if (blackTimer.isZero() || blackTimer.isNegative()) {
             result = Result.win(Player.WHITE, EndReason.TIMEOUT);
         }

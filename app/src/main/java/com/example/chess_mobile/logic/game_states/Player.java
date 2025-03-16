@@ -1,4 +1,4 @@
-package chess.logic;
+package com.example.chess_mobile.logic.game_states;
 
 public enum Player {
     NONE,

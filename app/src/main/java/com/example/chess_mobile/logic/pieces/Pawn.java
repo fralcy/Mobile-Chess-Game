@@ -1,9 +1,11 @@
-package chess.logic.pieces;
+package com.example.chess_mobile.logic.pieces;
 
-import chess.logic.Board;
-import chess.logic.Direction;
-import chess.logic.Position;
-import chess.logic.moves.*;
+import com.example.chess_mobile.logic.game_states.Player;
+
+import com.example.chess_mobile.logic.game_states.Board;
+import com.example.chess_mobile.logic.game_states.Direction;
+import com.example.chess_mobile.logic.game_states.Position;
+import com.example.chess_mobile.logic.moves.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;

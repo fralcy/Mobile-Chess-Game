@@ -1,4 +1,4 @@
-package chess.logic;
+package com.example.chess_mobile.logic.game_states;
 
 import java.io.Serializable;
 import java.util.Objects;

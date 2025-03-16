@@ -1,7 +1,7 @@
-package chess.logic.moves;
+package com.example.chess_mobile.logic.moves;
 
-import chess.logic.Board;
-import chess.logic.Position;
+import com.example.chess_mobile.logic.game_states.Board;
+import com.example.chess_mobile.logic.game_states.Position;
 
 public class EnPassant extends Move {
     private final Position fromPos;

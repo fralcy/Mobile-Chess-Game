@@ -1,6 +1,7 @@
-package chess.logic;
+package com.example.chess_mobile.logic.game_states;
 
-import chess.logic.pieces.PieceType;
+
+import com.example.chess_mobile.logic.pieces.PieceType;
 
 import java.util.EnumMap;
 import java.util.Map;

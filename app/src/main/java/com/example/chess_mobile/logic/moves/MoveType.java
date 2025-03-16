@@ -1,4 +1,4 @@
-package chess.logic.moves;
+package com.example.chess_mobile.logic.moves;
 
 public enum MoveType {
     NORMAL,

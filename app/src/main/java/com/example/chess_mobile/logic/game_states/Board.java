@@ -1,9 +1,10 @@
-package chess.logic;
+package com.example.chess_mobile.logic.game_states;
 
-import chess.logic.pieces.*;
-import chess.logic.moves.*;
+import com.example.chess_mobile.logic.pieces.*;
+import com.example.chess_mobile.logic.moves.*;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Board implements Serializable {
     private final Piece[][] pieces = new Piece[8][8];
@@ -231,15 +232,17 @@ public class Board implements Serializable {
             return false;
         }
         
-        Position wBishopPos = findPiece(Player.WHITE, PieceType.BISHOP);
-        Position bBishopPos = findPiece(Player.BLACK, PieceType.BISHOP);
-        
+        Position wBishopPos = findPiece(Player.WHITE);
+        Position bBishopPos = findPiece(Player.BLACK);
+
+        assert bBishopPos != null;
+        assert wBishopPos != null;
         return wBishopPos.getSquareColor() == bBishopPos.getSquareColor();
     }
     
-    private Position findPiece(Player color, PieceType type) {
+    private Position findPiece(Player color) {
         for (Position pos : getPiecePositionsFor(color)) {
-            if (getPiece(pos).getType() == type) {
+            if (getPiece(pos).getType() == PieceType.BISHOP) {
                 return pos;
             }
         }

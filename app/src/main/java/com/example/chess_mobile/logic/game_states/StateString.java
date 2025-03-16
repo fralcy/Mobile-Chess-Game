@@ -1,4 +1,6 @@
-package chess.logic;
+package com.example.chess_mobile.logic.game_states;
+
+import com.example.chess_mobile.logic.pieces.Piece;
 
 public class StateString {
     private final StringBuilder sb = new StringBuilder();

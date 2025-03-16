@@ -1,9 +1,9 @@
-package chess.logic.moves;
+package com.example.chess_mobile.logic.moves;
 
-import chess.logic.Board;
-import chess.logic.Piece;
-import chess.logic.PieceType;
-import chess.logic.Position;
+import com.example.chess_mobile.logic.game_states.Board;
+import com.example.chess_mobile.logic.pieces.Piece;
+import com.example.chess_mobile.logic.pieces.PieceType;
+import com.example.chess_mobile.logic.game_states.Position;
 
 public class NormalMove extends Move {
     private final Position fromPos;
