@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Chess_Mobile</string>
+    <string name="email_text">email</string>
+    <string name="password_text">password</string>
+    <string name="login_text">login</string>
+    <string name="register_text">register</string>
 </resources>
