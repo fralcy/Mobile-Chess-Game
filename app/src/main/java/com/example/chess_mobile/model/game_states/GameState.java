@@ -44,37 +44,8 @@ public class GameState implements Serializable {
         stateHistory.put(stateString, 1);
     }
 
-    public Board getBoard() {
-        return board;
-    }
-
-    public EPlayer getCurrentPlayer() {
-        return currentPlayer;
-    }
-
-    public Result getResult() {
-        return result;
-    }
-
-    public void setResult(Result result) {
-        this.result = result;
-    }
-
-    public Duration getWhiteTimer() {
-        return whiteTimer;
-    }
-
-    public Duration getBlackTimer() {
-        return blackTimer;
-    }
-
-    public GameState copy() {
-        Board newBoard = board.copy();
-        return new GameState(currentPlayer, newBoard);
-    }
-
     public List<Move> getLegalMovesForPiece(Position pos) {
-        if (board.isEmpty(pos) || board.getPiece(pos).getColor() != currentPlayer) {
+        if (board.isEmpty(pos) || board.getPiece(pos).getPlayerColor() != currentPlayer) {
             return new ArrayList<>();
         }
 
@@ -169,7 +140,11 @@ public class GameState implements Serializable {
         return numberFold >= 3;
     }
 
-    // check if white timer is zero
+    public boolean checkTimerZero() {
+        return whiteTimer.isZero() || blackTimer.isZero();
+    }
+
+    // run white timer
     public void whiteTimerTick() {
         whiteTimer = whiteTimer.minusSeconds(1);
 
@@ -178,12 +153,46 @@ public class GameState implements Serializable {
         }
     }
 
-    // check if black timer is zero
+    public void timerTick() {
+        if (this.currentPlayer == EPlayer.BLACK) this.blackTimerTick();
+        else if (this.currentPlayer == EPlayer.WHITE) this.whiteTimerTick();
+    }
+
+    // run black timer
     public void blackTimerTick() {
         blackTimer = blackTimer.minusSeconds(1);
 
         if (blackTimer.isZero() || blackTimer.isNegative()) {
             result = Result.win(EPlayer.WHITE, EEndReason.TIMEOUT);
         }
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public EPlayer getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public Result getResult() {
+        return result;
+    }
+
+    public void setResult(Result result) {
+        this.result = result;
+    }
+
+    public Duration getWhiteTimer() {
+        return whiteTimer;
+    }
+
+    public Duration getBlackTimer() {
+        return blackTimer;
+    }
+
+    public GameState copy() {
+        Board newBoard = board.copy();
+        return new GameState(currentPlayer, newBoard);
     }
 }

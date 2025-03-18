@@ -36,7 +36,7 @@ public class Queen extends Piece implements Serializable {
     }
     
     @Override
-    public EPlayer getColor() {
+    public EPlayer getPlayerColor() {
         return color;
     }
     

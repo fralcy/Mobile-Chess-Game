@@ -48,7 +48,7 @@ public class PawnPromotion extends Move {
         Piece pawn = board.getPiece(fromPos);
         board.setPiece(fromPos, null);
         
-        Piece promotionPiece = createPromotionPiece(pawn.getColor());
+        Piece promotionPiece = createPromotionPiece(pawn.getPlayerColor());
         promotionPiece.setHasMoved(true);
         board.setPiece(toPos, promotionPiece);
         

@@ -1,4 +1,4 @@
-package com.example.chess_mobile.model.authentication.firebase_implementation;
+package com.example.chess_mobile.model.authentication.firebase;
 
 import com.example.chess_mobile.model.authentication.Account;
 import com.example.chess_mobile.model.authentication.interfaces.IAuthenticationService;

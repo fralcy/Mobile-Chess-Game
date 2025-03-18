@@ -3,4 +3,5 @@
     <string name="password_text">password</string>
     <string name="login_text">login</string>
     <string name="register_text">register</string>
+    <string name="name_text">name</string>
 </resources>

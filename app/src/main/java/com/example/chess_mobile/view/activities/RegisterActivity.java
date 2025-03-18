@@ -1,6 +1,5 @@
-package com.example.chess_mobile;
+package com.example.chess_mobile.view.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -13,8 +12,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.chess_mobile.model.authentication.FirebaseAccount;
-import com.example.chess_mobile.model.authentication.firebase_implementation.FirebaseAuthenticationService;
+import com.example.chess_mobile.R;
+import com.example.chess_mobile.model.authentication.firebase.FirebaseAccount;
+import com.example.chess_mobile.model.authentication.firebase.FirebaseAuthenticationService;
 import com.example.chess_mobile.model.authentication.interfaces.IAuthenticationService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

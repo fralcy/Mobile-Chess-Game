@@ -31,10 +31,9 @@ public class StateString {
             case ROOK -> 'r';
             case QUEEN -> 'q';
             case KING -> 'k';
-            default -> ' ';
         };
 
-        if (piece.getColor() == EPlayer.WHITE) {
+        if (piece.getPlayerColor() == EPlayer.WHITE) {
             return Character.toUpperCase(c);
         }
         

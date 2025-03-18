@@ -38,7 +38,7 @@ public class King extends Piece implements Serializable {
     }
     
     @Override
-    public EPlayer getColor() {
+    public EPlayer getPlayerColor() {
         return color;
     }
     
@@ -55,7 +55,7 @@ public class King extends Piece implements Serializable {
         for (Direction dir : DIRECTIONS) {
             Position to = from.plus(dir);
             if (Board.isInside(to) && 
-                (board.isEmpty(to) || board.getPiece(to).getColor() != color)) {
+                (board.isEmpty(to) || board.getPiece(to).getPlayerColor() != color)) {
                 positions.add(to);
             }
         }

@@ -55,7 +55,7 @@ public class Castle extends Move {
     
     @Override
     public boolean isLegal(Board board) {
-        EPlayer player = board.getPiece(fromPos).getColor();
+        EPlayer player = board.getPiece(fromPos).getPlayerColor();
         
         if (board.isInCheck(player)) {
             return false;

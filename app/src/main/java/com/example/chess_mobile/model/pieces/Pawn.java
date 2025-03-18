@@ -30,7 +30,7 @@ public class Pawn extends Piece implements Serializable {
     }
     
     @Override
-    public EPlayer getColor() {
+    public EPlayer getPlayerColor() {
         return color;
     }
     
@@ -50,7 +50,7 @@ public class Pawn extends Piece implements Serializable {
             return false;
         }
         
-        return board.getPiece(pos).getColor() != color;
+        return board.getPiece(pos).getPlayerColor() != color;
     }
     
     private List<Move> getPromotionMoves(Position from, Position to) {

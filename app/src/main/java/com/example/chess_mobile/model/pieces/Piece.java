@@ -14,7 +14,7 @@ public abstract class Piece implements Serializable {
     protected boolean hasMoved = false;
     
     public abstract EPieceType getType();
-    public abstract EPlayer getColor();
+    public abstract EPlayer getPlayerColor();
     public abstract Piece copy();
     public abstract List<Move> getMoves(Position from, Board board);
     
@@ -38,7 +38,7 @@ public abstract class Piece implements Serializable {
             }
             
             Piece piece = board.getPiece(pos);
-            if (piece.getColor() != this.getColor()) {
+            if (piece.getPlayerColor() != this.getPlayerColor()) {
                 positions.add(pos);
             }
             

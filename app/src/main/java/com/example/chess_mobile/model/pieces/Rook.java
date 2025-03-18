@@ -32,7 +32,7 @@ public class Rook extends Piece implements Serializable {
     }
     
     @Override
-    public EPlayer getColor() {
+    public EPlayer getPlayerColor() {
         return color;
     }
     

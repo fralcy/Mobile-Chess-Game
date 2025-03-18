@@ -25,7 +25,7 @@ public class Knight extends Piece implements Serializable {
     }
     
     @Override
-    public EPlayer getColor() {
+    public EPlayer getPlayerColor() {
         return color;
     }
     
@@ -58,7 +58,7 @@ public class Knight extends Piece implements Serializable {
         
         for (Position pos : getPotentialPositions(from)) {
             if (Board.isInside(pos) && 
-                (board.isEmpty(pos) || board.getPiece(pos).getColor() != color)) {
+                (board.isEmpty(pos) || board.getPiece(pos).getPlayerColor() != color)) {
                 validPositions.add(pos);
             }
         }

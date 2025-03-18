@@ -1,6 +1,8 @@
-package com.example.chess_mobile.model.authentication;
+package com.example.chess_mobile.model.authentication.firebase;
 
-public class FirebaseAccount extends Account{
+import com.example.chess_mobile.model.authentication.Account;
+
+public class FirebaseAccount extends Account {
     public FirebaseAccount(String email, String password) {
         super(email, password);
     }

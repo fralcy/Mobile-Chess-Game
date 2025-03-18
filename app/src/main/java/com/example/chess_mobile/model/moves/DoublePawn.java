@@ -32,7 +32,7 @@ public class DoublePawn extends Move {
     
     @Override
     public boolean execute(Board board) {
-        EPlayer player = board.getPiece(fromPos).getColor();
+        EPlayer player = board.getPiece(fromPos).getPlayerColor();
         board.setPawnSkipPosition(player, skippedPos);
         
         new NormalMove(fromPos, toPos).execute(board);

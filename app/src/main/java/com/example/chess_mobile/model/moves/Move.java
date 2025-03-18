@@ -14,7 +14,7 @@ public abstract class Move {
     }
     
     public boolean isLegal(Board board) {
-        EPlayer player = board.getPiece(getFromPos()).getColor();
+        EPlayer player = board.getPiece(getFromPos()).getPlayerColor();
         Board boardCopy = board.copy();
         execute(boardCopy);
         return !boardCopy.isInCheck(player);
