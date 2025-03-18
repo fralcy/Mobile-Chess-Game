@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "3827367086",
+    "project_id": "chess-mobile-ae140",
+    "storage_bucket": "chess-mobile-ae140.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:3827367086:android:7213f35c4c88a81e7b813f",
+        "android_client_info": {
+          "package_name": "com.example.chess_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpbSR5OOYDfNpJYrSJB_tqsXNI83Op1V0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
