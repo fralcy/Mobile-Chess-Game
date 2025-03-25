@@ -5,59 +5,152 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#222222"
     tools:context=".view.activities.RegisterActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="57dp"
-        tools:layout_editor_absoluteY="-16dp">
+    <!-- Chess logo image -->
+    <ImageView
+        android:id="@+id/ivChessLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo_chess"
+        android:contentDescription="Chess.com logo"
+        app:layout_constraintBottom_toTopOf="@+id/tvSignUp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_bias="0.3" />
 
-        <EditText
-            android:id="@+id/registerTextName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="100dp"
-            android:layout_marginTop="148dp"
-            android:ems="10"
-            android:hint="@string/name_text"
-            android:autofillHints="username"
-            android:inputType="text"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <!-- Sign Up title -->
+    <TextView
+        android:id="@+id/tvSignUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign Up"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivChessLogo"
+        app:layout_constraintBottom_toTopOf="@+id/registerTextName" />
 
-        <EditText
-            android:id="@+id/registerTextEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/email_text"
-            android:autofillHints="emailAddress"
-            android:inputType="textEmailAddress"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/registerTextName" />
+    <!-- Name field -->
+    <EditText
+        android:id="@+id/registerTextName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="24dp"
+        android:background="#666666"
+        android:drawableStart="@drawable/ic_person"
+        android:drawablePadding="8dp"
+        android:hint="UserName"
+        android:inputType="text"
+        android:padding="16dp"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#AAAAAA"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSignUp"
+        app:layout_constraintBottom_toTopOf="@+id/registerTextEmail" />
 
-        <EditText
-            android:id="@+id/registerTextPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/password_text"
-            android:autofillHints="password"
-            android:inputType="textPassword"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/registerTextEmail" />
+    <!-- Email field -->
+    <EditText
+        android:id="@+id/registerTextEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="16dp"
+        android:background="#666666"
+        android:drawableStart="@drawable/ic_person"
+        android:drawablePadding="8dp"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:padding="16dp"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#AAAAAA"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registerTextName"
+        app:layout_constraintBottom_toTopOf="@+id/registerTextPassword" />
 
-        <Button
-            android:id="@+id/registerButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/register_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/registerTextPassword" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Password field -->
+    <EditText
+        android:id="@+id/registerTextPassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="16dp"
+        android:background="#666666"
+        android:drawableStart="@drawable/ic_lock"
+        android:drawablePadding="8dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="16dp"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#AAAAAA"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registerTextEmail"
+        app:layout_constraintBottom_toTopOf="@+id/reEnterPassword" />
+
+    <!-- Re-enter Password field -->
+    <EditText
+        android:id="@+id/reEnterPassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="16dp"
+        android:background="#666666"
+        android:drawableStart="@drawable/ic_lock"
+        android:drawablePadding="8dp"
+        android:hint="ReEnter-Password"
+        android:inputType="textPassword"
+        android:padding="16dp"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#AAAAAA"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registerTextPassword"
+        app:layout_constraintBottom_toTopOf="@+id/registerButton" />
+
+    <!-- Sign Up button -->
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/rounded_button_green"
+        android:padding="14dp"
+        android:text="SignUp"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/reEnterPassword"
+        app:layout_constraintBottom_toTopOf="@+id/tvLoginLink" />
+
+    <!-- Login text -->
+    <TextView
+        android:id="@+id/tvLoginLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="or Login"
+        android:textColor="#AAAAAA"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registerButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
