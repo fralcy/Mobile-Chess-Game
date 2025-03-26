@@ -1,9 +1,12 @@
 package com.example.chess_mobile.view.fragments;
 
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,60 +17,40 @@ import android.widget.ImageView;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.game_states.Board;
-import com.example.chess_mobile.model.game_states.EEndReason;
-import com.example.chess_mobile.model.game_states.EPlayer;
-import com.example.chess_mobile.model.game_states.GameState;
 import com.example.chess_mobile.model.game_states.Position;
-import com.example.chess_mobile.model.game_states.Result;
 import com.example.chess_mobile.model.moves.EMoveType;
 import com.example.chess_mobile.model.moves.Move;
 import com.example.chess_mobile.model.moves.PawnPromotion;
 import com.example.chess_mobile.model.pieces.EPieceType;
 import com.example.chess_mobile.model.pieces.Piece;
 import com.example.chess_mobile.utils.implementations.ChessTimer;
-import com.example.chess_mobile.utils.implementations.PieceImages;
+import com.example.chess_mobile.utils.implementations.piece_images.PieceImagesInstance;
 import com.example.chess_mobile.utils.interfaces.IChessTimer;
+import com.example.chess_mobile.utils.interfaces.IPieceImages;
 import com.example.chess_mobile.utils.interfaces.ITimerCallback;
+import com.example.chess_mobile.view_model.ChessBoardViewModel;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class ChessBoardFragment extends Fragment {
     private static final String BOARD_SIZE = "boardSize";
+
+    private ChessBoardViewModel _chessboardViewModel;
     private GridLayout _gridLayout;
     private int _size;
 
-    // Convert
-    IChessTimer _timer = new ChessTimer(1000, new ITimerCallback() {
-        @Override
-        public void onTick() {
-            if(_gameState == null) return;
-
-            if(_gameState.getWhiteTimer().isZero()) {
-                _gameState.setResult(Result.win(EPlayer.BLACK, EEndReason.TIMEOUT));
-                onGameOver();
-            } else if (_gameState.getBlackTimer().isZero()) {
-                _gameState.setResult(Result.win(EPlayer.WHITE, EEndReason.TIMEOUT));
-                onGameOver();
-            } else {
-                _gameState.timerTick();
-            }
-        }
-
-        @Override
-        public void onFinish() {
-
-        }
-    });
-
+    // Convert Logic & Handle Event
+    IChessTimer _timer;
     private ImageView[][] _squares;
-    private GameState _gameState;
     private Position _selectedPos;
     private final HashMap<Position, Move> _moveCache = new HashMap<>();
 
     public ChessBoardFragment() {
         // Required empty public constructor
     }
+
+    @NonNull
     public static ChessBoardFragment newInstance(int size) {
         ChessBoardFragment fragment = new ChessBoardFragment();
         Bundle args = new Bundle();
@@ -82,45 +65,40 @@ public class ChessBoardFragment extends Fragment {
         if (getArguments() != null) {
             _size = getArguments().getInt(BOARD_SIZE, 8);
         }
+
+        if (_size <= 0) {
+            throw new IllegalStateException("Invalid board size: " + _size);
+        }
+        this._squares = new ImageView[this._size][this._size];
+        this._timer = new ChessTimer(1000, new ITimerCallback() {
+            @Override
+            public void onTick() {
+                _chessboardViewModel.gameStateOnTick();
+                if (_chessboardViewModel.isGameOver()) {
+                    onGameOver();
+                }
+            }
+            @Override
+            public void onFinish() {
+
+            }
+        });
+
+        this._chessboardViewModel =
+                new ViewModelProvider(requireActivity()).get(ChessBoardViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chess_board, container, false);
-        _gridLayout = view.findViewById(R.id.chessboardGridLayoutContainer);
+        this._gridLayout = view.findViewById(R.id.chessboardGridLayoutContainer);
 
-        if (_size <= 0) {
-            throw new IllegalStateException("Invalid board size: " + _size);
-        }
-
-        // Khởi tạo mảng ô cờ trước khi sử dụng
-        this._squares = new ImageView[this._size][this._size];
-
-        // Khởi tạo trạng thái trò chơi
-        Board _board = new Board();
-        this._gameState = new GameState(EPlayer.WHITE, _board.initial());
-
-        if (this._gameState.getBoard() == null) {
+        if (this._chessboardViewModel.getBoard() == null) {
             throw new IllegalStateException("Game board was not initialized correctly.");
         }
 
-        // Khởi tạo bàn cờ và vẽ sau khi đảm bảo GridLayout đã đo xong
-        _gridLayout.requestLayout();
-        _gridLayout.post(() -> {
-            int gridWidth = _gridLayout.getWidth();
-            int gridHeight = _gridLayout.getHeight();
-
-            Log.d("BOARD_FRAGMENT_CREATE_VIEW", "Board Size" + gridWidth + ',' + gridHeight);
-            if (gridWidth == 0 || gridHeight == 0) {
-                Log.e("ChessBoardFragment", "GridLayout vẫn chưa được đo xong.");
-                return;
-            }
-
-            initializeBoard();
-            drawBoard(_gameState.getBoard());
-        });
-
+        gridLayoutSetUp();
         this._timer.startTimer();
         return view;
     }
@@ -128,27 +106,28 @@ public class ChessBoardFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        _gridLayout.post(() -> {
-            int gridWidth = _gridLayout.getWidth();
-            int gridHeight = _gridLayout.getHeight();
+        gridLayoutSetUp();
+    }
+
+    private void gridLayoutSetUp() {
+        this._gridLayout.post(() -> {
+            int gridWidth = this._gridLayout.getWidth();
+            int gridHeight = this._gridLayout.getHeight();
 
             if (gridWidth == 0 || gridHeight == 0) {
-                Log.e("ChessBoardFragment", "GridLayout vẫn chưa được đo xong.");
+                Log.e("ChessBoardFragment",
+                        "GridLayout vẫn chưa được đo xong. Grid Size: Width: " + gridWidth + ", Height: " + gridHeight );
                 return;
             }
 
-            initializeBoard();
-            drawBoard(_gameState.getBoard());
+            initializeBoard(this._gridLayout.getWidth(), this._gridLayout.getHeight());
+            drawBoard(this._chessboardViewModel.getBoard());
         });
+
     }
+    private void initializeBoard(int gridWidth, int gridHeight) {
 
-
-    private void initializeBoard() {
-        int gridWidth = _gridLayout.getWidth();
-        int gridHeight = _gridLayout.getHeight();
-
-        Log.d("BOARD_FRAGMENT_INITIALIZE_BOAR", "Board Size" + gridWidth + ',' + gridHeight);
-
+        Log.d("BOARD_FRAGMENT_INITIALIZE_BOARD", "Board Size" + gridWidth + ',' + gridHeight);
         if (gridWidth == 0 || gridHeight == 0) {
             Log.e("initializeBoard", "GridLayout chưa được đo xong, hủy khởi tạo.");
             return;
@@ -160,9 +139,9 @@ public class ChessBoardFragment extends Fragment {
             this._squares = new ImageView[this._size][this._size];
         }
 
-        _gridLayout.removeAllViews();
-        _gridLayout.setColumnCount(this._size);
-        _gridLayout.setRowCount(this._size);
+        this._gridLayout.removeAllViews();
+        this._gridLayout.setColumnCount(this._size);
+        this._gridLayout.setRowCount(this._size);
 
 
         for (int row = 0; row < this._size; row++) {
@@ -176,16 +155,19 @@ public class ChessBoardFragment extends Fragment {
                 square.setLayoutParams(params);
                 square.setAdjustViewBounds(true);
                 square.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                square.setBackgroundColor((row + col) % 2 == 0 ? Color.WHITE : Color.BLACK);
+
+                boolean isWhite = (row + col) % 2 == 0;
+                square.setBackgroundColor(getCellBackgroundColor(isWhite));
 
                 this._squares[row][col] = square;
                 this._gridLayout.addView(square);
 
-                final int finalRow = row, finalCol = col;
+                final int finalRow = row, finalCol = col; // Declare for compile purpose (programming not logic)
                 square.setOnClickListener(v -> handleSquareClick(finalRow, finalCol));
             }
         }
     }
+
     private void drawBoard(Board board) {
         if (board == null) {
             throw new IllegalStateException("Board is null when trying to draw.");
@@ -195,8 +177,9 @@ public class ChessBoardFragment extends Fragment {
             throw new IllegalStateException("_squares array is not initialized.");
         }
 
-        PieceImages pImageInstance = PieceImages.getInstance();
+        IPieceImages pImageInstance = PieceImagesInstance.getInstance();
         if (pImageInstance == null) {
+            Log.d("Chess_Fragment_drawBoard", "PieceImage is null");
             throw new IllegalStateException("PieceImage is null");
         }
 
@@ -207,6 +190,9 @@ public class ChessBoardFragment extends Fragment {
                 }
 
                 Piece piece = board.getPiece(row, col);
+                if (piece == null) {
+                    Log.e("BOARD_FRAGMENT_INITIALIZE_BOARD", "Piece is null");
+                }
                 int imageId = pImageInstance.getImage(piece);
 
                 this._squares[row][col].setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -217,34 +203,27 @@ public class ChessBoardFragment extends Fragment {
 
     private void handleSquareClick(int row, int col) {
         Position pos = new Position(row, col);
-        if (this._selectedPos == null)
-        {
+        if (this._selectedPos == null) {
             onFromPositionSelected(pos);
-        }
-        else
-        {
+        } else {
             onToPositionSelected(pos);
         }
-
     }
 
     private void onFromPositionSelected(Position pos) {
         // Get possible moves of a piece
-        List<Move> moves = this._gameState.getLegalMovesForPiece(pos);
+        List<Move> moves = this._chessboardViewModel.getLegalMovesForPiece(pos);
         if (!moves.isEmpty()) {
-            // Chọn quân cờ đã chỉ định
             this._selectedPos = pos;
-            // Lưu trữ các nước đi có thể
             this.cacheMoves(moves);
-            // Hiển thị các nước đi có thể
             showHighlights();
         }
     }
 
-    private void cacheMoves(List<Move> moves)
+    private void cacheMoves(@NonNull List<Move> moves)
     {
         this._moveCache.clear();
-        moves.forEach(move -> _moveCache.put(move.getToPos(), move));
+        moves.forEach(move -> this._moveCache.put(move.getToPos(), move));
     }
 
     private void onToPositionSelected(Position pos) {
@@ -252,38 +231,34 @@ public class ChessBoardFragment extends Fragment {
         hideHighlights();
 
         Move move = this._moveCache.get(pos);
-        if (move != null)
-        {
-            if (move.getType() == EMoveType.PAWN_PROMOTION)
-            {
+        if (move != null) {
+            if (move.getType() == EMoveType.PAWN_PROMOTION) {
                 handlePromotion(move.getFromPos(), move.getToPos());
-            }
-            else
-            {
+            } else {
                 handleMove(move);
             }
         }
     }
 
     private void subHandleMove(Move move) {
-        this._gameState.makeMove(move);
-        drawBoard(this._gameState.getBoard());
+        this._chessboardViewModel.gameStateMakeMove(move);
+        drawBoard(this._chessboardViewModel.getBoard());
     }
 
     private void handleMove(Move move) {
         this.subHandleMove(move);
         this._timer.startTimer();
 
-
-        if (this._gameState.isGameOver())
-        {
+        if (this._chessboardViewModel.isGameOver()) {
             this.onGameOver();
         }
     }
 
-    private void handlePromotion(Position fromPos, Position toPos) {
+    private void handlePromotion(@NonNull Position fromPos, @NonNull Position toPos) {
+        IPieceImages pImageInstance = PieceImagesInstance.getInstance();
+
         this._squares[toPos.row()][toPos.column()].setImageResource(
-                PieceImages.getInstance().getImage(this._gameState.getCurrentPlayer(), EPieceType.PAWN)); // Thay ảnh
+                pImageInstance.getImage(this._chessboardViewModel.getCurrentPlayer(), EPieceType.PAWN)); // Thay ảnh
         this._squares[fromPos.row()][fromPos.column()].setImageResource(0); // Xóa ảnh
 
         EPieceType type = this.showPromotionMenu();
@@ -297,18 +272,28 @@ public class ChessBoardFragment extends Fragment {
 
     private void showHighlights() {
         hideHighlights();
-        this._moveCache.forEach((position, move) ->
-                this._squares[position.row()][position.column()].setBackgroundColor(Color.GREEN)
+        this._moveCache.forEach((position, move) -> {
+                    this._squares[position.row()][position.column()].setBackgroundColor(Color.GREEN);
+                }
         );
     }
 
     private void hideHighlights() {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
+                GradientDrawable highlight = new GradientDrawable();
+                highlight.setColor(Color.YELLOW);
+                highlight.setCornerRadius(8f); // Bo góc
+                highlight.setStroke(3, Color.BLACK); // Viền đen
+                this._squares[row][col].setBackground(highlight);
+
                 boolean isWhite = (row + col) % 2 == 0;
-                this._squares[row][col].setBackgroundColor(isWhite ? Color.WHITE : Color.BLACK);
+                this._squares[row][col].setBackgroundColor(getCellBackgroundColor(isWhite));
             }
         }
+    }
+    private int getCellBackgroundColor(boolean isWhite) {
+        return isWhite ? Color.WHITE : Color.BLUE;
     }
 
     private void onGameOver() {
