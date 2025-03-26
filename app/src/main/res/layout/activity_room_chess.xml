@@ -18,4 +18,24 @@
         android:maxWidth="600dp"
         android:maxHeight="600dp" />
 
+    <FrameLayout
+        android:id="@+id/playerOpponentCardFrameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/roomChessFrameLayoutBoard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <FrameLayout
+        android:id="@+id/playerMainCardFrameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/roomChessFrameLayoutBoard" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

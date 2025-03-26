@@ -15,34 +15,40 @@ import com.example.chess_mobile.model.logic.moves.Move;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChessBoardViewModel extends ViewModel {
+public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     private final MutableLiveData<GameState> _gameState = new MutableLiveData<>();
 
+    @Override
     public LiveData<GameState> getGameState() {
         return this._gameState;
     }
 
+    @Override
     public Board getBoard() {
         GameState currentState = this._gameState.getValue();
         return (currentState != null) ? currentState.getBoard() : null;
     }
 
+    @Override
     public EPlayer getCurrentPlayer() {
         GameState currentState = this._gameState.getValue();
         return (currentState != null)
                 ? currentState.getCurrentPlayer() : null;
     }
 
+    @Override
     public List<Move> getLegalMovesForPiece(Position pos) {
         GameState currentState = this._gameState.getValue();
         return (currentState != null)
                 ? currentState.getLegalMovesForPiece(pos) : new ArrayList<>();
     }
 
+    @Override
     public void setGameState(GameState gs) {
         this._gameState.setValue(gs);
     }
 
+    @Override
     public void gameStateOnTick() {
         GameState currentState = this._gameState.getValue();
         if (currentState == null) return;
@@ -56,6 +62,7 @@ public class ChessBoardViewModel extends ViewModel {
         }
     }
 
+    @Override
     public void gameStateMakeMove(Move move) {
         GameState currentState = this._gameState.getValue();
         if (currentState != null) {
@@ -63,6 +70,7 @@ public class ChessBoardViewModel extends ViewModel {
         }
     }
 
+    @Override
     public boolean isGameOver() {
         GameState currentState = this._gameState.getValue();
 

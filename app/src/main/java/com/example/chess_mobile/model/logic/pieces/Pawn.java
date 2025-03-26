@@ -10,7 +10,6 @@ import com.example.chess_mobile.model.logic.moves.EnPassant;
 import com.example.chess_mobile.model.logic.moves.Move;
 import com.example.chess_mobile.model.logic.moves.NormalMove;
 import com.example.chess_mobile.model.logic.moves.PawnPromotion;
-import com.example.chess_mobile.model.moves.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;

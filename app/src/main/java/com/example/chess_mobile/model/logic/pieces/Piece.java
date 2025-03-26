@@ -6,7 +6,6 @@ import com.example.chess_mobile.model.logic.game_states.EPlayer;
 
 import com.example.chess_mobile.model.logic.game_states.Position;
 import com.example.chess_mobile.model.logic.moves.Move;
-import com.example.chess_mobile.model.moves.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

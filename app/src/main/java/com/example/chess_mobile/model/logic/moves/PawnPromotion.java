@@ -9,7 +9,6 @@ import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.Position;
 import com.example.chess_mobile.model.logic.pieces.Queen;
 import com.example.chess_mobile.model.logic.pieces.Rook;
-import com.example.chess_mobile.model.pieces.*;
 
 public class PawnPromotion extends Move {
     private final Position fromPos;

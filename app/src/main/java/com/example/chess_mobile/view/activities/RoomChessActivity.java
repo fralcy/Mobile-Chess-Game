@@ -15,6 +15,7 @@ import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.view.fragments.ChessBoardFragment;
+import com.example.chess_mobile.view.fragments.PlayerCardFragment;
 import com.example.chess_mobile.view_model.ChessBoardViewModel;
 
 public class RoomChessActivity extends AppCompatActivity {
@@ -43,6 +44,8 @@ public class RoomChessActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.roomChessFrameLayoutBoard, ChessBoardFragment.newInstance(8))
+                    .replace(R.id.playerOpponentCardFrameLayout, PlayerCardFragment.newInstance())
+                    .replace(R.id.playerMainCardFrameLayout, PlayerCardFragment.newInstance())
                     .commit();
         }
     }

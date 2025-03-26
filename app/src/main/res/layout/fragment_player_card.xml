@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".view.fragments.PlayerCardFragment"
+    >
+
+    <ImageView
+        android:layout_width="36dp"
+        android:layout_height="48dp"
+        android:src="@drawable/avatar_place_holder"
+        android:id="@+id/avatarImageView"
+        android:scaleType="fitStart"
+        android:layout_marginStart="21dp"
+        android:contentDescription="@string/player_avatar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/flagImageViewContainer"
+        android:layout_width="28dp"
+        android:layout_height="19dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="4dp"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="0dp"
+        app:layout_constraintStart_toEndOf="@+id/playerName"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/flagImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/player_nation_flag"
+            android:scaleType="centerCrop"
+            android:src="@drawable/flag_vietnam" />
+    </androidx.cardview.widget.CardView>
+    <TextView
+        android:id="@+id/playerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="6dp"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:minWidth="140dp"
+        android:text="@string/player_name"
+        android:textColor="#B3FFFFFF"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/avatarImageView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginEnd="18dp"
+        app:cardBackgroundColor="#6A6A6A"
+        app:cardCornerRadius="13dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/timeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:minWidth="100dp"
+            android:text="@string/_10_00"
+            android:textColor="#B3FFFFFF"
+            android:textSize="20sp" />
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

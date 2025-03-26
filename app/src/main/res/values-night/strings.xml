@@ -4,4 +4,6 @@
     <string name="login_text">login</string>
     <string name="register_text">register</string>
     <string name="name_text">name</string>
+    <string name="player_avatar">player avatar</string>
+    <string name="player_name">player name</string>
 </resources>

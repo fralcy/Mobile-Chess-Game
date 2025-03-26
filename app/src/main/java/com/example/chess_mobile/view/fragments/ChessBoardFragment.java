@@ -69,6 +69,8 @@ public class ChessBoardFragment extends Fragment {
         if (_size <= 0) {
             throw new IllegalStateException("Invalid board size: " + _size);
         }
+        this._chessboardViewModel =
+                new ViewModelProvider(requireActivity()).get(ChessBoardViewModel.class);
         this._squares = new ImageView[this._size][this._size];
         this._timer = new ChessTimer(1000, new ITimerCallback() {
             @Override
@@ -83,9 +85,6 @@ public class ChessBoardFragment extends Fragment {
 
             }
         });
-
-        this._chessboardViewModel =
-                new ViewModelProvider(requireActivity()).get(ChessBoardViewModel.class);
     }
 
     @Override
