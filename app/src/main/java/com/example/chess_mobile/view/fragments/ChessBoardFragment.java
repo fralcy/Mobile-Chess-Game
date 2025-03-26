@@ -1,7 +1,5 @@
 package com.example.chess_mobile.view.fragments;
 
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,17 +14,18 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 
 import com.example.chess_mobile.R;
-import com.example.chess_mobile.model.game_states.Board;
-import com.example.chess_mobile.model.game_states.Position;
-import com.example.chess_mobile.model.moves.EMoveType;
-import com.example.chess_mobile.model.moves.Move;
-import com.example.chess_mobile.model.moves.PawnPromotion;
-import com.example.chess_mobile.model.pieces.EPieceType;
-import com.example.chess_mobile.model.pieces.Piece;
+import com.example.chess_mobile.model.logic.game_states.Board;
+import com.example.chess_mobile.model.logic.game_states.Position;
+import com.example.chess_mobile.model.logic.moves.EMoveType;
+import com.example.chess_mobile.model.logic.moves.Move;
+import com.example.chess_mobile.model.logic.moves.PawnPromotion;
+import com.example.chess_mobile.model.logic.pieces.EPieceType;
+import com.example.chess_mobile.model.logic.pieces.Piece;
+import com.example.chess_mobile.theme.board_color.BoardColorInstance;
 import com.example.chess_mobile.utils.implementations.ChessTimer;
-import com.example.chess_mobile.utils.implementations.piece_images.PieceImagesInstance;
+import com.example.chess_mobile.theme.piece_images.PieceImagesInstance;
 import com.example.chess_mobile.utils.interfaces.IChessTimer;
-import com.example.chess_mobile.utils.interfaces.IPieceImages;
+import com.example.chess_mobile.theme.piece_images.IPieceImagesTheme;
 import com.example.chess_mobile.utils.interfaces.ITimerCallback;
 import com.example.chess_mobile.view_model.ChessBoardViewModel;
 
@@ -44,6 +43,7 @@ public class ChessBoardFragment extends Fragment {
     IChessTimer _timer;
     private ImageView[][] _squares;
     private Position _selectedPos;
+    private Move _lastMove;
     private final HashMap<Position, Move> _moveCache = new HashMap<>();
 
     public ChessBoardFragment() {
@@ -89,8 +89,9 @@ public class ChessBoardFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chess_board, container, false);
         this._gridLayout = view.findViewById(R.id.chessboardGridLayoutContainer);
 
@@ -157,7 +158,7 @@ public class ChessBoardFragment extends Fragment {
                 square.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
                 boolean isWhite = (row + col) % 2 == 0;
-                square.setBackgroundColor(getCellBackgroundColor(isWhite));
+                square.setBackgroundColor(BoardColorInstance.getInstance().getCellBackgroundColor(isWhite));
 
                 this._squares[row][col] = square;
                 this._gridLayout.addView(square);
@@ -177,7 +178,7 @@ public class ChessBoardFragment extends Fragment {
             throw new IllegalStateException("_squares array is not initialized.");
         }
 
-        IPieceImages pImageInstance = PieceImagesInstance.getInstance();
+        IPieceImagesTheme pImageInstance = PieceImagesInstance.getInstance();
         if (pImageInstance == null) {
             Log.d("Chess_Fragment_drawBoard", "PieceImage is null");
             throw new IllegalStateException("PieceImage is null");
@@ -202,12 +203,21 @@ public class ChessBoardFragment extends Fragment {
     }
 
     private void handleSquareClick(int row, int col) {
+        showLastMoveColor();
         Position pos = new Position(row, col);
         if (this._selectedPos == null) {
+            showLastMoveColor();
             onFromPositionSelected(pos);
         } else {
             onToPositionSelected(pos);
+            showLastMoveColor();
         }
+    }
+
+    private void cacheMoves(@NonNull List<Move> moves)
+    {
+        this._moveCache.clear();
+        moves.forEach(move -> this._moveCache.put(move.getToPos(), move));
     }
 
     private void onFromPositionSelected(Position pos) {
@@ -218,12 +228,6 @@ public class ChessBoardFragment extends Fragment {
             this.cacheMoves(moves);
             showHighlights();
         }
-    }
-
-    private void cacheMoves(@NonNull List<Move> moves)
-    {
-        this._moveCache.clear();
-        moves.forEach(move -> this._moveCache.put(move.getToPos(), move));
     }
 
     private void onToPositionSelected(Position pos) {
@@ -248,14 +252,15 @@ public class ChessBoardFragment extends Fragment {
     private void handleMove(Move move) {
         this.subHandleMove(move);
         this._timer.startTimer();
-
+        this._lastMove = move;
+        showLastMoveColor();
         if (this._chessboardViewModel.isGameOver()) {
             this.onGameOver();
         }
     }
 
     private void handlePromotion(@NonNull Position fromPos, @NonNull Position toPos) {
-        IPieceImages pImageInstance = PieceImagesInstance.getInstance();
+        IPieceImagesTheme pImageInstance = PieceImagesInstance.getInstance();
 
         this._squares[toPos.row()][toPos.column()].setImageResource(
                 pImageInstance.getImage(this._chessboardViewModel.getCurrentPlayer(), EPieceType.PAWN)); // Thay ảnh
@@ -270,30 +275,32 @@ public class ChessBoardFragment extends Fragment {
         return EPieceType.QUEEN;
     }
 
+    private void showLastMoveColor() {
+        if (this._lastMove == null) return;
+
+        Position from = this._lastMove.getFromPos();
+        Position to = this._lastMove.getToPos();
+        this._squares[from.row()][from.column()].setBackgroundColor(BoardColorInstance.getInstance().getLastMoveCellColor());
+        this._squares[to.row()][to.column()].setBackgroundColor(BoardColorInstance.getInstance().getLastMoveCellColor());
+    }
+
     private void showHighlights() {
         hideHighlights();
-        this._moveCache.forEach((position, move) -> {
-                    this._squares[position.row()][position.column()].setBackgroundColor(Color.GREEN);
-                }
+        this._squares[this._selectedPos.row()][this._selectedPos.column()]
+                .setBackgroundColor(BoardColorInstance.getInstance().getSelectedCellHighlightColor());
+        this._moveCache.forEach((position, move)
+                -> this._squares[position.row()][position.column()]
+                .setBackgroundColor(BoardColorInstance.getInstance().getCellHighlightColor(move))
         );
     }
 
     private void hideHighlights() {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                GradientDrawable highlight = new GradientDrawable();
-                highlight.setColor(Color.YELLOW);
-                highlight.setCornerRadius(8f); // Bo góc
-                highlight.setStroke(3, Color.BLACK); // Viền đen
-                this._squares[row][col].setBackground(highlight);
-
                 boolean isWhite = (row + col) % 2 == 0;
-                this._squares[row][col].setBackgroundColor(getCellBackgroundColor(isWhite));
+                this._squares[row][col].setBackgroundColor(BoardColorInstance.getInstance().getCellBackgroundColor(isWhite));
             }
         }
-    }
-    private int getCellBackgroundColor(boolean isWhite) {
-        return isWhite ? Color.WHITE : Color.BLUE;
     }
 
     private void onGameOver() {

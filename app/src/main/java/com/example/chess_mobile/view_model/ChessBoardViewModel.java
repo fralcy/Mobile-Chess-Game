@@ -4,13 +4,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.chess_mobile.model.game_states.Board;
-import com.example.chess_mobile.model.game_states.EEndReason;
-import com.example.chess_mobile.model.game_states.EPlayer;
-import com.example.chess_mobile.model.game_states.GameState;
-import com.example.chess_mobile.model.game_states.Position;
-import com.example.chess_mobile.model.game_states.Result;
-import com.example.chess_mobile.model.moves.Move;
+import com.example.chess_mobile.model.logic.game_states.Board;
+import com.example.chess_mobile.model.logic.game_states.EEndReason;
+import com.example.chess_mobile.model.logic.game_states.EPlayer;
+import com.example.chess_mobile.model.logic.game_states.GameState;
+import com.example.chess_mobile.model.logic.game_states.Position;
+import com.example.chess_mobile.model.logic.game_states.Result;
+import com.example.chess_mobile.model.logic.moves.Move;
 
 import java.util.ArrayList;
 import java.util.List;

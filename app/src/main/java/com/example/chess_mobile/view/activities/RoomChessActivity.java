@@ -11,9 +11,9 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.chess_mobile.R;
-import com.example.chess_mobile.model.game_states.Board;
-import com.example.chess_mobile.model.game_states.EPlayer;
-import com.example.chess_mobile.model.game_states.GameState;
+import com.example.chess_mobile.model.logic.game_states.Board;
+import com.example.chess_mobile.model.logic.game_states.EPlayer;
+import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.view.fragments.ChessBoardFragment;
 import com.example.chess_mobile.view_model.ChessBoardViewModel;
 
@@ -37,6 +37,7 @@ public class RoomChessActivity extends AppCompatActivity {
 
         Board board = new Board();
         chessBoardViewModel.setGameState(new GameState(EPlayer.WHITE, board.initial()));
+//        PieceImagesInstance.setTheme(EPieceImageTheme.COMIC);
 
         // Thêm ChessBoardFragment vào FrameLayout nếu chưa có
         if (savedInstanceState == null) {
