@@ -13,8 +13,8 @@ import java.time.Duration;
 import java.util.List;
 
 public interface IChessViewModel {
-    Player getWhitePlayer();
-    Player getBlackPlayer();
+    Player getMainPlayer();
+    Player getOpponentPlayer();
     void setPlayers(Player white, Player black);
     LiveData<Duration>  getWhiteTimer();
     LiveData<Duration>  getBlackTimer();

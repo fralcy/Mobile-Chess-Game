@@ -19,27 +19,25 @@ import java.util.List;
 
 public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     private final MutableLiveData<GameState> _gameState = new MutableLiveData<>();
-    private final MutableLiveData<Player> _white = new MutableLiveData<>();
-    private final MutableLiveData<Player> _black= new MutableLiveData<>();
+    private final MutableLiveData<Player> _main = new MutableLiveData<>();
+    private final MutableLiveData<Player> _opponent = new MutableLiveData<>();
     private final MutableLiveData<Duration> _whiteTimer = new MutableLiveData<>();
     private final MutableLiveData<Duration> _blackTimer = new MutableLiveData<>();
 
     @Override
-    public Player getWhitePlayer() {
-        return this._white.getValue();
+    public Player getMainPlayer() {
+        return this._main.getValue();
     }
 
     @Override
-    public Player getBlackPlayer() {
-        return this._black.getValue();
+    public Player getOpponentPlayer() {
+        return this._opponent.getValue();
     }
 
     @Override
-    public void setPlayers(Player white, Player black) {
-        white.setColor(EPlayer.WHITE);
-        black.setColor(EPlayer.BLACK);
-        this._white.setValue(white);
-        this._black.setValue(black);
+    public void setPlayers(Player main, Player opponent) {
+        this._main.setValue(main);
+        this._opponent.setValue(opponent);
     }
 
     @Override
