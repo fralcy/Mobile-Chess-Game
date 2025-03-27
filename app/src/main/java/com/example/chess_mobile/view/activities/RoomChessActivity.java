@@ -14,6 +14,7 @@ import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.GameState;
+import com.example.chess_mobile.model.player.Player;
 import com.example.chess_mobile.view.fragments.ChessBoardFragment;
 import com.example.chess_mobile.view.fragments.PlayerCardFragment;
 import com.example.chess_mobile.view_model.ChessBoardViewModel;
@@ -38,14 +39,20 @@ public class RoomChessActivity extends AppCompatActivity {
 
         Board board = new Board();
         chessBoardViewModel.setGameState(new GameState(EPlayer.WHITE, board.initial()));
+        chessBoardViewModel.setPlayers(
+                new Player("0", "White Player"),
+                new Player("-1", "Black Player")
+        );
 //        PieceImagesInstance.setTheme(EPieceImageTheme.COMIC);
 
         // Thêm ChessBoardFragment vào FrameLayout nếu chưa có
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.roomChessFrameLayoutBoard, ChessBoardFragment.newInstance(8))
-                    .replace(R.id.playerOpponentCardFrameLayout, PlayerCardFragment.newInstance())
-                    .replace(R.id.playerMainCardFrameLayout, PlayerCardFragment.newInstance())
+                    .replace(R.id.playerOpponentCardFrameLayout,
+                            PlayerCardFragment.newInstance(chessBoardViewModel.getBlackPlayer()))
+                    .replace(R.id.playerMainCardFrameLayout,
+                            PlayerCardFragment.newInstance(chessBoardViewModel.getWhitePlayer()))
                     .commit();
         }
     }

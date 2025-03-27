@@ -1,4 +1,4 @@
-package com.example.chess_mobile.theme.board_color;
+package com.example.chess_mobile.settings.board_color;
 
 import android.graphics.Color;
 

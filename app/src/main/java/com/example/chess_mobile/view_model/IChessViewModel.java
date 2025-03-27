@@ -7,10 +7,17 @@ import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.game_states.Position;
 import com.example.chess_mobile.model.logic.moves.Move;
+import com.example.chess_mobile.model.player.Player;
 
+import java.time.Duration;
 import java.util.List;
 
 public interface IChessViewModel {
+    Player getWhitePlayer();
+    Player getBlackPlayer();
+    void setPlayers(Player white, Player black);
+    LiveData<Duration>  getWhiteTimer();
+    LiveData<Duration>  getBlackTimer();
     LiveData<GameState> getGameState();
     Board getBoard();
     EPlayer getCurrentPlayer();

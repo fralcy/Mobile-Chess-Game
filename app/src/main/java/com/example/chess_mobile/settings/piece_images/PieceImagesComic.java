@@ -1,4 +1,4 @@
-package com.example.chess_mobile.theme.piece_images;
+package com.example.chess_mobile.settings.piece_images;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.logic.pieces.EPieceType;

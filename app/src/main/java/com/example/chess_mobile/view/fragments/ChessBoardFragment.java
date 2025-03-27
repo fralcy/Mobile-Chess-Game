@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +23,11 @@ import com.example.chess_mobile.model.logic.moves.Move;
 import com.example.chess_mobile.model.logic.moves.PawnPromotion;
 import com.example.chess_mobile.model.logic.pieces.EPieceType;
 import com.example.chess_mobile.model.logic.pieces.Piece;
-import com.example.chess_mobile.theme.board_color.BoardColorInstance;
+import com.example.chess_mobile.settings.board_color.BoardColorInstance;
 import com.example.chess_mobile.utils.implementations.ChessTimer;
-import com.example.chess_mobile.theme.piece_images.PieceImagesInstance;
+import com.example.chess_mobile.settings.piece_images.PieceImagesInstance;
 import com.example.chess_mobile.utils.interfaces.IChessTimer;
-import com.example.chess_mobile.theme.piece_images.IPieceImagesTheme;
+import com.example.chess_mobile.settings.piece_images.IPieceImagesTheme;
 import com.example.chess_mobile.utils.interfaces.ITimerCallback;
 import com.example.chess_mobile.view_model.ChessBoardViewModel;
 
@@ -75,9 +77,12 @@ public class ChessBoardFragment extends Fragment {
         this._timer = new ChessTimer(1000, new ITimerCallback() {
             @Override
             public void onTick() {
+                Log.d("ChessTimer", "Timer ticked");
                 _chessboardViewModel.gameStateOnTick();
                 if (_chessboardViewModel.isGameOver()) {
+                    Log.d("ChessTimer", "Game over detected, stopping timer");
                     onGameOver();
+                    _timer.stopTimer();
                 }
             }
             @Override
@@ -99,7 +104,6 @@ public class ChessBoardFragment extends Fragment {
         }
 
         gridLayoutSetUp();
-        this._timer.startTimer();
         return view;
     }
 
@@ -107,6 +111,7 @@ public class ChessBoardFragment extends Fragment {
     public void onResume() {
         super.onResume();
         gridLayoutSetUp();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> _timer.startTimer(), 800);
     }
 
     private void gridLayoutSetUp() {

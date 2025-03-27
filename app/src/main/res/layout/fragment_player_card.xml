@@ -29,7 +29,7 @@
         android:layout_marginTop="4dp"
         app:cardCornerRadius="4dp"
         app:cardElevation="0dp"
-        app:layout_constraintStart_toEndOf="@+id/playerName"
+        app:layout_constraintStart_toEndOf="@+id/playerNameText"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -41,7 +41,7 @@
             android:src="@drawable/flag_vietnam" />
     </androidx.cardview.widget.CardView>
     <TextView
-        android:id="@+id/playerName"
+        android:id="@+id/playerNameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

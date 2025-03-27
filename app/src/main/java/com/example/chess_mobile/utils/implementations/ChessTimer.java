@@ -2,6 +2,7 @@ package com.example.chess_mobile.utils.implementations;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import com.example.chess_mobile.utils.interfaces.IChessTimer;
 import com.example.chess_mobile.utils.interfaces.ITimerCallback;
@@ -23,12 +24,12 @@ public class ChessTimer implements IChessTimer {
     public void startTimer() {
         if (this.isRunning) return;
         this.isRunning = true;
-        int interval = this._interval;
         _timerRunnable = new Runnable() {
             @Override
             public void run() {
                 _timerCallback.onTick();
-                _handler.postDelayed(this, interval);
+                Log.d("ChessTimer_startTimer", "tick ");
+                _handler.postDelayed(this, _interval);
             }
         };
         _handler.post(_timerRunnable);
@@ -36,16 +37,15 @@ public class ChessTimer implements IChessTimer {
 
     @Override
     public void stopTimer() {
-        if (!this.isRunning) return;  // Tránh dừng khi chưa chạy
+        if (!this.isRunning || _timerRunnable == null) return;  // Tránh dừng khi chưa chạy
         this.isRunning = false;
         _handler.removeCallbacks(_timerRunnable); // Chỉ dừng bộ đếm, không gọi callback
     }
 
-    // Thêm phương thức kết thúc thủ công nếu cần
     @Override
     public void finishTimer() {
         stopTimer();
-        _timerCallback.onFinish();  // Gửi tín hiệu kết thúc nếu muốn
+        _timerCallback.onFinish();
     }
 
     public int getInterval() {

@@ -11,13 +11,46 @@ import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.game_states.Position;
 import com.example.chess_mobile.model.logic.game_states.Result;
 import com.example.chess_mobile.model.logic.moves.Move;
+import com.example.chess_mobile.model.player.Player;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     private final MutableLiveData<GameState> _gameState = new MutableLiveData<>();
+    private final MutableLiveData<Player> _white = new MutableLiveData<>();
+    private final MutableLiveData<Player> _black= new MutableLiveData<>();
+    private final MutableLiveData<Duration> _whiteTimer = new MutableLiveData<>();
+    private final MutableLiveData<Duration> _blackTimer = new MutableLiveData<>();
 
+    @Override
+    public Player getWhitePlayer() {
+        return this._white.getValue();
+    }
+
+    @Override
+    public Player getBlackPlayer() {
+        return this._black.getValue();
+    }
+
+    @Override
+    public void setPlayers(Player white, Player black) {
+        white.setColor(EPlayer.WHITE);
+        black.setColor(EPlayer.BLACK);
+        this._white.setValue(white);
+        this._black.setValue(black);
+    }
+
+    @Override
+    public LiveData<Duration> getWhiteTimer() {
+        return _whiteTimer;
+    }
+
+    @Override
+    public LiveData<Duration> getBlackTimer() {
+        return _blackTimer;
+    }
     @Override
     public LiveData<GameState> getGameState() {
         return this._gameState;
@@ -59,7 +92,10 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
             currentState.setResult(Result.win(EPlayer.WHITE, EEndReason.TIMEOUT));
         } else {
             currentState.timerTick();
+            this._whiteTimer.setValue(currentState.getWhiteTimer());
+            this._blackTimer.setValue(currentState.getBlackTimer());
         }
+        this._gameState.setValue(currentState);
     }
 
     @Override
