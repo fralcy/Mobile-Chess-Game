@@ -28,7 +28,6 @@ public class ChessTimer implements IChessTimer {
             @Override
             public void run() {
                 _timerCallback.onTick();
-                Log.d("ChessTimer_startTimer", "tick ");
                 _handler.postDelayed(this, _interval);
             }
         };

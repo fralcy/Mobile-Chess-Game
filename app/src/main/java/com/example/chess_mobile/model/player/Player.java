@@ -7,13 +7,7 @@ import java.io.Serializable;
 public class Player implements Serializable {
     private String id;
     private EPlayer color;
-    private String name = "Opponents";
-
-    public Player(String id, String name) {
-        this.id = id;
-        this.name = name;
-        this.color = EPlayer.WHITE;
-    }
+    private String name;
 
     public Player(String id, String name, EPlayer color) {
         this.id = id;

@@ -14,15 +14,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.logic.game_states.Board;
+import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.Position;
 import com.example.chess_mobile.model.logic.moves.EMoveType;
 import com.example.chess_mobile.model.logic.moves.Move;
 import com.example.chess_mobile.model.logic.moves.PawnPromotion;
 import com.example.chess_mobile.model.logic.pieces.EPieceType;
 import com.example.chess_mobile.model.logic.pieces.Piece;
+import com.example.chess_mobile.model.player.Player;
 import com.example.chess_mobile.settings.board_color.BoardColorInstance;
 import com.example.chess_mobile.utils.implementations.ChessTimer;
 import com.example.chess_mobile.settings.piece_images.PieceImagesInstance;
@@ -36,10 +39,15 @@ import java.util.List;
 
 public class ChessBoardFragment extends Fragment {
     private static final String BOARD_SIZE = "boardSize";
+    private static final String MAIN_PLAYER = "mainPlayer";
+
+    // Board ui
+    private final boolean reversed = true;
+    private int _size;
+    private Player _mainPlayer;
 
     private ChessBoardViewModel _chessboardViewModel;
     private GridLayout _gridLayout;
-    private int _size;
 
     // Convert Logic & Handle Event
     IChessTimer _timer;
@@ -53,10 +61,11 @@ public class ChessBoardFragment extends Fragment {
     }
 
     @NonNull
-    public static ChessBoardFragment newInstance(int size) {
+    public static ChessBoardFragment newInstance(int size, Player mainPlayer) {
         ChessBoardFragment fragment = new ChessBoardFragment();
         Bundle args = new Bundle();
         args.putInt(BOARD_SIZE, size);
+        args.putSerializable(MAIN_PLAYER, mainPlayer);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,7 +74,8 @@ public class ChessBoardFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            _size = getArguments().getInt(BOARD_SIZE, 8);
+            this._size = getArguments().getInt(BOARD_SIZE, 8);
+            this._mainPlayer = (Player) getArguments().getSerializable(MAIN_PLAYER);
         }
 
         if (_size <= 0) {
@@ -77,10 +87,8 @@ public class ChessBoardFragment extends Fragment {
         this._timer = new ChessTimer(1000, new ITimerCallback() {
             @Override
             public void onTick() {
-                Log.d("ChessTimer", "Timer ticked");
                 _chessboardViewModel.gameStateOnTick();
                 if (_chessboardViewModel.isGameOver()) {
-                    Log.d("ChessTimer", "Game over detected, stopping timer");
                     onGameOver();
                     _timer.stopTimer();
                 }
@@ -132,7 +140,6 @@ public class ChessBoardFragment extends Fragment {
     }
     private void initializeBoard(int gridWidth, int gridHeight) {
 
-        Log.d("BOARD_FRAGMENT_INITIALIZE_BOARD", "Board Size" + gridWidth + ',' + gridHeight);
         if (gridWidth == 0 || gridHeight == 0) {
             Log.e("initializeBoard", "GridLayout chưa được đo xong, hủy khởi tạo.");
             return;
@@ -161,14 +168,18 @@ public class ChessBoardFragment extends Fragment {
                 square.setAdjustViewBounds(true);
                 square.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
-                boolean isWhite = (row + col) % 2 == 0;
-                square.setBackgroundColor(BoardColorInstance.getInstance().getCellBackgroundColor(isWhite));
+                int cellRow = (this._mainPlayer.getColor() == EPlayer.BLACK && this.reversed) ?
+                        _size - 1 - row: row;
+                int cellCol = (this._mainPlayer.getColor() == EPlayer.BLACK && this.reversed) ?
+                        _size - 1 - col: col;
 
-                this._squares[row][col] = square;
+                this._squares[cellRow][cellCol] = square;
                 this._gridLayout.addView(square);
 
-                final int finalRow = row, finalCol = col; // Declare for compile purpose (programming not logic)
-                square.setOnClickListener(v -> handleSquareClick(finalRow, finalCol));
+                boolean isWhite = (cellRow + cellCol) % 2 == 1;
+                square.setBackgroundColor(BoardColorInstance.getInstance().getCellBackgroundColor(isWhite));
+
+                square.setOnClickListener(v -> handleSquareClick(cellRow, cellCol));
             }
         }
     }
@@ -190,6 +201,7 @@ public class ChessBoardFragment extends Fragment {
 
         for (int row = 0; row < this._size; row++) {
             for (int col = 0; col < this._size; col++) {
+
                 if (this._squares[row][col] == null) {
                     throw new IllegalStateException("_squares[" + row + "][" + col + "] is not initialized");
                 }
@@ -208,12 +220,11 @@ public class ChessBoardFragment extends Fragment {
 
     private void handleSquareClick(int row, int col) {
         showLastMoveColor();
-        Position pos = new Position(row, col);
         if (this._selectedPos == null) {
             showLastMoveColor();
-            onFromPositionSelected(pos);
+            onFromPositionSelected(new Position(row, col));
         } else {
-            onToPositionSelected(pos);
+            onToPositionSelected(new Position(row, col));
             showLastMoveColor();
         }
     }
@@ -284,6 +295,7 @@ public class ChessBoardFragment extends Fragment {
 
         Position from = this._lastMove.getFromPos();
         Position to = this._lastMove.getToPos();
+
         this._squares[from.row()][from.column()].setBackgroundColor(BoardColorInstance.getInstance().getLastMoveCellColor());
         this._squares[to.row()][to.column()].setBackgroundColor(BoardColorInstance.getInstance().getLastMoveCellColor());
     }
@@ -301,7 +313,7 @@ public class ChessBoardFragment extends Fragment {
     private void hideHighlights() {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                boolean isWhite = (row + col) % 2 == 0;
+                boolean isWhite = (row + col) % 2 == 1;
                 this._squares[row][col].setBackgroundColor(BoardColorInstance.getInstance().getCellBackgroundColor(isWhite));
             }
         }
@@ -309,5 +321,6 @@ public class ChessBoardFragment extends Fragment {
 
     private void onGameOver() {
         this._timer.finishTimer();
+        Toast.makeText(getContext(), "Trò chơi kết thúc!", Toast.LENGTH_LONG).show();
     }
 }

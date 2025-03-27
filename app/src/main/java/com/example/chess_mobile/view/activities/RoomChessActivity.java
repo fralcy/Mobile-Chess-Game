@@ -40,19 +40,18 @@ public class RoomChessActivity extends AppCompatActivity {
         Board board = new Board();
         chessBoardViewModel.setGameState(new GameState(EPlayer.WHITE, board.initial()));
         chessBoardViewModel.setPlayers(
-                new Player("0", "White Player"),
-                new Player("-1", "Black Player")
+                new Player("0", "Black Player", EPlayer.BLACK),
+                new Player("-1", "White Player", EPlayer.WHITE)
         );
 //        PieceImagesInstance.setTheme(EPieceImageTheme.COMIC);
 
-        // Thêm ChessBoardFragment vào FrameLayout nếu chưa có
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.roomChessFrameLayoutBoard, ChessBoardFragment.newInstance(8))
+                    .replace(R.id.roomChessFrameLayoutBoard, ChessBoardFragment.newInstance(8, chessBoardViewModel.getMainPlayer()))
                     .replace(R.id.playerOpponentCardFrameLayout,
-                            PlayerCardFragment.newInstance(chessBoardViewModel.getBlackPlayer()))
+                            PlayerCardFragment.newInstance(chessBoardViewModel.getOpponentPlayer()))
                     .replace(R.id.playerMainCardFrameLayout,
-                            PlayerCardFragment.newInstance(chessBoardViewModel.getWhitePlayer()))
+                            PlayerCardFragment.newInstance(chessBoardViewModel.getMainPlayer()))
                     .commit();
         }
     }
