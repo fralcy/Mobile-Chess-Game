@@ -124,22 +124,14 @@ public class BoardEvaluator {
             row = 7 - row;
         }
 
-        switch (pieceType) {
-            case PAWN:
-                return PAWN_TABLE[row][col];
-            case KNIGHT:
-                return KNIGHT_TABLE[row][col];
-            case BISHOP:
-                return BISHOP_TABLE[row][col];
-            case ROOK:
-                return ROOK_TABLE[row][col];
-            case QUEEN:
-                return QUEEN_TABLE[row][col];
-            case KING:
-                return isEndgame ? KING_TABLE_ENDGAME[row][col] : KING_TABLE_MID_GAME[row][col];
-            default:
-                return 0;
-        }
+        return switch (pieceType) {
+            case PAWN -> PAWN_TABLE[row][col];
+            case KNIGHT -> KNIGHT_TABLE[row][col];
+            case BISHOP -> BISHOP_TABLE[row][col];
+            case ROOK -> ROOK_TABLE[row][col];
+            case QUEEN -> QUEEN_TABLE[row][col];
+            case KING -> isEndgame ? KING_TABLE_ENDGAME[row][col] : KING_TABLE_MID_GAME[row][col];
+        };
     }
 
     /**
@@ -149,22 +141,14 @@ public class BoardEvaluator {
      * @return Piece value in centipawns
      */
     private static int getPieceValue(EPieceType pieceType) {
-        switch (pieceType) {
-            case PAWN:
-                return PAWN_VALUE;
-            case KNIGHT:
-                return KNIGHT_VALUE;
-            case BISHOP:
-                return BISHOP_VALUE;
-            case ROOK:
-                return ROOK_VALUE;
-            case QUEEN:
-                return QUEEN_VALUE;
-            case KING:
-                return KING_VALUE;
-            default:
-                return 0;
-        }
+        return switch (pieceType) {
+            case PAWN -> PAWN_VALUE;
+            case KNIGHT -> KNIGHT_VALUE;
+            case BISHOP -> BISHOP_VALUE;
+            case ROOK -> ROOK_VALUE;
+            case QUEEN -> QUEEN_VALUE;
+            case KING -> KING_VALUE;
+        };
     }
 
     /**
