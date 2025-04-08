@@ -1,7 +1,6 @@
 package com.example.chess_mobile.model.ai;
 
 import com.example.chess_mobile.model.logic.game_states.GameState;
-import com.example.chess_mobile.model.logic.game_states.Position;
 import com.example.chess_mobile.model.logic.moves.Move;
 import com.example.chess_mobile.model.logic.pieces.EPieceType;
 
