@@ -17,4 +17,11 @@
     <string name="create_room_mode">Friend Match</string>
     <string name="ai_mode">AI Challenge</string>
     <string name="local_mode">Local Match</string>
+
+    <!-- Ranked match strings -->
+    <string name="ranked_match_title">Ranked Match</string>
+    <string name="choose_time_for_match">Choose time for match</string>
+    <string name="_15_00">15:00</string>
+    <string name="_20_00">20:00</string>
+    <string name="play">Play</string>
 </resources>
