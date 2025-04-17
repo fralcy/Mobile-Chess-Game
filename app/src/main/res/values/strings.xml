@@ -56,4 +56,9 @@
     <string name="level_3">3</string>
     <string name="level_4">4</string>
     <string name="level_5">5</string>
+
+    <!-- Local match strings -->
+    <string name="local_match_title">Local Match</string>
+    <string name="choose_time_for_player_white">Choose time for player White</string>
+    <string name="choose_time_for_player_black">Choose time for player Black</string>
 </resources>

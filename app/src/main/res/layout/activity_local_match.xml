@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#222222"
+    tools:context=".view.activities.LocalMatchActivity">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/localMatchTextTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="@string/local_match_title"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- White Player Time Selection Section -->
+    <TextView
+        android:id="@+id/localMatchTextChooseTimeWhite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="48dp"
+        android:text="@string/choose_time_for_player_white"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/localMatchTextTitle" />
+
+    <!-- White Player Time Selection Buttons -->
+    <LinearLayout
+        android:id="@+id/localMatchWhiteTimeOptionsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:gravity="center_vertical|start"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/localMatchTextChooseTimeWhite">
+
+        <!-- 10:00 Button for White -->
+        <Button
+            android:id="@+id/localMatchWhiteButton10Min"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_button_bg"
+            android:minHeight="48dp"
+            android:text="@string/_10_00"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <!-- 15:00 Button for White -->
+        <Button
+            android:id="@+id/localMatchWhiteButton15Min"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_gray_button_bg"
+            android:minHeight="48dp"
+            android:text="@string/_15_00"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <!-- 20:00 Button for White -->
+        <Button
+            android:id="@+id/localMatchWhiteButton20Min"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_gray_button_bg"
+            android:minHeight="48dp"
+            android:text="@string/_20_00"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <!-- Black Player Time Selection Section -->
+    <TextView
+        android:id="@+id/localMatchTextChooseTimeBlack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/choose_time_for_player_black"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/localMatchWhiteTimeOptionsLayout" />
+
+    <!-- Black Player Time Selection Buttons -->
+    <LinearLayout
+        android:id="@+id/localMatchBlackTimeOptionsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:gravity="center_vertical|start"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/localMatchTextChooseTimeBlack">
+
+        <!-- 10:00 Button for Black -->
+        <Button
+            android:id="@+id/localMatchBlackButton10Min"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_button_bg"
+            android:minHeight="48dp"
+            android:text="@string/_10_00"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <!-- 15:00 Button for Black -->
+        <Button
+            android:id="@+id/localMatchBlackButton15Min"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_gray_button_bg"
+            android:minHeight="48dp"
+            android:text="@string/_15_00"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <!-- 20:00 Button for Black -->
+        <Button
+            android:id="@+id/localMatchBlackButton20Min"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_gray_button_bg"
+            android:minHeight="48dp"
+            android:text="@string/_20_00"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <!-- Play Button -->
+    <Button
+        android:id="@+id/localMatchButtonPlay"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/rounded_button_bg"
+        android:minHeight="48dp"
+        android:text="@string/play"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/localMatchBlackTimeOptionsLayout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
