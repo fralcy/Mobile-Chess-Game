@@ -4,12 +4,17 @@
     <string name="password_text">password</string>
     <string name="login_text">login</string>
     <string name="register_text">register</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="name_text">name</string>
     <string name="player_avatar">player avatar</string>
     <string name="_10_00">10:00</string>
     <string name="player_name">player name</string>
     <string name="player_nation_flag">nation_flag</string>
     <string name="click_to_play">Click to play!</string>
+
+    <!-- New strings for game mode selection -->
+    <string name="user_profile">User Profile</string>
+    <string name="ranked_mode">Ranked Match</string>
+    <string name="create_room_mode">Friend Match</string>
+    <string name="ai_mode">AI Challenge</string>
+    <string name="local_mode">Local Match</string>
 </resources>
