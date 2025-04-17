@@ -47,4 +47,13 @@
     <string name="room_id_content_description">Input field for room ID number</string>
     <string name="minutes_content_description">Input field for minutes</string>
     <string name="seconds_content_description">Input field for seconds</string>
+
+    <!-- AI match strings -->
+    <string name="ai_match_title">AI Match</string>
+    <string name="choose_difficulty">Choose difficulty:</string>
+    <string name="level_1">1</string>
+    <string name="level_2">2</string>
+    <string name="level_3">3</string>
+    <string name="level_4">4</string>
+    <string name="level_5">5</string>
 </resources>
