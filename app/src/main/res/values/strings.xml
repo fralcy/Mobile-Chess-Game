@@ -24,4 +24,27 @@
     <string name="_15_00">15:00</string>
     <string name="_20_00">20:00</string>
     <string name="play">Play</string>
+
+    <!-- Friend match strings -->
+    <string name="friend_match_title">Friend Match</string>
+    <string name="create_room">Create Room</string>
+    <string name="you_play_as">You play as:</string>
+    <string name="white">White</string>
+    <string name="random">"?"</string>
+    <string name="black">Black</string>
+    <string name="choose_time">Choose time:</string>
+    <string name="custom_time">Custom time:</string>
+    <string name="min">min</string>
+    <string name="sec">sec</string>
+    <string name="colon">:</string>
+    <string name="create">Create</string>
+    <string name="created_room_id">Created Room #123456</string>
+    <string name="waiting_player">Waiting other player to join</string>
+    <string name="join_room">Join Room</string>
+    <string name="enter_room_id">Enter room id:</string>
+    <string name="join">Join</string>
+    <string name="room_id_hint">Enter 6-digit room ID</string>
+    <string name="room_id_content_description">Input field for room ID number</string>
+    <string name="minutes_content_description">Input field for minutes</string>
+    <string name="seconds_content_description">Input field for seconds</string>
 </resources>
