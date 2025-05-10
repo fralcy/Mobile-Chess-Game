@@ -20,7 +20,10 @@ import com.example.chess_mobile.view.fragments.PlayerCardFragment;
 import com.example.chess_mobile.view_model.ChessBoardViewModel;
 
 public class RoomChessActivity extends AppCompatActivity {
-
+    public static final String MAIN_PLAYER = "main";
+    public static final String OPPONENT_PLAYER = "opponent";
+    public static final String DURATION = "duration";
+    public static final String TYPE = "type";
     FrameLayout frameLayoutBoard;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
