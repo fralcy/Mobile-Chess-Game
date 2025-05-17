@@ -1,8 +1,11 @@
 package com.example.chess_mobile.view.fragments;
 
+import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -14,12 +17,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.logic.game_states.Board;
+import com.example.chess_mobile.model.logic.game_states.EEndReason;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
+import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.game_states.Position;
+import com.example.chess_mobile.model.logic.game_states.Result;
 import com.example.chess_mobile.model.logic.moves.EMoveType;
 import com.example.chess_mobile.model.logic.moves.Move;
 import com.example.chess_mobile.model.logic.moves.PawnPromotion;
@@ -31,11 +38,12 @@ import com.example.chess_mobile.utils.implementations.ChessTimer;
 import com.example.chess_mobile.settings.piece_images.PieceImagesInstance;
 import com.example.chess_mobile.utils.interfaces.IChessTimer;
 import com.example.chess_mobile.settings.piece_images.IPieceImagesTheme;
-import com.example.chess_mobile.utils.interfaces.ITimerCallback;
+import com.example.chess_mobile.view.activities.MainActivity;
 import com.example.chess_mobile.view_model.ChessBoardViewModel;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ChessBoardFragment extends Fragment {
     private static final String BOARD_SIZE = "boardSize";
@@ -87,18 +95,11 @@ public class ChessBoardFragment extends Fragment {
         this._chessboardViewModel =
                 new ViewModelProvider(requireActivity()).get(ChessBoardViewModel.class);
         this._squares = new ImageView[this._size][this._size];
-        this._timer = new ChessTimer(1000, new ITimerCallback() {
-            @Override
-            public void onTick() {
-                _chessboardViewModel.gameStateOnTick();
-                if (_chessboardViewModel.isGameOver()) {
-                    onGameOver();
-                    _timer.stopTimer();
-                }
-            }
-            @Override
-            public void onFinish() {
-
+        this._timer = new ChessTimer(1000, () -> {
+            _chessboardViewModel.gameStateOnTick();
+            if (_chessboardViewModel.isGameOver()) {
+                onGameOver();
+                _timer.stopTimer();
             }
         });
     }
@@ -123,6 +124,7 @@ public class ChessBoardFragment extends Fragment {
         super.onResume();
         gridLayoutSetUp();
         new Handler(Looper.getMainLooper()).postDelayed(() -> _timer.startTimer(), 800);
+        showResignationDialog();
     }
 
     private void gridLayoutSetUp() {
@@ -139,7 +141,6 @@ public class ChessBoardFragment extends Fragment {
             initializeBoard(this._gridLayout.getWidth(), this._gridLayout.getHeight());
             drawBoard(this._chessboardViewModel.getBoard());
         });
-
     }
     private void initializeBoard(int gridWidth, int gridHeight) {
 
@@ -251,12 +252,13 @@ public class ChessBoardFragment extends Fragment {
         hideHighlights();
 
         Move move = this._moveCache.get(pos);
-        if (move != null) {
-            if (move.getType() == EMoveType.PAWN_PROMOTION) {
-                handlePromotion(move.getFromPos(), move.getToPos());
-            } else {
-                handleMove(move);
-            }
+        if (move == null) return;
+        if (move.getType() == EMoveType.PAWN_PROMOTION) {
+            showPromotionMenu(type -> {
+                handlePromotion(move.getFromPos(), move.getToPos(), type);
+            });
+        } else {
+            handleMove(move);
         }
     }
 
@@ -275,20 +277,52 @@ public class ChessBoardFragment extends Fragment {
         }
     }
 
-    private void handlePromotion(@NonNull Position fromPos, @NonNull Position toPos) {
+    private void handlePromotion(@NonNull Position fromPos, @NonNull Position toPos, EPieceType type) {
         IPieceImagesTheme pImageInstance = PieceImagesInstance.getInstance();
 
         this._squares[toPos.row()][toPos.column()].setImageResource(
                 pImageInstance.getImage(this._chessboardViewModel.getCurrentPlayer(), EPieceType.PAWN)); // Thay ảnh
         this._squares[fromPos.row()][fromPos.column()].setImageResource(0); // Xóa ảnh
-
-        EPieceType type = this.showPromotionMenu();
         Move promMove = new PawnPromotion(fromPos, toPos, type);
         handleMove(promMove);
     }
 
-    private EPieceType showPromotionMenu() {
-        return EPieceType.QUEEN;
+    private void showPromotionMenu(Consumer<EPieceType> onPieceSelected) {
+        Dialog promotionDialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
+        promotionDialog.setContentView(R.layout.layout_promotion_dialog);
+
+        IPieceImagesTheme pImageInstance = PieceImagesInstance.getInstance();
+        ((AppCompatImageView)promotionDialog.findViewById(R.id.promotionDialogQueen))
+                .setImageResource(pImageInstance.getImage(this._chessboardViewModel.getCurrentPlayer(), EPieceType.QUEEN));
+        ((AppCompatImageView)promotionDialog.findViewById(R.id.promotionDialogBishop))
+                .setImageResource(pImageInstance.getImage(this._chessboardViewModel.getCurrentPlayer(), EPieceType.BISHOP));
+        ((AppCompatImageView)promotionDialog.findViewById(R.id.promotionDialogRook))
+                .setImageResource(pImageInstance.getImage(this._chessboardViewModel.getCurrentPlayer(), EPieceType.ROOK));
+        ((AppCompatImageView)promotionDialog.findViewById(R.id.promotionDialogKnight))
+                .setImageResource(pImageInstance.getImage(this._chessboardViewModel.getCurrentPlayer(), EPieceType.KNIGHT));
+
+        promotionDialog.findViewById(R.id.promotionDialogQueen).setOnClickListener(v -> {
+            onPieceSelected.accept(EPieceType.QUEEN);
+            promotionDialog.dismiss();
+        });
+
+        promotionDialog.findViewById(R.id.promotionDialogBishop).setOnClickListener(v -> {
+            onPieceSelected.accept(EPieceType.BISHOP);
+            promotionDialog.dismiss();
+        });
+
+        promotionDialog.findViewById(R.id.promotionDialogRook).setOnClickListener(v -> {
+            onPieceSelected.accept(EPieceType.ROOK);
+            promotionDialog.dismiss();
+        });
+
+        promotionDialog.findViewById(R.id.promotionDialogKnight).setOnClickListener(v -> {
+            onPieceSelected.accept(EPieceType.KNIGHT);
+            promotionDialog.dismiss();
+        });
+
+        promotionDialog.setCanceledOnTouchOutside(true);
+        promotionDialog.show();
     }
 
     private void showLastMoveColor() {
@@ -322,6 +356,36 @@ public class ChessBoardFragment extends Fragment {
 
     private void onGameOver() {
         this._timer.finishTimer();
-        Toast.makeText(getContext(), "Trò chơi kết thúc!", Toast.LENGTH_LONG).show();
+        GameState currentGame = this._chessboardViewModel.getGameState().getValue();
+        String endGameMessage = "";
+        if (currentGame != null)
+            endGameMessage += currentGame.getResult();
+        Toast.makeText(requireContext(), endGameMessage, Toast.LENGTH_LONG).show();
+        backToMenu();
+    }
+
+    private void backToMenu() {
+        startActivity(new Intent(requireContext(), MainActivity.class));
+        requireActivity().finish();
+    }
+
+    public void showDrawOfferDialog() {
+        Dialog dialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
+        dialog.setContentView(R.layout.layout_confirmation_dialog);
+        ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(R.string.draw_offer_message);
+        dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> this._chessboardViewModel.setResult(Result.draw(EEndReason.STALEMATE)));
+        dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());
+        dialog.show();
+
+    }
+
+    public void showResignationDialog() {
+        Dialog dialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
+        dialog.setContentView(R.layout.layout_confirmation_dialog);
+        ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(R.string.resignation_message);
+        dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> this._chessboardViewModel
+                .setResult(Result.win(this._chessboardViewModel.getOpponentPlayer().getColor(), EEndReason.RESIGNATION)));
+        dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());
+        dialog.show();
     }
 }

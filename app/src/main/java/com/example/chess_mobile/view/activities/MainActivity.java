@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -33,12 +32,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
     private void showDialog() {
-        String textMessage = "Hello World";
+        String textMessage = "Wanna play?";
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.layout_confirmation_dialog);
         ((TextView) dialog.findViewById(R.id.dialogMessage)).setText(textMessage);
         dialog.findViewById(R.id.buttonYes).setOnClickListener(l-> startChess());
         dialog.findViewById(R.id.buttonNo).setOnClickListener(l-> dialog.dismiss());
+        dialog.setCanceledOnTouchOutside(true);
         dialog.show();
     }
 

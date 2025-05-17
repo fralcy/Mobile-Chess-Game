@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="24dp"
-    android:background="@drawable/property_radius_corner_window_dark_gray"
-    android:backgroundTint="@color/transparent"
+    android:background="@color/dark_gray"
     >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:backgroundTint="@color/dark_gray"
         android:padding="16dp">
 
         <TextView
@@ -54,7 +54,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/no"
-                android:textFontWeight="700"
                 android:textColor="@color/white"/>
         </LinearLayout>
     </LinearLayout>

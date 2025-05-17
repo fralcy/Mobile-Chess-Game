@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.chess_mobile.R;
@@ -49,13 +50,17 @@ public class RoomChessActivity extends AppCompatActivity {
 //        PieceImagesInstance.setTheme(EPieceImageTheme.COMIC);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.roomChessFrameLayoutBoard, ChessBoardFragment.newInstance(8, chessBoardViewModel.getMainPlayer()))
-                    .replace(R.id.playerOpponentCardFrameLayout,
-                            PlayerCardFragment.newInstance(chessBoardViewModel.getOpponentPlayer()))
-                    .replace(R.id.playerMainCardFrameLayout,
-                            PlayerCardFragment.newInstance(chessBoardViewModel.getMainPlayer()))
-                    .commit();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction
+                    .replace(R.id.playerOpponentCardFrameLayout, PlayerCardFragment.newInstance(chessBoardViewModel.getOpponentPlayer()))
+                    .replace(R.id.playerMainCardFrameLayout, PlayerCardFragment.newInstance(chessBoardViewModel.getMainPlayer()));
+
+            ChessBoardFragment chessBoardFragment = ChessBoardFragment.newInstance(8,
+                    chessBoardViewModel.getMainPlayer());
+            transaction.replace(R.id.roomChessFrameLayoutBoard, chessBoardFragment);
+
+            transaction.commit();
         }
+
     }
 }

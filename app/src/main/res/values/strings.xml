@@ -15,4 +15,11 @@
     <string name="dialog_message">dialog_message</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="title_promotion">Choose Promotion</string>
+    <string name="queen">Queen</string>
+    <string name="bishop">Bishop</string>
+    <string name="rook">Rook</string>
+    <string name="knight">Knight</string>
+    <string name="draw_offer_message">Your opponent has offered a draw. Do you want a draw?</string>
+    <string name="resignation_message">Are you sure you want to resign?</string>
 </resources>
