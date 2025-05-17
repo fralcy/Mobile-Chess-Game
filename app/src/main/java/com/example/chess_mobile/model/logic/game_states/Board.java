@@ -9,8 +9,6 @@ import com.example.chess_mobile.model.logic.pieces.Pawn;
 import com.example.chess_mobile.model.logic.pieces.Piece;
 import com.example.chess_mobile.model.logic.pieces.Queen;
 import com.example.chess_mobile.model.logic.pieces.Rook;
-import com.example.chess_mobile.model.logic.pieces.*;
-import com.example.chess_mobile.model.logic.moves.*;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;

@@ -6,6 +6,7 @@ import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.game_states.Position;
+import com.example.chess_mobile.model.logic.game_states.Result;
 import com.example.chess_mobile.model.logic.moves.Move;
 import com.example.chess_mobile.model.player.Player;
 
@@ -26,5 +27,5 @@ public interface IChessViewModel {
     void gameStateOnTick();
     void gameStateMakeMove(Move move);
     boolean isGameOver();
-
+    void setResult(Result result);
 }

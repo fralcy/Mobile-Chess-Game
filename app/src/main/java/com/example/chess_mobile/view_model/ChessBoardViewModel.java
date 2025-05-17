@@ -18,11 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
-    private final MutableLiveData<GameState> _gameState = new MutableLiveData<>();
-    private final MutableLiveData<Player> _main = new MutableLiveData<>();
-    private final MutableLiveData<Player> _opponent = new MutableLiveData<>();
-    private final MutableLiveData<Duration> _whiteTimer = new MutableLiveData<>();
-    private final MutableLiveData<Duration> _blackTimer = new MutableLiveData<>();
+    protected final MutableLiveData<GameState> _gameState = new MutableLiveData<>();
+    protected final MutableLiveData<Player> _main = new MutableLiveData<>();
+    protected final MutableLiveData<Player> _opponent = new MutableLiveData<>();
+    protected final MutableLiveData<Duration> _whiteTimer = new MutableLiveData<>();
+    protected final MutableLiveData<Duration> _blackTimer = new MutableLiveData<>();
 
     @Override
     public Player getMainPlayer() {
@@ -32,6 +32,12 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     @Override
     public Player getOpponentPlayer() {
         return this._opponent.getValue();
+    }
+
+    @Override
+    public void setResult(Result result) {
+        GameState currentState = this._gameState.getValue();
+        if (currentState != null) currentState.setResult(result);
     }
 
     @Override
