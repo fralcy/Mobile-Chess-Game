@@ -12,4 +12,7 @@
     <string name="player_name">player name</string>
     <string name="player_nation_flag">nation_flag</string>
     <string name="click_to_play">Click to play!</string>
+    <string name="dialog_message">dialog_message</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
