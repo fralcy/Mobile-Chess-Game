@@ -20,6 +20,7 @@ public interface IChessViewModel {
     LiveData<Duration>  getWhiteTimer();
     LiveData<Duration>  getBlackTimer();
     LiveData<GameState> getGameState();
+    LiveData<Result> getResult();
     Board getBoard();
     EPlayer getCurrentPlayer();
     List<Move> getLegalMovesForPiece(Position pos);

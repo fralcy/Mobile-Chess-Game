@@ -46,23 +46,23 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ChessBoardFragment extends Fragment {
-    private static final String BOARD_SIZE = "boardSize";
-    private static final String MAIN_PLAYER = "mainPlayer";
+    protected static final String BOARD_SIZE = "boardSize";
+    protected static final String MAIN_PLAYER = "mainPlayer";
 
     // Board ui
-    private boolean reversed = true;
-    private int _size;
-    private Player _mainPlayer;
+    protected boolean reversed = true;
+    protected int _size;
+    protected Player _mainPlayer;
 
-    private ChessBoardViewModel _chessboardViewModel;
-    private GridLayout _gridLayout;
+    protected ChessBoardViewModel _chessboardViewModel;
+    protected GridLayout _gridLayout;
 
     // Convert Logic & Handle Event
     IChessTimer _timer;
-    private ImageView[][] _squares;
-    private Position _selectedPos;
-    private Move _lastMove;
-    private final HashMap<Position, Move> _moveCache = new HashMap<>();
+    protected ImageView[][] _squares;
+    protected Position _selectedPos;
+    protected Move _lastMove;
+    protected final HashMap<Position, Move> _moveCache = new HashMap<>();
 
     public ChessBoardFragment() {
         // Required empty public constructor
@@ -124,10 +124,9 @@ public class ChessBoardFragment extends Fragment {
         super.onResume();
         gridLayoutSetUp();
         new Handler(Looper.getMainLooper()).postDelayed(() -> _timer.startTimer(), 800);
-        showResignationDialog();
     }
 
-    private void gridLayoutSetUp() {
+    protected void gridLayoutSetUp() {
         this._gridLayout.post(() -> {
             int gridWidth = this._gridLayout.getWidth();
             int gridHeight = this._gridLayout.getHeight();
@@ -142,7 +141,7 @@ public class ChessBoardFragment extends Fragment {
             drawBoard(this._chessboardViewModel.getBoard());
         });
     }
-    private void initializeBoard(int gridWidth, int gridHeight) {
+    protected void initializeBoard(int gridWidth, int gridHeight) {
 
         if (gridWidth == 0 || gridHeight == 0) {
             Log.e("initializeBoard", "GridLayout chưa được đo xong, hủy khởi tạo.");
@@ -186,7 +185,7 @@ public class ChessBoardFragment extends Fragment {
         }
     }
 
-    private void drawBoard(Board board) {
+    protected void drawBoard(Board board) {
         if (board == null) {
             throw new IllegalStateException("Board is null when trying to draw.");
         }
@@ -220,7 +219,7 @@ public class ChessBoardFragment extends Fragment {
         }
     }
 
-    private void handleSquareClick(int row, int col) {
+    protected void handleSquareClick(int row, int col) {
         showLastMoveColor();
         if (this._selectedPos == null) {
             showLastMoveColor();
@@ -231,13 +230,13 @@ public class ChessBoardFragment extends Fragment {
         }
     }
 
-    private void cacheMoves(@NonNull List<Move> moves)
+    protected void cacheMoves(@NonNull List<Move> moves)
     {
         this._moveCache.clear();
         moves.forEach(move -> this._moveCache.put(move.getToPos(), move));
     }
 
-    private void onFromPositionSelected(Position pos) {
+    protected void onFromPositionSelected(Position pos) {
         // Get possible moves of a piece
         List<Move> moves = this._chessboardViewModel.getLegalMovesForPiece(pos);
         if (!moves.isEmpty()) {
@@ -247,7 +246,7 @@ public class ChessBoardFragment extends Fragment {
         }
     }
 
-    private void onToPositionSelected(Position pos) {
+    protected void onToPositionSelected(Position pos) {
         this._selectedPos = null;
         hideHighlights();
 
@@ -262,12 +261,12 @@ public class ChessBoardFragment extends Fragment {
         }
     }
 
-    private void subHandleMove(Move move) {
+    protected void subHandleMove(Move move) {
         this._chessboardViewModel.gameStateMakeMove(move);
         drawBoard(this._chessboardViewModel.getBoard());
     }
 
-    private void handleMove(Move move) {
+    protected void handleMove(Move move) {
         this.subHandleMove(move);
         this._timer.startTimer();
         this._lastMove = move;
@@ -277,7 +276,7 @@ public class ChessBoardFragment extends Fragment {
         }
     }
 
-    private void handlePromotion(@NonNull Position fromPos, @NonNull Position toPos, EPieceType type) {
+    protected void handlePromotion(@NonNull Position fromPos, @NonNull Position toPos, EPieceType type) {
         IPieceImagesTheme pImageInstance = PieceImagesInstance.getInstance();
 
         this._squares[toPos.row()][toPos.column()].setImageResource(
@@ -287,7 +286,7 @@ public class ChessBoardFragment extends Fragment {
         handleMove(promMove);
     }
 
-    private void showPromotionMenu(Consumer<EPieceType> onPieceSelected) {
+    protected void showPromotionMenu(Consumer<EPieceType> onPieceSelected) {
         Dialog promotionDialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
         promotionDialog.setContentView(R.layout.layout_promotion_dialog);
 
@@ -325,7 +324,7 @@ public class ChessBoardFragment extends Fragment {
         promotionDialog.show();
     }
 
-    private void showLastMoveColor() {
+    protected void showLastMoveColor() {
         if (this._lastMove == null) return;
 
         Position from = this._lastMove.getFromPos();
@@ -335,7 +334,7 @@ public class ChessBoardFragment extends Fragment {
         this._squares[to.row()][to.column()].setBackgroundColor(BoardColorInstance.getInstance().getLastMoveCellColor());
     }
 
-    private void showHighlights() {
+    protected void showHighlights() {
         hideHighlights();
         this._squares[this._selectedPos.row()][this._selectedPos.column()]
                 .setBackgroundColor(BoardColorInstance.getInstance().getSelectedCellHighlightColor());
@@ -345,7 +344,7 @@ public class ChessBoardFragment extends Fragment {
         );
     }
 
-    private void hideHighlights() {
+    protected void hideHighlights() {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 boolean isWhite = (row + col) % 2 == 1;
@@ -354,17 +353,17 @@ public class ChessBoardFragment extends Fragment {
         }
     }
 
-    private void onGameOver() {
+    protected void onGameOver() {
         this._timer.finishTimer();
         GameState currentGame = this._chessboardViewModel.getGameState().getValue();
         String endGameMessage = "";
         if (currentGame != null)
-            endGameMessage += currentGame.getResult();
-        Toast.makeText(requireContext(), endGameMessage, Toast.LENGTH_LONG).show();
-        backToMenu();
+            endGameMessage += currentGame.getResult().getResult();
+//        Toast.makeText(requireContext(), endGameMessage, Toast.LENGTH_LONG).show();
+//        backToMenu();
     }
 
-    private void backToMenu() {
+    protected void backToMenu() {
         startActivity(new Intent(requireContext(), MainActivity.class));
         requireActivity().finish();
     }
@@ -373,7 +372,10 @@ public class ChessBoardFragment extends Fragment {
         Dialog dialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
         dialog.setContentView(R.layout.layout_confirmation_dialog);
         ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(R.string.draw_offer_message);
-        dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> this._chessboardViewModel.setResult(Result.draw(EEndReason.STALEMATE)));
+        dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
+            this._chessboardViewModel.setResult(Result.draw(EEndReason.DRAW));
+            dialog.dismiss();
+        });
         dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());
         dialog.show();
 
@@ -383,8 +385,13 @@ public class ChessBoardFragment extends Fragment {
         Dialog dialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
         dialog.setContentView(R.layout.layout_confirmation_dialog);
         ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(R.string.resignation_message);
-        dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> this._chessboardViewModel
-                .setResult(Result.win(this._chessboardViewModel.getOpponentPlayer().getColor(), EEndReason.RESIGNATION)));
+        dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
+            EPlayer winner = this._chessboardViewModel.getCurrentPlayer() == EPlayer.BLACK ?
+                    EPlayer.WHITE : EPlayer.BLACK;
+            this._chessboardViewModel
+                    .setResult(Result.win(winner, EEndReason.RESIGNATION));
+            dialog.dismiss();
+        });
         dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());
         dialog.show();
     }

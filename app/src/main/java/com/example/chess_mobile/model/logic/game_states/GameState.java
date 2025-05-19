@@ -105,16 +105,16 @@ public class GameState implements Serializable {
 
         if (moves.isEmpty()) {
             if (board.isInCheck(currentPlayer)) {
-                result = Result.win(currentPlayer.getOpponent(), EEndReason.CHECKMATE);
+                this.setResult(Result.win(currentPlayer.getOpponent(), EEndReason.CHECKMATE));
             } else {
-                result = Result.draw(EEndReason.STALEMATE);
+                this.setResult(Result.draw(EEndReason.STALEMATE));
             }
         } else if (board.hasInsufficientMaterial()) {
-            result = Result.draw(EEndReason.INSUFFICIENT_MATERIAL);
+            setResult(Result.draw(EEndReason.INSUFFICIENT_MATERIAL));
         } else if (fiftyMoveRule()) {
-            result = Result.draw(EEndReason.FIFTY_MOVE_RULE);
+            setResult(Result.draw(EEndReason.FIFTY_MOVE_RULE));
         } else if (threefoldRepetition()) {
-            result = Result.draw(EEndReason.THREEFOLD_REPETITION);
+            setResult(Result.draw(EEndReason.THREEFOLD_REPETITION));
         }
     }
 

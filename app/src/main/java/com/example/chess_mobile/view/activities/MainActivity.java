@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startChess() {
-        Toast.makeText(this,"Hi", Toast.LENGTH_LONG).show();
         startActivity(new Intent(this, RoomChessActivity.class));
     }
 }

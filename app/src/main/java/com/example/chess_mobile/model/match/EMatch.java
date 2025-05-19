@@ -1,6 +1,8 @@
 package com.example.chess_mobile.model.match;
 
-public enum EMatch {
+import java.io.Serializable;
+
+public enum EMatch implements Serializable {
     AI,
     LOCAL,
     FRIEND,

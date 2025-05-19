@@ -19,6 +19,7 @@ import java.util.List;
 
 public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     protected final MutableLiveData<GameState> _gameState = new MutableLiveData<>();
+    protected final MutableLiveData<Result> _result = new MutableLiveData<>();
     protected final MutableLiveData<Player> _main = new MutableLiveData<>();
     protected final MutableLiveData<Player> _opponent = new MutableLiveData<>();
     protected final MutableLiveData<Duration> _whiteTimer = new MutableLiveData<>();
@@ -37,7 +38,10 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     @Override
     public void setResult(Result result) {
         GameState currentState = this._gameState.getValue();
-        if (currentState != null) currentState.setResult(result);
+        if (currentState != null) {
+            currentState.setResult(result);
+            this._result.setValue(currentState.getResult());
+        };
     }
 
     @Override
@@ -59,6 +63,9 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     public LiveData<GameState> getGameState() {
         return this._gameState;
     }
+
+    @Override
+    public LiveData<Result> getResult() { return this._result; }
 
     @Override
     public Board getBoard() {
@@ -91,9 +98,9 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
         if (currentState == null) return;
 
         if (currentState.getWhiteTimer().isZero()) {
-            currentState.setResult(Result.win(EPlayer.BLACK, EEndReason.TIMEOUT));
+            this.setResult(Result.win(EPlayer.BLACK, EEndReason.TIMEOUT));
         } else if (currentState.getBlackTimer().isZero()) {
-            currentState.setResult(Result.win(EPlayer.WHITE, EEndReason.TIMEOUT));
+            this.setResult(Result.win(EPlayer.WHITE, EEndReason.TIMEOUT));
         } else {
             currentState.timerTick();
             this._whiteTimer.setValue(currentState.getWhiteTimer());
@@ -107,6 +114,7 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
         GameState currentState = this._gameState.getValue();
         if (currentState != null) {
             currentState.makeMove(move);
+            this._result.setValue(currentState.getResult());
         }
     }
 

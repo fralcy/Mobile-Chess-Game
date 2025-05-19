@@ -6,4 +6,6 @@
     <string name="name_text">name</string>
     <string name="player_avatar">player avatar</string>
     <string name="player_name">player name</string>
+    <string name="resign">Resign</string>
+    <string name="result">Result</string>
 </resources>

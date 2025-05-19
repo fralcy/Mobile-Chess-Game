@@ -22,4 +22,11 @@
     <string name="knight">Knight</string>
     <string name="draw_offer_message">Your opponent has offered a draw. Do you want a draw?</string>
     <string name="resignation_message">Are you sure you want to resign?</string>
+    <string name="draw_confirm_message">Are you sure you want a draw?</string>
+    <string name="draw_icon">draw icon</string>
+    <string name="draw">Draw</string>
+    <string name="resign_icon">resign icon</string>
+    <string name="resign">Resign</string>
+    <string name="result">Result</string>
+    <string name="game_over">Game Over</string>
 </resources>
