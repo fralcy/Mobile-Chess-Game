@@ -1,7 +1,7 @@
 package com.example.chess_mobile.view.fragments;
 
 import android.app.Dialog;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,13 +18,11 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EEndReason;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
-import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.game_states.Position;
 import com.example.chess_mobile.model.logic.game_states.Result;
 import com.example.chess_mobile.model.logic.moves.EMoveType;
@@ -38,16 +36,26 @@ import com.example.chess_mobile.utils.implementations.ChessTimer;
 import com.example.chess_mobile.settings.piece_images.PieceImagesInstance;
 import com.example.chess_mobile.utils.interfaces.IChessTimer;
 import com.example.chess_mobile.settings.piece_images.IPieceImagesTheme;
-import com.example.chess_mobile.view.activities.MainActivity;
+import com.example.chess_mobile.view.activities.IGameOverListener;
 import com.example.chess_mobile.view_model.ChessBoardViewModel;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class ChessBoardFragment extends Fragment {
     protected static final String BOARD_SIZE = "boardSize";
     protected static final String MAIN_PLAYER = "mainPlayer";
+    @NonNull
+    public static ChessBoardFragment newInstance(int size, Player mainPlayer) {
+        ChessBoardFragment fragment = new ChessBoardFragment();
+        Bundle args = new Bundle();
+        args.putInt(BOARD_SIZE, size);
+        args.putSerializable(MAIN_PLAYER, mainPlayer);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     // Board ui
     protected boolean reversed = true;
@@ -64,18 +72,21 @@ public class ChessBoardFragment extends Fragment {
     protected Move _lastMove;
     protected final HashMap<Position, Move> _moveCache = new HashMap<>();
 
+    // interface logic
+    private IGameOverListener gameOverListener;
+
     public ChessBoardFragment() {
         // Required empty public constructor
     }
 
-    @NonNull
-    public static ChessBoardFragment newInstance(int size, Player mainPlayer) {
-        ChessBoardFragment fragment = new ChessBoardFragment();
-        Bundle args = new Bundle();
-        args.putInt(BOARD_SIZE, size);
-        args.putSerializable(MAIN_PLAYER, mainPlayer);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof IGameOverListener) {
+            gameOverListener = (IGameOverListener) context;
+        } else {
+            throw new RuntimeException(context + " must implement GameOverListener");
+        }
     }
 
     @Override
@@ -86,7 +97,10 @@ public class ChessBoardFragment extends Fragment {
             this._mainPlayer = (Player) getArguments().getSerializable(MAIN_PLAYER);
         }
 
-        assert this._mainPlayer != null;
+        if (this._mainPlayer == null) {
+            throw new IllegalStateException("Main player must be provided via arguments");
+        }
+
         this.reversed = this._mainPlayer.getColor() == EPlayer.BLACK;
 
         if (_size <= 0) {
@@ -95,13 +109,27 @@ public class ChessBoardFragment extends Fragment {
         this._chessboardViewModel =
                 new ViewModelProvider(requireActivity()).get(ChessBoardViewModel.class);
         this._squares = new ImageView[this._size][this._size];
-        this._timer = new ChessTimer(1000, () -> {
-            _chessboardViewModel.gameStateOnTick();
-            if (_chessboardViewModel.isGameOver()) {
-                onGameOver();
-                _timer.stopTimer();
-            }
-        });
+
+        if (this._timer == null) {
+            this._timer = new ChessTimer(1000, () -> {
+                _chessboardViewModel.gameStateOnTick();
+                _chessboardViewModel.isGameOver().ifPresent(flag -> {
+                    if (flag) {
+                        this.onGameOver();
+                    }
+                });
+
+            });
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (this._timer != null) {
+            this._timer.stopTimer();
+            this._timer.finishTimer();
+        }
     }
 
     @Override
@@ -133,7 +161,9 @@ public class ChessBoardFragment extends Fragment {
 
             if (gridWidth == 0 || gridHeight == 0) {
                 Log.e("ChessBoardFragment",
-                        "GridLayout vẫn chưa được đo xong. Grid Size: Width: " + gridWidth + ", Height: " + gridHeight );
+                        "GridLayout has been measured. Grid Size: Width: " + gridWidth + ", " +
+                                "Height:" +
+                                " " + gridHeight );
                 return;
             }
 
@@ -144,7 +174,7 @@ public class ChessBoardFragment extends Fragment {
     protected void initializeBoard(int gridWidth, int gridHeight) {
 
         if (gridWidth == 0 || gridHeight == 0) {
-            Log.e("initializeBoard", "GridLayout chưa được đo xong, hủy khởi tạo.");
+            Log.e("initializeBoard", "GridLayout hasn't been measured, cancel initiation!.");
             return;
         }
 
@@ -253,9 +283,7 @@ public class ChessBoardFragment extends Fragment {
         Move move = this._moveCache.get(pos);
         if (move == null) return;
         if (move.getType() == EMoveType.PAWN_PROMOTION) {
-            showPromotionMenu(type -> {
-                handlePromotion(move.getFromPos(), move.getToPos(), type);
-            });
+            showPromotionMenu(type -> handlePromotion(move.getFromPos(), move.getToPos(), type));
         } else {
             handleMove(move);
         }
@@ -271,17 +299,19 @@ public class ChessBoardFragment extends Fragment {
         this._timer.startTimer();
         this._lastMove = move;
         showLastMoveColor();
-        if (this._chessboardViewModel.isGameOver()) {
-            this.onGameOver();
-        }
+        this._chessboardViewModel.isGameOver().ifPresent(flag -> {
+            if (flag) {
+                this.onGameOver();
+            }
+        });
     }
 
     protected void handlePromotion(@NonNull Position fromPos, @NonNull Position toPos, EPieceType type) {
         IPieceImagesTheme pImageInstance = PieceImagesInstance.getInstance();
 
-        this._squares[toPos.row()][toPos.column()].setImageResource(
-                pImageInstance.getImage(this._chessboardViewModel.getCurrentPlayer(), EPieceType.PAWN)); // Thay ảnh
-        this._squares[fromPos.row()][fromPos.column()].setImageResource(0); // Xóa ảnh
+        this._squares[toPos.row()][toPos.column()]
+                .setImageResource(pImageInstance.getImage(this._chessboardViewModel.getCurrentPlayer(), EPieceType.PAWN));
+        this._squares[fromPos.row()][fromPos.column()].setImageResource(0);
         Move promMove = new PawnPromotion(fromPos, toPos, type);
         handleMove(promMove);
     }
@@ -345,27 +375,24 @@ public class ChessBoardFragment extends Fragment {
     }
 
     protected void hideHighlights() {
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
+        for (int row = 0; row < this._size; row++) {
+            for (int col = 0; col < this._size; col++) {
                 boolean isWhite = (row + col) % 2 == 1;
                 this._squares[row][col].setBackgroundColor(BoardColorInstance.getInstance().getCellBackgroundColor(isWhite));
             }
         }
     }
-
     protected void onGameOver() {
-        this._timer.finishTimer();
-        GameState currentGame = this._chessboardViewModel.getGameState().getValue();
-        String endGameMessage = "";
-        if (currentGame != null)
-            endGameMessage += currentGame.getResult().getResult();
-//        Toast.makeText(requireContext(), endGameMessage, Toast.LENGTH_LONG).show();
-//        backToMenu();
-    }
 
-    protected void backToMenu() {
-        startActivity(new Intent(requireContext(), MainActivity.class));
-        requireActivity().finish();
+        if (this._timer != null) {
+            this._timer.stopTimer();
+            this._timer.finishTimer();
+            this._timer = null;
+        }
+
+        if (gameOverListener != null) {
+            gameOverListener.onGameOver();
+        }
     }
 
     public void showDrawOfferDialog() {
@@ -377,6 +404,7 @@ public class ChessBoardFragment extends Fragment {
             dialog.dismiss();
         });
         dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());
+        dialog.setCanceledOnTouchOutside(true);
         dialog.show();
 
     }

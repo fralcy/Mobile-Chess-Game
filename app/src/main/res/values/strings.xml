@@ -29,4 +29,6 @@
     <string name="resign">Resign</string>
     <string name="result">Result</string>
     <string name="game_over">Game Over</string>
+    <string name="new_game_label">New Game</string>
+    <string name="back_label">Back</string>
 </resources>

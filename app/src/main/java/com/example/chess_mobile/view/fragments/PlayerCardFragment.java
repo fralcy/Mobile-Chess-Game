@@ -55,15 +55,20 @@ public class PlayerCardFragment extends Fragment {
         ((TextView)view.findViewById(R.id.playerNameText)).setText(this._player.getName());
         this._timeText = view.findViewById(R.id.timeText);
 
-        // Quan sát LiveData để cập nhật thời gian
-        if (this._player.getColor() == EPlayer.WHITE) {
-            this._chessboardViewModel.getWhiteTimer().observe(getViewLifecycleOwner(),
-                    duration -> this._timeText.setText(TimeFormater.formatDuration(duration)));
-        } else if (this._player.getColor() == EPlayer.BLACK) {
-            this._chessboardViewModel.getBlackTimer().observe(getViewLifecycleOwner(),
-                    duration -> this._timeText.setText(TimeFormater.formatDuration(duration)));
-        }
+        this.setListenOnPlayerTime();
 
         return view;
+    }
+
+    private void setListenOnPlayerTime() {
+        if (this._player.getColor() == EPlayer.WHITE) {
+            this._chessboardViewModel.getWhiteTimer().observe(
+                    getViewLifecycleOwner(),
+                    duration -> this._timeText.setText(TimeFormater.formatDuration(duration)));
+        } else if (this._player.getColor() == EPlayer.BLACK) {
+            this._chessboardViewModel.getBlackTimer().observe(
+                    getViewLifecycleOwner(),
+                    duration -> this._timeText.setText(TimeFormater.formatDuration(duration)));
+        }
     }
 }

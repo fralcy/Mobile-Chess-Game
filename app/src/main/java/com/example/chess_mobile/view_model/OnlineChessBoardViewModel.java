@@ -1,15 +1,12 @@
 package com.example.chess_mobile.view_model;
 
-import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.moves.Move;
 
 public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IOnlineChess{
 
     @Override
     public void gameStateMakeMove(Move move) {
-        GameState currentState = this._gameState.getValue();
-        if (currentState == null) return;
-        currentState.makeMove(move);
+        super.gameStateMakeMove(move);
     }
 
     @Override

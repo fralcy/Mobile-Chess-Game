@@ -16,6 +16,7 @@ import com.example.chess_mobile.model.player.Player;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     protected final MutableLiveData<GameState> _gameState = new MutableLiveData<>();
@@ -41,7 +42,28 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
         if (currentState != null) {
             currentState.setResult(result);
             this._result.setValue(currentState.getResult());
-        };
+        }
+    }
+
+    @Override
+    public void reset() {
+//        _main.setValue(null);
+//        _opponent.setValue(null);
+        _whiteTimer.setValue(Duration.ZERO);
+        _blackTimer.setValue(Duration.ZERO);
+        _result.setValue(null);
+        _gameState.setValue(null);
+    }
+
+    @Override
+    public void newGame(EPlayer startingPlayer, Board board, Player main, Player opponent,
+                        Duration mainSide, Duration opponentSide)  {
+        reset();
+        GameState gs = new GameState(startingPlayer, board, mainSide, opponentSide);
+        setGameState(gs);
+        setPlayers(main, opponent);
+        _whiteTimer.setValue(gs.getWhiteTimer());
+        _blackTimer.setValue(gs.getBlackTimer());
     }
 
     @Override
@@ -101,7 +123,7 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
             this.setResult(Result.win(EPlayer.BLACK, EEndReason.TIMEOUT));
         } else if (currentState.getBlackTimer().isZero()) {
             this.setResult(Result.win(EPlayer.WHITE, EEndReason.TIMEOUT));
-        } else {
+        } else if (!currentState.isGameOver()) {
             currentState.timerTick();
             this._whiteTimer.setValue(currentState.getWhiteTimer());
             this._blackTimer.setValue(currentState.getBlackTimer());
@@ -119,10 +141,8 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     }
 
     @Override
-    public boolean isGameOver() {
+    public Optional<Boolean> isGameOver() {
         GameState currentState = this._gameState.getValue();
-
-        // if no state, always over
-        return currentState == null || currentState.isGameOver();
+        return Optional.ofNullable(currentState).map(GameState::isGameOver);
     }
 }
