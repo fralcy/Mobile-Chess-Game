@@ -72,8 +72,8 @@ public class GameState implements Serializable {
         } else {
             noCaptureOrPawnMoves++;
         }
-
         currentPlayer = currentPlayer.getOpponent();
+
         updateStateString();
         checkForGameOver();
     }

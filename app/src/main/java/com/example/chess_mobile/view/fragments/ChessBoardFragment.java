@@ -30,6 +30,7 @@ import com.example.chess_mobile.model.logic.moves.Move;
 import com.example.chess_mobile.model.logic.moves.PawnPromotion;
 import com.example.chess_mobile.model.logic.pieces.EPieceType;
 import com.example.chess_mobile.model.logic.pieces.Piece;
+import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.player.Player;
 import com.example.chess_mobile.settings.board_color.BoardColorInstance;
 import com.example.chess_mobile.utils.implementations.ChessTimer;
@@ -41,18 +42,19 @@ import com.example.chess_mobile.view_model.ChessBoardViewModel;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class ChessBoardFragment extends Fragment {
     protected static final String BOARD_SIZE = "boardSize";
     protected static final String MAIN_PLAYER = "mainPlayer";
+    protected static final String TYPE = "matchType";
     @NonNull
-    public static ChessBoardFragment newInstance(int size, Player mainPlayer) {
+    public static ChessBoardFragment newInstance(int size, Player mainPlayer, EMatch matchType) {
         ChessBoardFragment fragment = new ChessBoardFragment();
         Bundle args = new Bundle();
         args.putInt(BOARD_SIZE, size);
         args.putSerializable(MAIN_PLAYER, mainPlayer);
+        args.putSerializable(TYPE, matchType);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,6 +63,7 @@ public class ChessBoardFragment extends Fragment {
     protected boolean reversed = true;
     protected int _size;
     protected Player _mainPlayer;
+    protected EMatch _matchType;
 
     protected ChessBoardViewModel _chessboardViewModel;
     protected GridLayout _gridLayout;
@@ -95,6 +98,7 @@ public class ChessBoardFragment extends Fragment {
         if (getArguments() != null) {
             this._size = getArguments().getInt(BOARD_SIZE, 8);
             this._mainPlayer = (Player) getArguments().getSerializable(MAIN_PLAYER);
+            this._matchType = (EMatch) getArguments().getSerializable(TYPE);
         }
 
         if (this._mainPlayer == null) {
@@ -107,7 +111,7 @@ public class ChessBoardFragment extends Fragment {
             throw new IllegalStateException("Invalid board size: " + _size);
         }
         this._chessboardViewModel =
-                new ViewModelProvider(requireActivity()).get(ChessBoardViewModel.class);
+                new ViewModelProvider(requireActivity()).get(ChessBoardViewModel.getChessViewModel(_matchType));
         this._squares = new ImageView[this._size][this._size];
 
         if (this._timer == null) {
@@ -153,7 +157,6 @@ public class ChessBoardFragment extends Fragment {
         gridLayoutSetUp();
         new Handler(Looper.getMainLooper()).postDelayed(() -> _timer.startTimer(), 800);
     }
-
     protected void gridLayoutSetUp() {
         this._gridLayout.post(() -> {
             int gridWidth = this._gridLayout.getWidth();
@@ -250,6 +253,8 @@ public class ChessBoardFragment extends Fragment {
     }
 
     protected void handleSquareClick(int row, int col) {
+        if (this._chessboardViewModel.getMainPlayer().getColor() != this._chessboardViewModel.getCurrentPlayer()) return;
+
         showLastMoveColor();
         if (this._selectedPos == null) {
             showLastMoveColor();

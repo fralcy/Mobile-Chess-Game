@@ -11,6 +11,7 @@ import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.game_states.Position;
 import com.example.chess_mobile.model.logic.game_states.Result;
 import com.example.chess_mobile.model.logic.moves.Move;
+import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.player.Player;
 
 import java.time.Duration;
@@ -25,6 +26,13 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     protected final MutableLiveData<Player> _opponent = new MutableLiveData<>();
     protected final MutableLiveData<Duration> _whiteTimer = new MutableLiveData<>();
     protected final MutableLiveData<Duration> _blackTimer = new MutableLiveData<>();
+
+    static public Class<? extends ChessBoardViewModel>  getChessViewModel(EMatch matchType) {
+        return switch (matchType) {
+            case RANKED, FRIEND -> OnlineChessBoardViewModel.class;
+            default -> ChessBoardViewModel.class;
+        };
+    }
 
     @Override
     public Player getMainPlayer() {
@@ -134,10 +142,9 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     @Override
     public void gameStateMakeMove(Move move) {
         GameState currentState = this._gameState.getValue();
-        if (currentState != null) {
-            currentState.makeMove(move);
-            this._result.setValue(currentState.getResult());
-        }
+        if (currentState == null) return;
+        currentState.makeMove(move);
+        this._result.setValue(currentState.getResult());
     }
 
     @Override

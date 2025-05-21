@@ -1,8 +1,14 @@
 package com.example.chess_mobile.view_model;
 
+
+import androidx.lifecycle.MutableLiveData;
+
 import com.example.chess_mobile.model.adapter.DurationAdapter;
+import com.example.chess_mobile.model.logic.game_states.Board;
+import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.moves.Move;
+import com.example.chess_mobile.model.player.Player;
 import com.example.chess_mobile.model.websocket.ChessWebSocketClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,8 +22,26 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IOnlineChess{
-    private static final String BASE_WSS = "wss://yourserver.com/game/";
+    private static final String BASE_WSS = "wss://s14675.blr1.piesocket.com/v3/1?api_key=LdVY7DsOIGZ7JRqqzPTqbJTO7WjqNZznt589crEg&notify_self=1";
+    private final MutableLiveData<Boolean> _webSocketStatus = new MutableLiveData<>(false);
     private final ChessWebSocketClient socketClient = new ChessWebSocketClient();
+
+    @Override
+    public void setOnlineStatus(boolean status) { this._webSocketStatus.setValue(status); }
+
+    @Override
+    public MutableLiveData<Boolean> getWebSocketStatus() { return this._webSocketStatus; }
+
+    @Override
+    public void newGame(
+            EPlayer startingPlayer, Board board, Player main, Player opponent, Duration mainSide,
+            Duration opponentSide
+    ) {
+        super.newGame(startingPlayer, board, main, opponent, mainSide, opponentSide);
+        this.onGameConnection("");
+        this.setOnlineStatus(true);
+    }
+
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Duration.class, new DurationAdapter())
             .create();
@@ -26,14 +50,15 @@ public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IO
     public void gameStateMakeMove(Move move) {
         GameState currentState = this._gameState.getValue();
         if (currentState == null) return;
-        super.gameStateMakeMove(move);
+        currentState.makeMove(move);
+        this._result.setValue(currentState.getResult());
         sendMessage(ESocketMessageType.MOVE, currentState);
     }
 
     @Override
     public void onGameConnection(String gameID) {
-        String socketUrl = BASE_WSS + gameID;
-        socketClient.connect(socketUrl);
+        socketClient.connect(BASE_WSS);
+        socketClient.setListener(this::handleIncomingMessage);
     }
 
     @Override
@@ -65,10 +90,10 @@ public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IO
 
         String json = gson.toJson(message);
         socketClient.sendMessage(json);
-        socketClient.sendMessage(json);
     }
 
-    private void handleIncomingMessage(String message) {
+    @Override
+    public void handleIncomingMessage(String message) {
         try {
             Type type = new TypeToken<Map<String, Object>>() {}.getType();
             Map<String, Object> parsedMessage = gson.fromJson(message, type);

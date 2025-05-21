@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
-import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.game_states.Result;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.player.Player;
@@ -25,7 +24,6 @@ import com.example.chess_mobile.view.fragments.ChessBoardFragment;
 import com.example.chess_mobile.view.fragments.CongratsCardFragment;
 import com.example.chess_mobile.view.fragments.DrawResignActionFragment;
 import com.example.chess_mobile.view.fragments.DrawResignActionListener;
-import com.example.chess_mobile.view.fragments.LocalChessBoardFragment;
 import com.example.chess_mobile.view.fragments.OnlineCongratsCardFragment;
 import com.example.chess_mobile.view.fragments.PlayerCardFragment;
 import com.example.chess_mobile.view_model.ChessBoardViewModel;
@@ -57,15 +55,16 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
         });
         this.main = Optional
                 .ofNullable((Player) getIntent().getSerializableExtra(MAIN_PLAYER))
-                .orElse(new Player("0", "Black Player", EPlayer.BLACK));
+                .orElse(new Player("0", "Black Player", EPlayer.WHITE));
         this.opponent = Optional
                 .ofNullable((Player) getIntent().getSerializableExtra(OPPONENT_PLAYER))
-                .orElse(new Player("-1", "White Player", EPlayer.WHITE));
+                .orElse(new Player("-1", "White Player", EPlayer.BLACK));
         this.duration = Optional
                 .ofNullable((Duration) getIntent().getSerializableExtra(DURATION))
                 .orElse(Duration.ofSeconds(600));
         this.matchType = Optional
                 .ofNullable((EMatch) getIntent().getSerializableExtra(TYPE))
+//                .orElse(EMatch.FRIEND);
                 .orElse(EMatch.LOCAL);
 //        PieceImagesInstance.setTheme(EPieceImageTheme.COMIC);
 
@@ -78,8 +77,8 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
     private ChessBoardFragment initChessBoardFragment(EMatch matchType, Player mainPlayer) {
         return switch (matchType) {
 //            case LOCAL -> LocalChessBoardFragment.newInstance(8, mainPlayer);
-            case RANKED, AI, FRIEND -> ChessBoardFragment.newInstance(8, mainPlayer);
-            default -> LocalChessBoardFragment.newInstance(8, mainPlayer);
+            case RANKED, AI, FRIEND -> ChessBoardFragment.newInstance(8, mainPlayer, matchType);
+            default -> ChessBoardFragment.newInstance(8, mainPlayer, matchType);
         };
     }
 
@@ -114,7 +113,6 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
             default -> CongratsCardFragment.newInstance(result);
         };
     }
-
     private void setListenOnActionFragment(IChessViewModel chessViewModel, EMatch matchType,
                                            ChessBoardFragment chessBoardFragment,FragmentTransaction transaction) {
         chessViewModel.getResult().observe(this, result -> {
@@ -127,21 +125,12 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                         transaction.replace(R.id.gameActionsFrameLayout, actionFragment)
                 );
             }
-
-            transaction
-                    .replace(R.id.playerOpponentCardFrameLayout, PlayerCardFragment.newInstance(chessViewModel.getOpponentPlayer()))
-                    .replace(R.id.playerMainCardFrameLayout, PlayerCardFragment.newInstance(chessViewModel.getMainPlayer()))
-                    .replace(R.id.roomChessFrameLayoutBoard, chessBoardFragment);
         });
-    }
-
-    private void bindFragments(EMatch matchType, Player mainPlayer, Player opponentPlayer) {
-        bindFragments(matchType, mainPlayer, opponentPlayer, Duration.ofSeconds(600)); // Default value
     }
 
     private void bindFragments(EMatch matchType, Player mainPlayer, Player opponentPlayer, Duration duration) {
         ChessBoardViewModel chessBoardViewModel = new ViewModelProvider(this)
-                .get(ChessBoardViewModel.class);
+                .get(ChessBoardViewModel.getChessViewModel(matchType));
 
         Board board = new Board();
         chessBoardViewModel.newGame(EPlayer.WHITE, board.initial(), mainPlayer,
@@ -150,17 +139,16 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         ChessBoardFragment chessBoardFragment = this.initChessBoardFragment(matchType,
                 chessBoardViewModel.getMainPlayer());
-
-
         this.initDrawResignActionFragment(matchType, chessBoardFragment).ifPresent(actionFragment ->
                 transaction.replace(R.id.gameActionsFrameLayout, actionFragment));
-
         setListenOnActionFragment(chessBoardViewModel, matchType,
                 chessBoardFragment, transaction);
-
         transaction
-                .replace(R.id.playerOpponentCardFrameLayout, PlayerCardFragment.newInstance(chessBoardViewModel.getOpponentPlayer()))
-                .replace(R.id.playerMainCardFrameLayout, PlayerCardFragment.newInstance(chessBoardViewModel.getMainPlayer()))
+                .replace(R.id.playerOpponentCardFrameLayout,
+                        PlayerCardFragment.newInstance(chessBoardViewModel.getOpponentPlayer(),
+                                matchType))
+                .replace(R.id.playerMainCardFrameLayout,
+                        PlayerCardFragment.newInstance(chessBoardViewModel.getMainPlayer(), matchType))
                 .replace(R.id.roomChessFrameLayoutBoard, chessBoardFragment)
                 .commit();
     }

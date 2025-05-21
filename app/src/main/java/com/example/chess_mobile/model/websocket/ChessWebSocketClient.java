@@ -2,6 +2,7 @@ package com.example.chess_mobile.model.websocket;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,9 +12,15 @@ import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
-public class ChessWebSocketClient extends WebSocketListener{
+public class ChessWebSocketClient extends WebSocketListener {
+    private IWebSocketMessageListener _listener;
+
     private WebSocket webSocket;
     private final OkHttpClient client = new OkHttpClient();
+
+    public void setListener(IWebSocketMessageListener listener) {
+        this._listener = listener;
+    }
 
     public void connect(String url) {
         Request request = new Request.Builder().url(url).build();
@@ -42,7 +49,10 @@ public class ChessWebSocketClient extends WebSocketListener{
     @Override
     public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
         super.onMessage(webSocket, text);
-        System.out.println("Received message: " + text);
+        if (this._listener != null) {
+            this._listener.onMessageReceived(text);
+            System.out.println("Received message: " + text);
+        }
     }
 
     @Override
