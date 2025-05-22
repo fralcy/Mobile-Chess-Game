@@ -2,5 +2,7 @@ package com.example.chess_mobile.view.activities;
 
 import android.app.Activity;
 
-public class AIMatchActivity extends Activity {
+import com.example.chess_mobile.view_model.IAIMatchViewModel;
+
+public class AIMatchActivity extends Activity implements IAIMatchViewModel {
 }

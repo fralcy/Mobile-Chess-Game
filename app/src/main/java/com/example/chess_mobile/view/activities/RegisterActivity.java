@@ -16,10 +16,11 @@ import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.authentication.firebase.FirebaseAccount;
 import com.example.chess_mobile.model.authentication.firebase.FirebaseAuthenticationService;
 import com.example.chess_mobile.model.authentication.interfaces.IAuthenticationService;
+import com.example.chess_mobile.view_model.IRegisterViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements IRegisterViewModel {
     IAuthenticationService authenticationService;
     Button buttonRegister;
     EditText txtEmail;

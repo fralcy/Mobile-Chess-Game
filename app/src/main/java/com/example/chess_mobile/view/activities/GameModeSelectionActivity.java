@@ -2,5 +2,7 @@ package com.example.chess_mobile.view.activities;
 
 import android.app.Activity;
 
-public class GameModeSelectionActivity extends Activity {
+import com.example.chess_mobile.view_model.IGameModeSelectionViewModel;
+
+public class GameModeSelectionActivity extends Activity implements IGameModeSelectionViewModel {
 }

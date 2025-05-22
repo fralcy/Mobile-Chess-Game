@@ -2,5 +2,7 @@ package com.example.chess_mobile.view.activities;
 
 import android.app.Activity;
 
-public class LocalMatchActivity extends Activity {
+import com.example.chess_mobile.view_model.ILocalMatchViewModel;
+
+public class LocalMatchActivity extends Activity implements ILocalMatchViewModel {
 }
