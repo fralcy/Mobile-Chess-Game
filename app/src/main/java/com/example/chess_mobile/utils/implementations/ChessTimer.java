@@ -27,6 +27,7 @@ public class ChessTimer implements IChessTimer {
         _timerRunnable = new Runnable() {
             @Override
             public void run() {
+                if (!isRunning) return;
                 _timerCallback.onTick();
                 _handler.postDelayed(this, _interval);
             }
@@ -36,9 +37,10 @@ public class ChessTimer implements IChessTimer {
 
     @Override
     public void stopTimer() {
-        if (!this.isRunning || _timerRunnable == null) return;  // Tránh dừng khi chưa chạy
+        if (!this.isRunning || _timerRunnable == null) return;  // avoid stop when not running yet
         this.isRunning = false;
-        _handler.removeCallbacks(_timerRunnable); // Chỉ dừng bộ đếm, không gọi callback
+        _handler.removeCallbacks(_timerRunnable); // just stop the counter, not evoke callback
+        this._timerRunnable = null;
     }
 
     @Override

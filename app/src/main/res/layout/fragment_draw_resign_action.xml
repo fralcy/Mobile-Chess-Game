@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:context=".view.fragments.DrawResignActionFragment"
+    android:orientation="horizontal"
+    android:background="@color/dark_gray"
+    android:gravity="center"
+    >
+    <TextView
+        android:id="@+id/actionButtonDraw"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textColor="@color/white"
+        android:drawablePadding="4dp"
+        app:drawableLeftCompat="@drawable/asset_icon_draw_dark_theme"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        app:fontWeight="900"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:text="@string/draw" />
+    <TextView
+        android:id="@+id/actionButtonResign"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textColor="@color/white"
+        android:drawablePadding="4dp"
+        app:drawableLeftCompat="@drawable/asset_icon_resign_dark_theme"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        app:fontWeight="900"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:text="@string/resign" />
+
+</LinearLayout>
