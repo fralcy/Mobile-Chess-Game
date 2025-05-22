@@ -4,12 +4,32 @@
     <string name="password_text">password</string>
     <string name="login_text">login</string>
     <string name="register_text">register</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="name_text">name</string>
     <string name="player_avatar">player avatar</string>
     <string name="_10_00">10:00</string>
     <string name="player_name">player name</string>
     <string name="player_nation_flag">nation_flag</string>
     <string name="click_to_play">Click to play!</string>
+    <string name="dialog_message">dialog_message</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="title_promotion">Choose Promotion</string>
+    <string name="queen">Queen</string>
+    <string name="bishop">Bishop</string>
+    <string name="rook">Rook</string>
+    <string name="knight">Knight</string>
+    <string name="draw_offer_message">Your opponent has offered a draw. Do you want a draw?</string>
+    <string name="resignation_message">Are you sure you want to resign?</string>
+    <string name="draw_confirm_message">Are you sure you want a draw?</string>
+    <string name="draw_icon">draw icon</string>
+    <string name="draw">Draw</string>
+    <string name="resign_icon">resign icon</string>
+    <string name="resign">Resign</string>
+    <string name="result">Result</string>
+    <string name="game_over">Game Over</string>
+    <string name="new_game_label">New Game</string>
+    <string name="back_label">Back</string>
 
     <!-- New strings for game mode selection -->
     <string name="user_profile">User Profile</string>
