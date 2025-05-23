@@ -4,7 +4,6 @@
     <string name="password_text">password</string>
     <string name="login_text">login</string>
     <string name="register_text">register</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="name_text">name</string>
     <string name="player_avatar">player avatar</string>
@@ -31,4 +30,55 @@
     <string name="game_over">Game Over</string>
     <string name="new_game_label">New Game</string>
     <string name="back_label">Back</string>
+
+    <!-- New strings for game mode selection -->
+    <string name="user_profile">User Profile</string>
+    <string name="ranked_mode">Ranked Match</string>
+    <string name="create_room_mode">Friend Match</string>
+    <string name="ai_mode">AI Challenge</string>
+    <string name="local_mode">Local Match</string>
+
+    <!-- Ranked match strings -->
+    <string name="ranked_match_title">Ranked Match</string>
+    <string name="choose_time_for_match">Choose time for match</string>
+    <string name="_15_00">15:00</string>
+    <string name="_20_00">20:00</string>
+    <string name="play">Play</string>
+
+    <!-- Friend match strings -->
+    <string name="friend_match_title">Friend Match</string>
+    <string name="create_room">Create Room</string>
+    <string name="you_play_as">You play as:</string>
+    <string name="white">White</string>
+    <string name="random">"?"</string>
+    <string name="black">Black</string>
+    <string name="choose_time">Choose time:</string>
+    <string name="custom_time">Custom time:</string>
+    <string name="min">min</string>
+    <string name="sec">sec</string>
+    <string name="colon">:</string>
+    <string name="create">Create</string>
+    <string name="created_room_id">Created Room #123456</string>
+    <string name="waiting_player">Waiting other player to join</string>
+    <string name="join_room">Join Room</string>
+    <string name="enter_room_id">Enter room id:</string>
+    <string name="join">Join</string>
+    <string name="room_id_hint">Enter 6-digit room ID</string>
+    <string name="room_id_content_description">Input field for room ID number</string>
+    <string name="minutes_content_description">Input field for minutes</string>
+    <string name="seconds_content_description">Input field for seconds</string>
+
+    <!-- AI match strings -->
+    <string name="ai_match_title">AI Match</string>
+    <string name="choose_difficulty">Choose difficulty:</string>
+    <string name="level_1">1</string>
+    <string name="level_2">2</string>
+    <string name="level_3">3</string>
+    <string name="level_4">4</string>
+    <string name="level_5">5</string>
+
+    <!-- Local match strings -->
+    <string name="local_match_title">Local Match</string>
+    <string name="choose_time_for_player_white">Choose time for player White</string>
+    <string name="choose_time_for_player_black">Choose time for player Black</string>
 </resources>
