@@ -16,16 +16,24 @@
         android:theme="@style/Theme.Chess_Mobile"
         tools:targetApi="31">
         <activity
+            android:name=".view.activities.FindMatchActivity"
+            android:exported="false" />
+        <activity android:name=".view.activities.FriendMatchActivity" android:exported="true"/>
+        <activity
             android:name=".view.activities.RoomChessActivity"
             android:exported="false" />
         <activity
             android:name=".view.activities.RegisterActivity"
             android:exported="true" />
-        <activity android:name=".view.activities.GameModeSelectionActivity" android:exported="true"/>
+        <activity
+            android:name=".view.activities.GameModeSelectionActivity"
+            android:exported="true" />
+        <activity
+            android:name=".view.activities.RankedMatchActivity"
+            android:exported="true" /> <!-- <activity android:name=".view.activities.AIMatchActivity" android:exported="true"/> -->
         <activity
             android:name=".view.activities.LoginActivity"
             android:exported="true" />
-<!--        <activity android:name=".view.activities.AIMatchActivity" android:exported="true"/>-->
         <activity
             android:name=".view.activities.MainActivity"
             android:exported="true">

@@ -75,7 +75,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:id="@+id/rank_match">
 
                 <ImageView
                     android:id="@+id/gameModeSelectionImageRanked"
@@ -119,7 +120,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:id="@+id/friend_match">
 
                 <ImageView
                     android:id="@+id/gameModeSelectionImageCreateRoom"
