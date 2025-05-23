@@ -1,5 +1,6 @@
 package com.example.chess_mobile.view.activities;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -27,14 +28,28 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         bindView();
+        showDialog();
+        }
 
+    private void showDialog() {
+        String textMessage = "Wanna play?";
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.layout_confirmation_dialog);
+        ((TextView) dialog.findViewById(R.id.dialogMessage)).setText(textMessage);
+        dialog.findViewById(R.id.buttonYes).setOnClickListener(l-> startChess());
+        dialog.findViewById(R.id.buttonNo).setOnClickListener(l-> dialog.dismiss());
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
     }
 
     private void bindView() {
         textView = findViewById(R.id.textView);
         textView.setOnClickListener(l -> {
-            Toast.makeText(this,"Hi", Toast.LENGTH_LONG).show();
-            startActivity(new Intent(this, RoomChessActivity.class));
+            startChess();
         });
+    }
+
+    private void startChess() {
+        startActivity(new Intent(this, RoomChessActivity.class));
     }
 }

@@ -19,18 +19,13 @@ public class GameState implements Serializable {
     private final Map<String, Integer> stateHistory = new HashMap<>();
     private Duration whiteTimer;
     private Duration blackTimer;
+
     public GameState(EPlayer player, Board board) {
         this(player, board, Duration.ofMinutes(10));
     }
 
     public GameState(EPlayer player, Board board, Duration timePerPlayer) {
-        this.currentPlayer = player;
-        this.board = board;
-        this.whiteTimer = timePerPlayer;
-        this.blackTimer = timePerPlayer;
-
-        stateString = new StateString(currentPlayer, board).toString();
-        stateHistory.put(stateString, 1);
+        this(player, board, timePerPlayer, timePerPlayer);
     }
 
     // Constructor with different time for each player
@@ -77,8 +72,8 @@ public class GameState implements Serializable {
         } else {
             noCaptureOrPawnMoves++;
         }
-
         currentPlayer = currentPlayer.getOpponent();
+
         updateStateString();
         checkForGameOver();
     }
@@ -105,16 +100,16 @@ public class GameState implements Serializable {
 
         if (moves.isEmpty()) {
             if (board.isInCheck(currentPlayer)) {
-                result = Result.win(currentPlayer.getOpponent(), EEndReason.CHECKMATE);
+                this.setResult(Result.win(currentPlayer.getOpponent(), EEndReason.CHECKMATE));
             } else {
-                result = Result.draw(EEndReason.STALEMATE);
+                this.setResult(Result.draw(EEndReason.STALEMATE));
             }
         } else if (board.hasInsufficientMaterial()) {
-            result = Result.draw(EEndReason.INSUFFICIENT_MATERIAL);
+            setResult(Result.draw(EEndReason.INSUFFICIENT_MATERIAL));
         } else if (fiftyMoveRule()) {
-            result = Result.draw(EEndReason.FIFTY_MOVE_RULE);
+            setResult(Result.draw(EEndReason.FIFTY_MOVE_RULE));
         } else if (threefoldRepetition()) {
-            result = Result.draw(EEndReason.THREEFOLD_REPETITION);
+            setResult(Result.draw(EEndReason.THREEFOLD_REPETITION));
         }
     }
 
@@ -145,16 +140,13 @@ public class GameState implements Serializable {
         return numberFold >= 3;
     }
 
-    public boolean checkTimerZero() {
-        return whiteTimer.isZero() || blackTimer.isZero();
-    }
+//    public boolean checkTimerZero() { return whiteTimer.isZero() || blackTimer.isZero(); }
 
-    // run white timer
     public void whiteTimerTick() {
         whiteTimer = whiteTimer.minusSeconds(1);
 
         if (whiteTimer.getSeconds() <= 0) {
-            result = Result.win(EPlayer.BLACK, EEndReason.TIMEOUT);
+            this.setResult(Result.win(EPlayer.BLACK, EEndReason.TIMEOUT));
         }
     }
 
@@ -163,12 +155,11 @@ public class GameState implements Serializable {
         else if (this.currentPlayer == EPlayer.WHITE) this.whiteTimerTick();
     }
 
-    // run black timer
     public void blackTimerTick() {
         blackTimer = blackTimer.minusSeconds(1);
 
         if (blackTimer.isZero() || blackTimer.isNegative()) {
-            result = Result.win(EPlayer.WHITE, EEndReason.TIMEOUT);
+            this.setResult(Result.win(EPlayer.WHITE, EEndReason.TIMEOUT));
         }
     }
 
@@ -185,6 +176,7 @@ public class GameState implements Serializable {
     }
 
     public void setResult(Result result) {
+        if (this.result != null) return;
         this.result = result;
     }
 
