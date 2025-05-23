@@ -57,6 +57,8 @@ public class LoginActivity extends AppCompatActivity implements ILoginViewModel 
         authenticationService.login(acc, isSuccess-> {
             if (isSuccess) {
                 Toast.makeText(this, "Login Success! ", Toast.LENGTH_LONG).show();
+                Intent gameModeSelection = new Intent(this, GameModeSelectionActivity.class);
+                startActivity(gameModeSelection);
             } else {
                 Toast.makeText(this, "Login Failed! ", Toast.LENGTH_LONG).show();
             }

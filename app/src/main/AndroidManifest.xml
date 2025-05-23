@@ -20,10 +20,12 @@
             android:exported="false" />
         <activity
             android:name=".view.activities.RegisterActivity"
-            android:exported="false" />
+            android:exported="true" />
+        <activity android:name=".view.activities.GameModeSelectionActivity" android:exported="true"/>
         <activity
             android:name=".view.activities.LoginActivity"
-            android:exported="false" />
+            android:exported="true" />
+<!--        <activity android:name=".view.activities.AIMatchActivity" android:exported="true"/>-->
         <activity
             android:name=".view.activities.MainActivity"
             android:exported="true">

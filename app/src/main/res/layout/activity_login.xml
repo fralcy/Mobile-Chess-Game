@@ -26,7 +26,7 @@
         <ImageView
             android:layout_width="75dp"
             android:layout_height="75dp"
-            android:src="@drawable/piece_classic_w_knight" />
+            android:src="@drawable/asset_piece_classic_w_knight" />
 
         <TextView
             android:layout_width="wrap_content"

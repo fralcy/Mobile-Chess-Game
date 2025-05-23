@@ -64,8 +64,8 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                 .orElse(Duration.ofSeconds(600));
         this.matchType = Optional
                 .ofNullable((EMatch) getIntent().getSerializableExtra(TYPE))
-//                .orElse(EMatch.FRIEND);
                 .orElse(EMatch.LOCAL);
+ //               .orElse(EMatch.LOCAL);
 //        PieceImagesInstance.setTheme(EPieceImageTheme.COMIC);
 
         if (savedInstanceState == null) {

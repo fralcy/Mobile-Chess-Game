@@ -38,7 +38,15 @@ public class FirebaseAuthenticationService implements IAuthenticationService {
 
     @Override
     public void login(Account account, IOnSuccessListener listener) {
-        Task<AuthResult> task = firebaseAuth.signInWithEmailAndPassword(account.getEmail(), account.getPassword());
-        listener.onSuccess(task.isSuccessful());
+        Task<AuthResult> task = firebaseAuth.signInWithEmailAndPassword(account.getEmail(), account.getPassword()).addOnCompleteListener(t -> {
+            if (t.isSuccessful()) {
+                listener.onSuccess(true);
+            } else {
+
+                listener.onSuccess(false);
+            }
+        });
+
+
     }
 }
