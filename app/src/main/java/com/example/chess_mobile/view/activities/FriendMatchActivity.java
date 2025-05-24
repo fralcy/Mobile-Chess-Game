@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.core.content.ContextCompat;
+
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.websocket.SocketManager;
 import com.example.chess_mobile.view_model.IFriendMatchViewModel;
@@ -37,6 +39,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_friend_match);
         bindView();
+        setUpOnClickListener();
     }
     public void bindView() {
         this.whiteButton = findViewById(R.id.friendMatchButtonWhite);
@@ -49,6 +52,43 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
         this.createButton= findViewById(R.id.friendMatchButtonCreate);
         this.roomIdInput = findViewById(R.id.friendMatchEditTextRoomId);
         this.joinButton= findViewById(R.id.friendMatchButtonJoin);
+    }
+    public void setUpOnClickListener() {
+        this.whiteButton.setOnClickListener(v->{
+            FriendMatchActivity.this.getIntent().putExtra("Host_White",true);
+            FriendMatchActivity.this.isWhite=true;
+            FriendMatchActivity.this.whiteButton.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this,R.drawable.rounded_button_bg));
+            FriendMatchActivity.this.blackButton.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_gray_button_bg));
+        });
+        this.blackButton.setOnClickListener(v->{
+            FriendMatchActivity.this.getIntent().putExtra("Host_White",false);
+            FriendMatchActivity.this.isWhite=false;
+            FriendMatchActivity.this.whiteButton.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this,R.drawable.rounded_gray_button_bg));
+            FriendMatchActivity.this.blackButton.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_button_bg));
+
+        });
+        this.timeButton10.setOnClickListener(v->{
+            FriendMatchActivity.this.getIntent().putExtra("Friend_Play_Time",10);
+            FriendMatchActivity.this.playTime=10;
+            FriendMatchActivity.this.timeButton10.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_button_bg));
+            FriendMatchActivity.this.timeButton15.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this,R.drawable.rounded_gray_button_bg));
+            FriendMatchActivity.this.timeButton20.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_gray_button_bg));
+        });
+        this.timeButton15.setOnClickListener(v->{
+            FriendMatchActivity.this.getIntent().putExtra("Friend_Play_Time",15);
+            FriendMatchActivity.this.playTime=15;
+            FriendMatchActivity.this.timeButton10.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_gray_button_bg));
+            FriendMatchActivity.this.timeButton15.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this,R.drawable.rounded_button_bg));
+            FriendMatchActivity.this.timeButton20.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_gray_button_bg));
+
+        });
+        this.timeButton20.setOnClickListener(v->{
+            FriendMatchActivity.this.getIntent().putExtra("Friend_Play_Time",20);
+            FriendMatchActivity.this.playTime=20;
+            FriendMatchActivity.this.timeButton10.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_gray_button_bg));
+            FriendMatchActivity.this.timeButton15.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this,R.drawable.rounded_gray_button_bg));
+            FriendMatchActivity.this.timeButton20.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_button_bg));
+        });
     }
 
 }

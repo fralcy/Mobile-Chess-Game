@@ -15,7 +15,7 @@ import ua.naiksoftware.stomp.StompClient;
 public class SocketManager {
     private StompClient stompClient;
     private CompositeDisposable compositeDisposable;
-    public static String beEndPoint=" ws://165.22.241.224:8080/ws/websocket";
+    public static String beEndPoint="ws://165.22.241.224:8080/ws/websocket";
     public void connect() {
         stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP,beEndPoint);
         compositeDisposable= new CompositeDisposable();
@@ -47,6 +47,8 @@ public class SocketManager {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topicMessage -> {
                     Log.d("STOMP", "Received: " + topicMessage.getPayload());
+                },throwable -> {
+                    throwable.printStackTrace();
                 });
 
         compositeDisposable.add(dispTopic);
