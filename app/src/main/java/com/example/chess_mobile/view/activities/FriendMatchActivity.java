@@ -8,13 +8,19 @@ import android.widget.EditText;
 import androidx.core.content.ContextCompat;
 
 import com.example.chess_mobile.R;
+import com.example.chess_mobile.dto.request.CreateMatchRequest;
+import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.websocket.SocketManager;
 import com.example.chess_mobile.view_model.IFriendMatchViewModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.Gson;
 
 public class FriendMatchActivity extends Activity implements IFriendMatchViewModel {
     private boolean isWhite;
     private Integer playTime;
     private SocketManager socketManager;
+    private FirebaseUser currentUser;
 
     //View
     private Button whiteButton;
@@ -40,6 +46,19 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
         setContentView(R.layout.activity_friend_match);
         bindView();
         setUpOnClickListener();
+        this.socketManager = new SocketManager();
+        this.socketManager.connect(() -> {
+            // Sau khi connect thành công, mới subscribe
+            this.socketManager.subscribeTopic("/user/queue/match");
+        });
+
+        this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.socketManager.disconnect();
     }
     public void bindView() {
         this.whiteButton = findViewById(R.id.friendMatchButtonWhite);
@@ -88,6 +107,12 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
             FriendMatchActivity.this.timeButton10.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_gray_button_bg));
             FriendMatchActivity.this.timeButton15.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this,R.drawable.rounded_gray_button_bg));
             FriendMatchActivity.this.timeButton20.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_button_bg));
+        });
+        this.createButton.setOnClickListener(v->{
+            CreateMatchRequest createFriendMatchRequest = new CreateMatchRequest(EMatch.PRIVATE,FriendMatchActivity.this.isWhite,FriendMatchActivity.this.currentUser.getUid(),FriendMatchActivity.this.playTime);
+            String json = new Gson().toJson(createFriendMatchRequest);
+            FriendMatchActivity.this.socketManager.sendMessage(json, "/app/chess/create");
+
         });
     }
 

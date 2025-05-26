@@ -28,7 +28,10 @@ public class FindMatchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         FindMatch();
         this.socketManager = new SocketManager();
-        this.socketManager.connect();
+        this.socketManager.connect(() -> {
+            // Sau khi connect thành công, mới subscribe
+            this.socketManager.subscribeTopic("/user/queue/match");
+        });
         this.socketManager.subscribeTopic(SocketManager.beEndPoint+"/queue/match");
         int playTime = getIntent().getIntExtra("Rank_Play_Time",0);
         this.currentUser= FirebaseAuth.getInstance().getCurrentUser();

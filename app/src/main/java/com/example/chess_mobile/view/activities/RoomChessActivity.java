@@ -77,7 +77,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
     private ChessBoardFragment initChessBoardFragment(EMatch matchType, Player mainPlayer) {
         return switch (matchType) {
 //            case LOCAL -> LocalChessBoardFragment.newInstance(8, mainPlayer);
-            case RANKED, AI, FRIEND -> ChessBoardFragment.newInstance(8, mainPlayer, matchType);
+            case RANKED, AI, PRIVATE -> ChessBoardFragment.newInstance(8, mainPlayer, matchType);
             default -> ChessBoardFragment.newInstance(8, mainPlayer, matchType);
         };
     }
@@ -85,7 +85,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
     private Optional<DrawResignActionFragment> initDrawResignActionFragment
             (EMatch matchType, ChessBoardFragment chessBoardFragment) {
         DrawResignActionFragment actionFragment = switch (matchType) {
-            case RANKED, AI, FRIEND, LOCAL -> DrawResignActionFragment.newInstance();
+            case RANKED, AI, PRIVATE, LOCAL -> DrawResignActionFragment.newInstance();
             default -> null;
         };
 

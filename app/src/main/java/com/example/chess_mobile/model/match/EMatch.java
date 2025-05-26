@@ -5,6 +5,6 @@ import java.io.Serializable;
 public enum EMatch implements Serializable {
     AI,
     LOCAL,
-    FRIEND,
+    PRIVATE,
     RANKED
 }
