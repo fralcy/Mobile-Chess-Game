@@ -38,53 +38,44 @@
     <!-- Color Selection Buttons -->
     <LinearLayout
         android:id="@+id/aiMatchColorOptionsLayout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="40dp"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/aiMatchTextPlayAs"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/aiMatchTextPlayAs">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- White Button -->
         <Button
             android:id="@+id/aiMatchButtonWhite"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="48dp"
+            android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_weight="1"
             android:background="@drawable/rounded_button_bg"
-            android:minHeight="48dp"
             android:text="@string/white"
             android:textColor="#FFFFFF"
             android:textSize="16sp" />
 
-        <!-- Random Button -->
         <Button
             android:id="@+id/aiMatchButtonRandom"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_weight="1"
             android:background="@drawable/rounded_gray_button_bg"
-            android:minHeight="48dp"
             android:text="@string/random"
             android:textColor="#FFFFFF"
             android:textSize="16sp" />
 
-        <!-- Black Button -->
         <Button
             android:id="@+id/aiMatchButtonBlack"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_marginStart="8dp"
-            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/rounded_gray_button_bg"
-            android:minHeight="48dp"
             android:text="@string/black"
             android:textColor="#FFFFFF"
             android:textSize="16sp" />
@@ -105,29 +96,26 @@
     <!-- Difficulty Selection Buttons -->
     <LinearLayout
         android:id="@+id/aiMatchDifficultyOptionsLayout"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@+id/aiMatchColorOptionsLayout"
-        app:layout_constraintStart_toStartOf="@+id/aiMatchColorOptionsLayout"
-        app:layout_constraintTop_toBottomOf="@+id/aiMatchTextDifficulty">
+        app:layout_constraintTop_toBottomOf="@+id/aiMatchTextDifficulty"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Level 1 Button -->
         <Button
             android:id="@+id/aiMatchButtonLevel1"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_marginEnd="4dp"
             android:background="@drawable/rounded_button_bg"
-            android:minHeight="48dp"
             android:text="@string/level_1"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <!-- Level 2 Button -->
         <Button
             android:id="@+id/aiMatchButtonLevel2"
             android:layout_width="56dp"
@@ -135,13 +123,11 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:background="@drawable/rounded_gray_button_bg"
-            android:minHeight="48dp"
             android:text="@string/level_2"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <!-- Level 3 Button -->
         <Button
             android:id="@+id/aiMatchButtonLevel3"
             android:layout_width="56dp"
@@ -149,13 +135,11 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:background="@drawable/rounded_gray_button_bg"
-            android:minHeight="48dp"
             android:text="@string/level_3"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <!-- Level 4 Button -->
         <Button
             android:id="@+id/aiMatchButtonLevel4"
             android:layout_width="56dp"
@@ -163,20 +147,17 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:background="@drawable/rounded_gray_button_bg"
-            android:minHeight="48dp"
             android:text="@string/level_4"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <!-- Level 5 Button -->
         <Button
             android:id="@+id/aiMatchButtonLevel5"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_marginStart="4dp"
             android:background="@drawable/rounded_gray_button_bg"
-            android:minHeight="48dp"
             android:text="@string/level_5"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
@@ -186,17 +167,18 @@
     <!-- Play Button -->
     <Button
         android:id="@+id/aiMatchButtonPlay"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="56dp"
         android:layout_marginTop="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/rounded_button_bg"
-        android:minHeight="48dp"
         android:text="@string/play"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/aiMatchColorOptionsLayout"
-        app:layout_constraintStart_toStartOf="@+id/aiMatchColorOptionsLayout"
-        app:layout_constraintTop_toBottomOf="@+id/aiMatchDifficultyOptionsLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/aiMatchDifficultyOptionsLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

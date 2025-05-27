@@ -132,17 +132,31 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
         ChessBoardViewModel chessBoardViewModel = new ViewModelProvider(this)
                 .get(ChessBoardViewModel.getChessViewModel(matchType));
 
+        // Set AI difficulty if this is AI match
+        if (matchType == EMatch.AI) {
+            int aiDifficulty = getIntent().getIntExtra("AI_DIFFICULTY", 1);
+            chessBoardViewModel.setAIDifficulty(aiDifficulty);
+        }
+
+        // Get starting player from intent, default to WHITE
+        EPlayer startingPlayer = Optional
+                .ofNullable((EPlayer) getIntent().getSerializableExtra("STARTING_PLAYER"))
+                .orElse(EPlayer.WHITE);
+
         Board board = new Board();
-        chessBoardViewModel.newGame(EPlayer.WHITE, board.initial(), mainPlayer,
+        chessBoardViewModel.newGame(startingPlayer, board.initial(), mainPlayer,
                 opponentPlayer, duration);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         ChessBoardFragment chessBoardFragment = this.initChessBoardFragment(matchType,
                 chessBoardViewModel.getMainPlayer());
+
         this.initDrawResignActionFragment(matchType, chessBoardFragment).ifPresent(actionFragment ->
                 transaction.replace(R.id.gameActionsFrameLayout, actionFragment));
+
         setListenOnActionFragment(chessBoardViewModel, matchType,
                 chessBoardFragment, transaction);
+
         transaction
                 .replace(R.id.playerOpponentCardFrameLayout,
                         PlayerCardFragment.newInstance(chessBoardViewModel.getOpponentPlayer(),

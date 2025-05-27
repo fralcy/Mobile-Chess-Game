@@ -1,9 +1,13 @@
 package com.example.chess_mobile.view_model;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.chess_mobile.model.ai.ChessAIService;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EEndReason;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
@@ -27,7 +31,14 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     protected final MutableLiveData<Duration> _whiteTimer = new MutableLiveData<>();
     protected final MutableLiveData<Duration> _blackTimer = new MutableLiveData<>();
 
-    static public Class<? extends ChessBoardViewModel>  getChessViewModel(EMatch matchType) {
+    // AI support
+    private ChessAIService aiService;
+    private int aiDifficulty = 1;
+    private boolean isAIMatch = false;
+    private boolean isAIThinking = false;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    static public Class<? extends ChessBoardViewModel> getChessViewModel(EMatch matchType) {
         return switch (matchType) {
             case RANKED, PRIVATE -> OnlineChessBoardViewModel.class;
             default -> ChessBoardViewModel.class;
@@ -55,23 +66,44 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
 
     @Override
     public void reset() {
-//        _main.setValue(null);
-//        _opponent.setValue(null);
         _whiteTimer.setValue(Duration.ZERO);
         _blackTimer.setValue(Duration.ZERO);
         _result.setValue(null);
         _gameState.setValue(null);
+        isAIMatch = false;
+        isAIThinking = false;
+        aiService = null;
     }
 
     @Override
     public void newGame(EPlayer startingPlayer, Board board, Player main, Player opponent,
-                        Duration mainSide, Duration opponentSide)  {
+                        Duration mainSide, Duration opponentSide) {
         reset();
+
+        // Check if this is AI match
+        isAIMatch = "ai".equals(opponent.getId());
+        if (isAIMatch) {
+            aiService = new ChessAIService();
+            aiService.setDifficulty(aiDifficulty);
+        }
+
         GameState gs = new GameState(startingPlayer, board, mainSide, opponentSide);
         setGameState(gs);
         setPlayers(main, opponent);
         _whiteTimer.setValue(gs.getWhiteTimer());
         _blackTimer.setValue(gs.getBlackTimer());
+
+        // If AI goes first
+        if (isAIMatch && startingPlayer == opponent.getColor()) {
+            handler.postDelayed(this::makeAIMove, 1000);
+        }
+    }
+
+    public void setAIDifficulty(int difficulty) {
+        this.aiDifficulty = difficulty;
+        if (aiService != null) {
+            aiService.setDifficulty(difficulty);
+        }
     }
 
     @Override
@@ -89,13 +121,16 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     public LiveData<Duration> getBlackTimer() {
         return _blackTimer;
     }
+
     @Override
     public LiveData<GameState> getGameState() {
         return this._gameState;
     }
 
     @Override
-    public LiveData<Result> getResult() { return this._result; }
+    public LiveData<Result> getResult() {
+        return this._result;
+    }
 
     @Override
     public Board getBoard() {
@@ -106,15 +141,13 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     @Override
     public EPlayer getCurrentPlayer() {
         GameState currentState = this._gameState.getValue();
-        return (currentState != null)
-                ? currentState.getCurrentPlayer() : null;
+        return (currentState != null) ? currentState.getCurrentPlayer() : null;
     }
 
     @Override
     public List<Move> getLegalMovesForPiece(Position pos) {
         GameState currentState = this._gameState.getValue();
-        return (currentState != null)
-                ? currentState.getLegalMovesForPiece(pos) : new ArrayList<>();
+        return (currentState != null) ? currentState.getLegalMovesForPiece(pos) : new ArrayList<>();
     }
 
     @Override
@@ -143,8 +176,65 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     public void gameStateMakeMove(Move move) {
         GameState currentState = this._gameState.getValue();
         if (currentState == null) return;
+
         currentState.makeMove(move);
         this._result.setValue(currentState.getResult());
+
+        // Update timers immediately
+        this._whiteTimer.setValue(currentState.getWhiteTimer());
+        this._blackTimer.setValue(currentState.getBlackTimer());
+
+        // After move, check if AI should move next
+        if (isAIMatch && !currentState.isGameOver() && !isAIThinking) {
+            Player opponent = getOpponentPlayer();
+            if (opponent != null && getCurrentPlayer() == opponent.getColor()) {
+                // AI moves immediately, no delay for better UX
+                makeAIMove();
+            }
+        }
+    }
+
+    private void makeAIMove() {
+        if (isAIThinking || aiService == null) return;
+
+        GameState currentState = _gameState.getValue();
+        if (currentState == null || currentState.isGameOver()) return;
+
+        Player opponent = getOpponentPlayer();
+        if (opponent == null || getCurrentPlayer() != opponent.getColor()) return;
+
+        isAIThinking = true;
+
+        // Calculate AI move in background thread
+        new Thread(() -> {
+            try {
+                Move aiMove = aiService.calculateMove(currentState.getBoard(), aiDifficulty);
+
+                // Small delay to make AI feel more natural (not instant)
+                Thread.sleep(300 + (aiDifficulty * 200L)); // 0.5s to 1.3s based on difficulty
+
+                // Execute AI move on main thread
+                handler.post(() -> {
+                    isAIThinking = false;
+
+                    GameState state = _gameState.getValue();
+                    if (state != null && !state.isGameOver() && aiMove != null) {
+                        Player opp = getOpponentPlayer();
+                        if (opp != null && getCurrentPlayer() == opp.getColor()) {
+                            // Execute AI move directly
+                            state.makeMove(aiMove);
+                            _result.setValue(state.getResult());
+                            // Update timers after AI move
+                            _whiteTimer.setValue(state.getWhiteTimer());
+                            _blackTimer.setValue(state.getBlackTimer());
+                        }
+                    }
+                });
+
+            } catch (Exception e) {
+                handler.post(() -> isAIThinking = false);
+            }
+        }).start();
     }
 
     @Override
@@ -152,4 +242,6 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
         GameState currentState = this._gameState.getValue();
         return Optional.ofNullable(currentState).map(GameState::isGameOver);
     }
+
+
 }
