@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +15,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.request.CreateMatchRequest;
+import com.example.chess_mobile.dto.request.JoinMatchRequest;
 import com.example.chess_mobile.dto.response.MatchResponse;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.websocket.SocketManager;
@@ -125,9 +127,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
                 String payload = topicMessage.getPayload();
                 Gson gson = new Gson();
                 currentMatch = gson.fromJson(payload, MatchResponse.class);
-                FriendMatchActivity.this.getRoomIdText().setVisibility(View.VISIBLE);
-                FriendMatchActivity.this.getRoomIdText().setText("Match Id is "+currentMatch.getMatchId());
-                FriendMatchActivity.this.getWaitingText().setVisibility(View.VISIBLE);
+
 
                 Intent intent = new Intent(FriendMatchActivity.this, FriendMatchLobbyActivity.class);
                 intent.putExtra("Match_Info",currentMatch);
@@ -199,6 +199,30 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
             SocketManager.getInstance().sendMessage(json, "/app/chess/create");
 
         });
+        this.joinButton.setOnClickListener(v->{
+            String matchId = String.valueOf(roomIdInput.getText());
+            FriendMatchActivity.this.getIntent().putExtra("match_id",matchId);
+            SocketManager.getInstance().subscribeTopic("/topic/match/"+matchId,topicMessage->{
+                Log.d("RESPONSE FROM SERVER", topicMessage.getPayload());
+
+            });
+            SocketManager.getInstance().subscribeTopic("/topic/match/"+matchId+"/error",topicMessage->{
+                Log.d("ERROR FROM SERVER", topicMessage.getPayload());
+                String errorMessage;
+                if(topicMessage.getPayload().equals("Cannot join this match")) {
+                    errorMessage= "You can not join this match";
+                }
+                else {
+                    errorMessage = "The match that you are finding does not exist";
+                }
+                new AlertDialog.Builder(FriendMatchActivity.this).setTitle(topicMessage.getPayload()).setMessage(errorMessage).setCancelable(false).setPositiveButton("OK",(dialog,which)->{
+                    dialog.dismiss();
+                }).show();
+            });
+            JoinMatchRequest joinMatchRequest = new JoinMatchRequest(FriendMatchActivity.this.currentUser.getUid());
+            String json = new Gson().toJson(joinMatchRequest);
+            SocketManager.getInstance().sendMessage(json,"/app/chess/join/"+matchId);
+        });
     }
 
     @Override
@@ -212,5 +236,10 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
                         finish();
                     }
                 });
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SocketManager.getInstance().disconnect();
     }
 }

@@ -2,7 +2,10 @@ package com.example.chess_mobile.view.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -21,6 +24,10 @@ public class FriendMatchLobbyActivity extends AppCompatActivity implements OnErr
     private TextView whiteName;
     private Button backButton;
     private TextView matchIdText;
+
+    private Button startButton;
+    private ProgressBar progressBar;
+    private boolean isBlack;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +36,15 @@ public class FriendMatchLobbyActivity extends AppCompatActivity implements OnErr
         loadPlayer();
         setUpBackButton();
         SocketManager.getInstance().subscribeTopic("/topic/match/"+currentMatch.getMatchId(),tMes->{
-
+            Log.d("JOIN", tMes.getPayload());
+            FriendMatchLobbyActivity.this.startButton.setVisibility(View.VISIBLE);
+            FriendMatchLobbyActivity.this.progressBar.setVisibility(View.GONE);
+            if(this.isBlack) {
+                whiteName.setText("Guest");
+            }
+            else {
+                blackName.setText("Guest");
+            }
         });
 
     }
@@ -43,11 +58,13 @@ public class FriendMatchLobbyActivity extends AppCompatActivity implements OnErr
         this.whiteName = findViewById(R.id.tv_white_name);
         this.backButton = findViewById(R.id.btn_cancel);
         this.matchIdText = findViewById(R.id.tv_match_id);
+        this.startButton = findViewById(R.id.btn_start);
+        this.progressBar = findViewById(R.id.progress_bar);
     }
     public void loadPlayer() {
         this.currentMatch = (MatchResponse) getIntent().getSerializableExtra("Match_Info");
-        boolean isBlack =this.currentMatch.getPlayerBlackId()!=null;
-        if(isBlack) {
+        this.isBlack =this.currentMatch.getPlayerBlackId()!=null;
+        if(this.isBlack) {
             blackName.setText("You");
             whiteName.setText("Waiting ...");
         }
@@ -68,4 +85,5 @@ public class FriendMatchLobbyActivity extends AppCompatActivity implements OnErr
             finish();
         });
     }
+
 }

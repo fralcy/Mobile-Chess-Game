@@ -17,12 +17,14 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".view.activities.FriendGuestActivity"
+            android:exported="true" />
+        <activity
             android:name=".view.activities.FriendMatchLobbyActivity"
             android:exported="true" />
         <activity
             android:name=".view.activities.FindMatchActivity"
             android:exported="false" />
-
         <activity
             android:name=".view.activities.FriendMatchActivity"
             android:exported="true" />

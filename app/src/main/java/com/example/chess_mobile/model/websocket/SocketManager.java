@@ -10,7 +10,9 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 import io.reactivex.CompletableTransformer;
@@ -28,6 +30,7 @@ import ua.naiksoftware.stomp.dto.StompMessage;
 
 public  class SocketManager {
     protected StompClient stompClient;
+    private final Map<String, Disposable> topicDisposables = new HashMap<>();
     protected CompositeDisposable compositeDisposable;
     private static SocketManager instance;
     public static SocketManager getInstance() {
@@ -86,7 +89,7 @@ public  class SocketManager {
                 .subscribe(onMessage, throwable -> {
                     Log.e("STOMP", "❌ Error in topic subscription", throwable);
                 });
-
+        topicDisposables.put(topic, dispTopic);
         compositeDisposable.add(dispTopic);
     }
 
@@ -123,6 +126,17 @@ public  class SocketManager {
         }
         if (compositeDisposable != null) {
             compositeDisposable.dispose();
+        }
+    }
+    public void unsubscribeTopic(String topic) {
+        Disposable disposable = topicDisposables.get(topic);
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+            compositeDisposable.remove(disposable);
+            topicDisposables.remove(topic);
+            Log.d("STOMP", "🔕 Unsubscribed from topic: " + topic);
+        } else {
+            Log.w("STOMP", "⚠️ No active subscription found for topic: " + topic);
         }
     }
 }

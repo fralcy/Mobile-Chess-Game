@@ -9,10 +9,10 @@
 
     <!-- Tiêu đề -->
     <TextView
-        android:id="@+id/tv_waiting_title"
+        android:id="@+id/fg_waiting_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Waiting for Opponent"
+        android:text="Waiting for Host to start"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -20,7 +20,7 @@
 
     <!-- Match ID -->
     <TextView
-        android:id="@+id/tv_match_id"
+        android:id="@+id/fg_match_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Match ID: abc123"
@@ -39,7 +39,7 @@
 
         <!-- White Player -->
         <LinearLayout
-            android:id="@+id/player_white"
+            android:id="@+id/player_white_fg"
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_weight="1"
@@ -52,7 +52,7 @@
             >
 
             <TextView
-                android:id="@+id/tv_white_label"
+                android:id="@+id/fg_white_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="White"
@@ -61,7 +61,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/tv_white_name"
+                android:id="@+id/fg_white_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="You"
@@ -72,7 +72,7 @@
 
         <!-- Black Player -->
         <LinearLayout
-            android:id="@+id/player_black"
+            android:id="@+id/player_black_fg"
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_weight="1"
@@ -84,7 +84,7 @@
             >
 
             <TextView
-                android:id="@+id/tv_black_label"
+                android:id="@+id/fg_black_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Black"
@@ -93,7 +93,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/tv_black_name"
+                android:id="@+id/fg_black_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Waiting..."
@@ -104,35 +104,18 @@
     </LinearLayout>
 
     <!-- ProgressBar -->
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:layout_marginBottom="32dp" />
-    <Button
-        android:id="@+id/btn_start"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start"
-        android:textAllCaps="false"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#00C853"
-        android:padding="12dp"
-        android:layout_marginBottom="12dp"
-        android:visibility="gone"
-        />
+
+
     <!-- Nút hủy -->
     <Button
-        android:id="@+id/btn_cancel"
+        android:id="@+id/btn_leave"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Cancel"
+        android:text="Leave room"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
         android:backgroundTint="#00C853"
         android:padding="12dp"
-         />
+        />
 
 </LinearLayout>

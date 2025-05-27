@@ -307,7 +307,7 @@
         android:background="@drawable/rounded_gray_button_bg"
         android:gravity="center"
         android:hint="@string/room_id_hint"
-        android:inputType="number"
+        android:inputType="text"
         android:minHeight="48dp"
         android:textColor="#FFFFFF"
         android:textColorHint="#CCCCCC"
