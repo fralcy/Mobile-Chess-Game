@@ -14,12 +14,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Chess_Mobile"
-        tools:targetApi="31"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <activity
+            android:name=".view.activities.FriendMatchLobbyActivity"
+            android:exported="true" />
         <activity
             android:name=".view.activities.FindMatchActivity"
             android:exported="false" />
-        <activity android:name=".view.activities.FriendMatchActivity" android:exported="true"/>
+
+        <activity
+            android:name=".view.activities.FriendMatchActivity"
+            android:exported="true" />
         <activity
             android:name=".view.activities.RoomChessActivity"
             android:exported="false" />

@@ -1,13 +1,17 @@
 package com.example.chess_mobile.model.websocket;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.util.Log;
 
+import com.example.chess_mobile.view.activities.OnErrorWebSocket;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+
 
 import io.reactivex.CompletableTransformer;
 import io.reactivex.ObservableTransformer;
@@ -15,21 +19,26 @@ import io.reactivex.SingleTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ua.naiksoftware.stomp.Stomp;
 import ua.naiksoftware.stomp.StompClient;
 import ua.naiksoftware.stomp.dto.StompHeader;
+import ua.naiksoftware.stomp.dto.StompMessage;
 
-public class SocketManager {
-    private StompClient stompClient;
-    private CompositeDisposable compositeDisposable;
+public  class SocketManager {
+    protected StompClient stompClient;
+    protected CompositeDisposable compositeDisposable;
+    private static SocketManager instance;
+    public static SocketManager getInstance() {
+        if(instance==null) {
+            instance = new SocketManager();
+        }
+        return instance;
+    }
+    public static final String beEndPoint = "ws://165.22.241.224:8080/ws";
 
-    public static String beEndPoint="ws://165.22.241.224:8080/ws/websocket";
-
-
-
-
-    public void connect(Runnable onConnected) {
+    public void connect(Runnable onConnected, OnErrorWebSocket onError) {
         stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, beEndPoint);
         compositeDisposable = new CompositeDisposable();
 
@@ -39,16 +48,16 @@ public class SocketManager {
                 .subscribe(lifecycleEvent -> {
                     switch (lifecycleEvent.getType()) {
                         case OPENED:
-                            Log.d("STOMP", "Connection opened");
+                            Log.d("STOMP", "✅ Connection opened");
                             if (onConnected != null) {
-                                onConnected.run();  // 👈 Gọi callback khi connect xong
+                                onConnected.run();
                             }
                             break;
                         case ERROR:
-                            Log.e("STOMP", "Error", lifecycleEvent.getException());
+                            onError.OnError();
                             break;
                         case CLOSED:
-                            Log.d("STOMP", "Connection closed");
+                            Log.d("STOMP", "🔌 Connection closed");
                             break;
                     }
                 });
@@ -61,30 +70,34 @@ public class SocketManager {
                     List<StompHeader> listHeader = new ArrayList<>();
                     listHeader.add(new StompHeader("Authorization", "Bearer " + idToken));
 
+                    // ✅ Kết nối STOMP với header chứa token
                     stompClient.connect(listHeader);
                 } else {
-                    Log.e("FIREBASE", "Cannot get ID token", task.getException());
+                    Log.e("FIREBASE", "❌ Cannot get ID token", task.getException());
                 }
             });
         }
     }
-    public void subscribeTopic(String topic) {
+
+    public void subscribeTopic(String topic, Consumer<StompMessage> onMessage){
         Disposable dispTopic = stompClient.topic(topic)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(topicMessage -> {
-                    Log.d("RECEIVE",  topicMessage.getPayload());
-                },throwable -> {
-                    throwable.printStackTrace();
+                .subscribe(onMessage, throwable -> {
+                    Log.e("STOMP", "❌ Error in topic subscription", throwable);
                 });
 
         compositeDisposable.add(dispTopic);
     }
+
     @SuppressLint("CheckResult")
     public void sendMessage(String message, String destination) {
         stompClient.send(destination, message)
                 .compose(applyCompletableSchedulers())
-                .subscribe(() -> Log.d("STOMP", "Message sent"), throwable -> Log.e("STOMP", "Error", throwable));
+                .subscribe(
+                        () -> Log.d("STOMP", "📤 Message sent"),
+                        throwable -> Log.e("STOMP", "❌ Send error", throwable)
+                );
     }
     private <T> ObservableTransformer<T, T> applyObservableSchedulers() {
         return upstream -> upstream
@@ -92,21 +105,22 @@ public class SocketManager {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    // Dành cho Completable
     private CompletableTransformer applyCompletableSchedulers() {
         return upstream -> upstream
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    // Dành cho Single
     private <T> SingleTransformer<T, T> applySingleSchedulers() {
         return upstream -> upstream
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
+
     public void disconnect() {
-        stompClient.disconnect();
+        if (stompClient != null) {
+            stompClient.disconnect();
+        }
         if (compositeDisposable != null) {
             compositeDisposable.dispose();
         }

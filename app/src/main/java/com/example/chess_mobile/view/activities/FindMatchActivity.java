@@ -3,41 +3,35 @@ package com.example.chess_mobile.view.activities;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.request.CreateMatchRequest;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.websocket.SocketManager;
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 
-public class FindMatchActivity extends AppCompatActivity {
-    private SocketManager socketManager;
+public class FindMatchActivity extends AppCompatActivity implements OnErrorWebSocket {
+
     private FirebaseUser currentUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FindMatch();
-        this.socketManager = new SocketManager();
-        this.socketManager.connect(() -> {
+
+        SocketManager.getInstance().connect(() -> {
             // Sau khi connect thành công, mới subscribe
-            this.socketManager.subscribeTopic("/user/queue/match");
-        });
-        this.socketManager.subscribeTopic(SocketManager.beEndPoint+"/queue/match");
+            SocketManager.getInstance().subscribeTopic("/user/queue/match",null);
+        },this);
+
         int playTime = getIntent().getIntExtra("Rank_Play_Time",0);
         this.currentUser= FirebaseAuth.getInstance().getCurrentUser();
         CreateMatchRequest request = new CreateMatchRequest(EMatch.RANKED, null,this.currentUser.getUid(),playTime );
         String json = new Gson().toJson(request);
-        this.socketManager.sendMessage(json,SocketManager.beEndPoint+"/app/chess/create");
+        SocketManager.getInstance().sendMessage(json,SocketManager.beEndPoint+"/app/chess/create");
 
     }
     public void FindMatch() {
@@ -68,8 +62,12 @@ public class FindMatchActivity extends AppCompatActivity {
     public void onDestroy() {
 
         super.onDestroy();
-        this.socketManager.disconnect();
+        SocketManager.getInstance().disconnect();
 
     }
 
+    @Override
+    public void OnError() {
+
+    }
 }

@@ -1,14 +1,20 @@
 package com.example.chess_mobile.view.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.request.CreateMatchRequest;
+import com.example.chess_mobile.dto.response.MatchResponse;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.websocket.SocketManager;
 import com.example.chess_mobile.view_model.IFriendMatchViewModel;
@@ -16,11 +22,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 
-public class FriendMatchActivity extends Activity implements IFriendMatchViewModel {
+public class FriendMatchActivity extends Activity implements IFriendMatchViewModel,OnErrorWebSocket {
     private boolean isWhite;
     private Integer playTime;
-    private SocketManager socketManager;
+
     private FirebaseUser currentUser;
+    private MatchResponse currentMatch;
 
     //View
     private Button whiteButton;
@@ -33,6 +40,71 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
     private Button createButton;
     private Button joinButton;
     private EditText roomIdInput;
+    private TextView roomIdText;
+    private TextView waitingText;
+
+    public Button getBlackButton() {
+        return blackButton;
+    }
+
+    public Button getCreateButton() {
+        return createButton;
+    }
+
+    public FirebaseUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public EditText getCustomMin() {
+        return customMin;
+    }
+
+    public EditText getCustomSec() {
+        return customSec;
+    }
+
+    public boolean isWhite() {
+        return isWhite;
+    }
+
+    public Button getJoinButton() {
+        return joinButton;
+    }
+
+    public Integer getPlayTime() {
+        return playTime;
+    }
+
+    public EditText getRoomIdInput() {
+        return roomIdInput;
+    }
+
+    public TextView getRoomIdText() {
+        return roomIdText;
+    }
+
+
+
+    public Button getTimeButton10() {
+        return timeButton10;
+    }
+
+    public Button getTimeButton15() {
+        return timeButton15;
+    }
+
+    public Button getTimeButton20() {
+        return timeButton20;
+    }
+
+    public TextView getWaitingText() {
+        return waitingText;
+    }
+
+    public Button getWhiteButton() {
+        return whiteButton;
+    }
+
     @Override
     public void onStart() {
 
@@ -46,11 +118,22 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
         setContentView(R.layout.activity_friend_match);
         bindView();
         setUpOnClickListener();
-        this.socketManager = new SocketManager();
-        this.socketManager.connect(() -> {
+
+        SocketManager.getInstance().connect(() -> {
             // Sau khi connect thành công, mới subscribe
-            this.socketManager.subscribeTopic("/user/queue/match");
-        });
+            SocketManager.getInstance().subscribeTopic("/user/queue/match",topicMessage->{
+                String payload = topicMessage.getPayload();
+                Gson gson = new Gson();
+                currentMatch = gson.fromJson(payload, MatchResponse.class);
+                FriendMatchActivity.this.getRoomIdText().setVisibility(View.VISIBLE);
+                FriendMatchActivity.this.getRoomIdText().setText("Match Id is "+currentMatch.getMatchId());
+                FriendMatchActivity.this.getWaitingText().setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(FriendMatchActivity.this, FriendMatchLobbyActivity.class);
+                intent.putExtra("Match_Info",currentMatch);
+                startActivity(intent);
+            });
+        },this);
 
         this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -58,7 +141,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        this.socketManager.disconnect();
+        SocketManager.getInstance().disconnect();
     }
     public void bindView() {
         this.whiteButton = findViewById(R.id.friendMatchButtonWhite);
@@ -71,6 +154,8 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
         this.createButton= findViewById(R.id.friendMatchButtonCreate);
         this.roomIdInput = findViewById(R.id.friendMatchEditTextRoomId);
         this.joinButton= findViewById(R.id.friendMatchButtonJoin);
+        this.roomIdText= findViewById(R.id.friendMatchTextRoomCreated);
+        this.waitingText= findViewById(R.id.friendMatchTextWaiting);
     }
     public void setUpOnClickListener() {
         this.whiteButton.setOnClickListener(v->{
@@ -111,9 +196,21 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
         this.createButton.setOnClickListener(v->{
             CreateMatchRequest createFriendMatchRequest = new CreateMatchRequest(EMatch.PRIVATE,FriendMatchActivity.this.isWhite,FriendMatchActivity.this.currentUser.getUid(),FriendMatchActivity.this.playTime);
             String json = new Gson().toJson(createFriendMatchRequest);
-            FriendMatchActivity.this.socketManager.sendMessage(json, "/app/chess/create");
+            SocketManager.getInstance().sendMessage(json, "/app/chess/create");
 
         });
     }
 
+    @Override
+    public void OnError() {
+        new AlertDialog.Builder(FriendMatchActivity.this).setTitle("Connection Error").
+                setMessage("Check your wifi connection!").setCancelable(false).setPositiveButton("Back", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent( FriendMatchActivity.this,GameModeSelectionActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+    }
 }
