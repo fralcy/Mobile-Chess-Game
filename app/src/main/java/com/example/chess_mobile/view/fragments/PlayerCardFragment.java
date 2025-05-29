@@ -15,7 +15,7 @@ import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.player.Player;
 import com.example.chess_mobile.utils.implementations.TimeFormater;
-import com.example.chess_mobile.view_model.ChessBoardViewModel;
+import com.example.chess_mobile.view_model.implementations.ChessBoardViewModel;
 
 public class PlayerCardFragment extends Fragment {
     private static final String PLAYER = "player";

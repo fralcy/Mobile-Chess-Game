@@ -1,4 +1,4 @@
-package com.example.chess_mobile.view_model;
+package com.example.chess_mobile.view_model.implementations;
 
 
 import androidx.lifecycle.MutableLiveData;
@@ -10,6 +10,8 @@ import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.moves.Move;
 import com.example.chess_mobile.model.player.Player;
 import com.example.chess_mobile.model.websocket.ChessWebSocketClient;
+import com.example.chess_mobile.view_model.enums.ESocketMessageType;
+import com.example.chess_mobile.view_model.interfaces.IOnlineChess;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -21,7 +23,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IOnlineChess{
+public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IOnlineChess {
     private static final String BASE_WSS = "wss://s14675.blr1.piesocket.com/v3/1?api_key=LdVY7DsOIGZ7JRqqzPTqbJTO7WjqNZznt589crEg&notify_self=1";
     private final MutableLiveData<Boolean> _webSocketStatus = new MutableLiveData<>(false);
     private final ChessWebSocketClient socketClient = new ChessWebSocketClient();

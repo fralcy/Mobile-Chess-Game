@@ -1,4 +1,4 @@
-package com.example.chess_mobile.view_model;
+package com.example.chess_mobile.view_model.implementations;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -13,6 +13,7 @@ import com.example.chess_mobile.model.logic.game_states.Result;
 import com.example.chess_mobile.model.logic.moves.Move;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.view_model.interfaces.IChessViewModel;
 
 import java.time.Duration;
 import java.util.ArrayList;

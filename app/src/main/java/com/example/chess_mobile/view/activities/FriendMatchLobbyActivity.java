@@ -9,15 +9,10 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.response.MatchResponse;
 import com.example.chess_mobile.model.websocket.SocketManager;
+import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 
 public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSocket {
     private MatchResponse currentMatch;

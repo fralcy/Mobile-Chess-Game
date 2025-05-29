@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.example.chess_mobile.R;
-import com.example.chess_mobile.view_model.ILocalMatchViewModel;
+import com.example.chess_mobile.view_model.interfaces.ILocalMatchViewModel;
 
 public class LocalMatchActivity extends Activity implements ILocalMatchViewModel {
     @Override

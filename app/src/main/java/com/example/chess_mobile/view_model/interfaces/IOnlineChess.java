@@ -1,8 +1,9 @@
-package com.example.chess_mobile.view_model;
+package com.example.chess_mobile.view_model.interfaces;
 
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.chess_mobile.model.logic.game_states.GameState;
+import com.example.chess_mobile.view_model.enums.ESocketMessageType;
 
 public interface IOnlineChess {
     void setOnlineStatus(boolean status);

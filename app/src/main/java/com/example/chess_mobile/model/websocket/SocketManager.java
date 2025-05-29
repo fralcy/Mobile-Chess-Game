@@ -1,14 +1,12 @@
 package com.example.chess_mobile.model.websocket;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.util.Log;
 
-import com.example.chess_mobile.view.activities.OnErrorWebSocket;
+import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

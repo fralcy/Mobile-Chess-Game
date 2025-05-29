@@ -1,6 +1,4 @@
-package com.example.chess_mobile.view.fragments;
-
-import java.util.Optional;
+package com.example.chess_mobile.view.interfaces;
 
 public interface DrawResignActionListener {
     void onDrawOffered();

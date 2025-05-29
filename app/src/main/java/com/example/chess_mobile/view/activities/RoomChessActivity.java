@@ -23,11 +23,12 @@ import com.example.chess_mobile.model.player.Player;
 import com.example.chess_mobile.view.fragments.ChessBoardFragment;
 import com.example.chess_mobile.view.fragments.CongratsCardFragment;
 import com.example.chess_mobile.view.fragments.DrawResignActionFragment;
-import com.example.chess_mobile.view.fragments.DrawResignActionListener;
+import com.example.chess_mobile.view.interfaces.DrawResignActionListener;
 import com.example.chess_mobile.view.fragments.OnlineCongratsCardFragment;
 import com.example.chess_mobile.view.fragments.PlayerCardFragment;
-import com.example.chess_mobile.view_model.ChessBoardViewModel;
-import com.example.chess_mobile.view_model.IChessViewModel;
+import com.example.chess_mobile.view.interfaces.IGameOverListener;
+import com.example.chess_mobile.view_model.implementations.ChessBoardViewModel;
+import com.example.chess_mobile.view_model.interfaces.IChessViewModel;
 
 import java.time.Duration;
 import java.util.Optional;

@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -19,12 +18,14 @@ import com.example.chess_mobile.dto.request.JoinMatchRequest;
 import com.example.chess_mobile.dto.response.MatchResponse;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.websocket.SocketManager;
-import com.example.chess_mobile.view_model.IFriendMatchViewModel;
+import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
+import com.example.chess_mobile.view_model.interfaces.IFriendMatchViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 
-public class FriendMatchActivity extends Activity implements IFriendMatchViewModel,OnErrorWebSocket {
+public class FriendMatchActivity extends Activity implements IFriendMatchViewModel,
+        OnErrorWebSocket {
     private boolean isWhite;
     private Integer playTime;
 

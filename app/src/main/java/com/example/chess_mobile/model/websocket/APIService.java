@@ -9,7 +9,4 @@ import retrofit2.http.Path;
 public interface APIService {
     @GET("/user/{id}")
     Call<PlayerResponse> getPlayer(@Path("id") String id);
-
-
-
 }

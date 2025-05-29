@@ -37,8 +37,8 @@ import com.example.chess_mobile.utils.implementations.ChessTimer;
 import com.example.chess_mobile.settings.piece_images.PieceImagesInstance;
 import com.example.chess_mobile.utils.interfaces.IChessTimer;
 import com.example.chess_mobile.settings.piece_images.IPieceImagesTheme;
-import com.example.chess_mobile.view.activities.IGameOverListener;
-import com.example.chess_mobile.view_model.ChessBoardViewModel;
+import com.example.chess_mobile.view.interfaces.IGameOverListener;
+import com.example.chess_mobile.view_model.implementations.ChessBoardViewModel;
 
 import java.util.HashMap;
 import java.util.List;

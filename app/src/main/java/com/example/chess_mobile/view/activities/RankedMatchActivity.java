@@ -8,8 +8,7 @@ import android.widget.Button;
 import androidx.core.content.ContextCompat;
 
 import com.example.chess_mobile.R;
-import com.example.chess_mobile.model.websocket.SocketManager;
-import com.example.chess_mobile.view_model.IRankedMatchViewModel;
+import com.example.chess_mobile.view_model.interfaces.IRankedMatchViewModel;
 
 public class RankedMatchActivity extends Activity implements IRankedMatchViewModel {
     private Button button10min;

@@ -1,4 +1,4 @@
-package com.example.chess_mobile.view_model;
+package com.example.chess_mobile.view_model.enums;
 
 public enum ESocketMessageType {
 //    GAME_START,

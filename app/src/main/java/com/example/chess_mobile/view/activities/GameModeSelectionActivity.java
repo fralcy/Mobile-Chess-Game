@@ -7,7 +7,7 @@ import android.os.Bundle;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.chess_mobile.R;
-import com.example.chess_mobile.view_model.IGameModeSelectionViewModel;
+import com.example.chess_mobile.view_model.interfaces.IGameModeSelectionViewModel;
 
 public class GameModeSelectionActivity extends Activity implements IGameModeSelectionViewModel {
     @Override

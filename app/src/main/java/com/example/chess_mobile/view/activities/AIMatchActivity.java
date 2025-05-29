@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.example.chess_mobile.R;
-import com.example.chess_mobile.view_model.IAIMatchViewModel;
+import com.example.chess_mobile.view_model.interfaces.IAIMatchViewModel;
 
 public class AIMatchActivity extends Activity implements IAIMatchViewModel {
     @Override

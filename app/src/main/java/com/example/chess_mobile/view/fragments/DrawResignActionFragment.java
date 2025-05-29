@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.chess_mobile.R;
+import com.example.chess_mobile.view.interfaces.DrawResignActionListener;
 
 /**
  * A simple {@link Fragment} subclass.
