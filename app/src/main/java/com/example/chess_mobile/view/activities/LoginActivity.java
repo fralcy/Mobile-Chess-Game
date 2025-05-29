@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity implements ILoginViewModel 
         super.onStart();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            startActivity(new Intent(this   , GameModeSelectionActivity.class));
+            startActivity(new Intent(this , GameModeSelectionActivity.class));
             finish();
         }
     }

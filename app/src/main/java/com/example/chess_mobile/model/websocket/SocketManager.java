@@ -1,7 +1,8 @@
 package com.example.chess_mobile.model.websocket;
 
-import android.annotation.SuppressLint;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,7 +31,12 @@ public  class SocketManager {
     protected StompClient stompClient;
     private final Map<String, Disposable> topicDisposables = new HashMap<>();
     protected CompositeDisposable compositeDisposable;
-    private static SocketManager instance;
+    public static final Consumer<StompMessage> EMPTY_CONSUMER = unused -> {};
+
+    // implement right singleton pattern
+    // constructor have to be private
+    private SocketManager(){}
+    private static SocketManager instance = null;
     public static SocketManager getInstance() {
         if(instance==null) {
             instance = new SocketManager();
@@ -40,10 +46,15 @@ public  class SocketManager {
     public static final String beEndPoint = "ws://165.22.241.224:8080/ws";
 
     public void connect(Runnable onConnected, OnErrorWebSocket onError) {
+        // Clean up previous connection if call multiple time
+        if (compositeDisposable != null && !compositeDisposable.isDisposed()) {
+            compositeDisposable.dispose();
+        }
+
         stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, beEndPoint);
         compositeDisposable = new CompositeDisposable();
 
-        stompClient.lifecycle()
+        Disposable lifecycleDisposable = stompClient.lifecycle()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(lifecycleEvent -> {
@@ -62,7 +73,7 @@ public  class SocketManager {
                             break;
                     }
                 });
-
+        compositeDisposable.add(lifecycleDisposable);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             user.getIdToken(false).addOnCompleteListener(task -> {
@@ -70,8 +81,6 @@ public  class SocketManager {
                     String idToken = task.getResult().getToken();
                     List<StompHeader> listHeader = new ArrayList<>();
                     listHeader.add(new StompHeader("Authorization", "Bearer " + idToken));
-
-                    // ✅ Kết nối STOMP với header chứa token
                     stompClient.connect(listHeader);
                 } else {
                     Log.e("FIREBASE", "❌ Cannot get ID token", task.getException());
@@ -80,30 +89,24 @@ public  class SocketManager {
         }
     }
 
-    public void subscribeTopic(String topic, Consumer<StompMessage> onMessage){
-        Disposable dispTopic = stompClient.topic(topic)
+    public void subscribeTopic(String topic,Consumer<StompMessage> onMessage){
+        Disposable disposableTopic = stompClient.topic(topic)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(onMessage, throwable -> {
                     Log.e("STOMP", "❌ Error in topic subscription", throwable);
                 });
-        topicDisposables.put(topic, dispTopic);
-        compositeDisposable.add(dispTopic);
+        topicDisposables.put(topic, disposableTopic);
+        compositeDisposable.add(disposableTopic);
     }
 
-    @SuppressLint("CheckResult")
     public void sendMessage(String message, String destination) {
-        stompClient.send(destination, message)
+        Disposable sendfDisposable = stompClient.send(destination, message)
                 .compose(applyCompletableSchedulers())
-                .subscribe(
-                        () -> Log.d("STOMP", "📤 Message sent"),
+                .subscribe(() -> Log.d("STOMP", "📤 Message sent"),
                         throwable -> Log.e("STOMP", "❌ Send error", throwable)
                 );
-    }
-    private <T> ObservableTransformer<T, T> applyObservableSchedulers() {
-        return upstream -> upstream
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+        compositeDisposable.add(sendfDisposable);
     }
 
     private CompletableTransformer applyCompletableSchedulers() {
@@ -111,13 +114,6 @@ public  class SocketManager {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
-
-    private <T> SingleTransformer<T, T> applySingleSchedulers() {
-        return upstream -> upstream
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
     public void disconnect() {
         if (stompClient != null) {
             stompClient.disconnect();
@@ -137,4 +133,17 @@ public  class SocketManager {
             Log.w("STOMP", "⚠️ No active subscription found for topic: " + topic);
         }
     }
+
+    private <T> ObservableTransformer<T, T> applyObservableSchedulers() {
+        return upstream -> upstream
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private <T> SingleTransformer<T, T> applySingleSchedulers() {
+        return upstream -> upstream
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
 }
