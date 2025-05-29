@@ -204,6 +204,12 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
             FriendMatchActivity.this.getIntent().putExtra("match_id",matchId);
             SocketManager.getInstance().subscribeTopic("/topic/match/"+matchId,topicMessage->{
                 Log.d("RESPONSE FROM SERVER", topicMessage.getPayload());
+                MatchResponse matchResponse = (MatchResponse) new Gson().fromJson(topicMessage.getPayload(),MatchResponse.class);
+
+
+                Intent intent  = new Intent(FriendMatchActivity.this, FriendGuestActivity.class);
+                intent.putExtra("Match_Info", matchResponse);
+                startActivity(intent);
 
             });
             SocketManager.getInstance().subscribeTopic("/topic/match/"+matchId+"/error",topicMessage->{
@@ -223,6 +229,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
             String json = new Gson().toJson(joinMatchRequest);
             SocketManager.getInstance().sendMessage(json,"/app/chess/join/"+matchId);
         });
+
     }
 
     @Override
@@ -235,7 +242,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
                         startActivity(intent);
                         finish();
                     }
-                });
+                }).show();
     }
     @Override
     public void onDestroy() {

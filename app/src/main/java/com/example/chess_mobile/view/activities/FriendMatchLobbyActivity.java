@@ -1,5 +1,6 @@
 package com.example.chess_mobile.view.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +19,7 @@ import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.response.MatchResponse;
 import com.example.chess_mobile.model.websocket.SocketManager;
 
-public class FriendMatchLobbyActivity extends AppCompatActivity implements OnErrorWebSocket {
+public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSocket {
     private MatchResponse currentMatch;
     private TextView blackName;
     private TextView whiteName;
@@ -63,6 +64,7 @@ public class FriendMatchLobbyActivity extends AppCompatActivity implements OnErr
     }
     public void loadPlayer() {
         this.currentMatch = (MatchResponse) getIntent().getSerializableExtra("Match_Info");
+
         this.isBlack =this.currentMatch.getPlayerBlackId()!=null;
         if(this.isBlack) {
             blackName.setText("You");
@@ -84,6 +86,12 @@ public class FriendMatchLobbyActivity extends AppCompatActivity implements OnErr
             startActivity(intent);
             finish();
         });
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SocketManager.getInstance().unsubscribeTopic("/topic/match/"+currentMatch.getMatchId());
+
     }
 
 }
