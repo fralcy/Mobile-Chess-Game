@@ -6,6 +6,7 @@ import android.widget.Toast;
 import com.example.chess_mobile.model.authentication.firebase.FirebaseAccount;
 import com.example.chess_mobile.model.authentication.firebase.FirebaseAuthenticationService;
 import com.example.chess_mobile.model.authentication.interfaces.IAuthenticationService;
+import com.example.chess_mobile.view.activities.GameModeSelectionActivity;
 import com.example.chess_mobile.view.activities.MainActivity;
 import com.example.chess_mobile.view.activities.RegisterActivity;
 
@@ -67,7 +68,7 @@ public interface ILoginViewModel {
 
     default void onLoginSuccess(Context context) {
         Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent = new Intent(context, GameModeSelectionActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
     }
