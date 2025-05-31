@@ -33,10 +33,16 @@ public interface IChessViewModel {
 
     void reset();
     void newGame(EPlayer startingPlayer, Board board, Player main, Player opponent, Duration mainSide, Duration opponentSide);
-    default void newGame(EPlayer startingPlayer, Board board, Player main, Player opponent, Duration timePerSide) {
-        newGame(startingPlayer, board, main, opponent, timePerSide, timePerSide);
+
+    default void newGame(String matchId, EPlayer startingPlayer, Board board,
+                         Player main, Player opponent, Duration mainSide, Duration opponentSide)
+    {
+        newGame(startingPlayer, board, main, opponent, mainSide, opponentSide);
     }
-    default void newGame(EPlayer startingPlayer, Board board, Player main, Player opponent) {
-        newGame(startingPlayer, board, main, opponent, Duration.ofSeconds(600), Duration.ofSeconds(600));
+
+    default void newGame(String matchId, EPlayer startingPlayer, Board board,
+                         Player main, Player opponent, Duration timePerSide)
+    {
+        newGame(startingPlayer, board, main, opponent, timePerSide, timePerSide);
     }
 }

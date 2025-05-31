@@ -56,8 +56,6 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
 
     @Override
     public void reset() {
-//        _main.setValue(null);
-//        _opponent.setValue(null);
         _whiteTimer.setValue(Duration.ZERO);
         _blackTimer.setValue(Duration.ZERO);
         _result.setValue(null);

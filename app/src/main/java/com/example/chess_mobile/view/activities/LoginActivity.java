@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -25,6 +26,7 @@ public class LoginActivity extends AppCompatActivity implements ILoginViewModel 
     Button buttonLogin;
     EditText txtEmail;
     EditText txtPassword;
+    TextView registerLink;
 
     @Override
     protected void onStart() {
@@ -69,11 +71,21 @@ public class LoginActivity extends AppCompatActivity implements ILoginViewModel 
         buttonLogin.setOnClickListener(l -> {
             String email = txtEmail.getText().toString();
             String password = txtPassword.getText().toString();
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this,  "Email or password is incorrect. Try again!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             login(email, password);
+        });
+
+        registerLink.setOnClickListener(l -> {
+            startActivity(new Intent(this, RegisterActivity.class));
+            finish();
         });
     }
 
     private void bindView() {
+        registerLink = findViewById(R.id.registerLink);
         buttonLogin = findViewById(R.id.loginButton);
         txtEmail =  findViewById(R.id.loginTextEmail);
         txtPassword = findViewById(R.id.loginTextPassword);

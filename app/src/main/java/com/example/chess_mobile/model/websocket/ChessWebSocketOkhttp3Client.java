@@ -12,28 +12,34 @@ import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
-public class ChessWebSocketClient extends WebSocketListener {
-    private IWebSocketMessageListener _listener;
+public class ChessWebSocketOkhttp3Client extends WebSocketListener implements IChessWebSocketClient {
+    public static final String BASE_WSS = "wss://s14675.blr1.piesocket.com/v3/1?api_key=LdVY7DsOIGZ7JRqqzPTqbJTO7WjqNZznt589crEg&notify_self=1";
+
+    private IWebSocketMessageListenerAdapter _listener;
 
     private WebSocket webSocket;
     private final OkHttpClient client = new OkHttpClient();
 
-    public void setListener(IWebSocketMessageListener listener) {
+    private void setListener(IWebSocketMessageListenerAdapter listener) {
         this._listener = listener;
     }
 
-    public void connect(String url) {
-        Request request = new Request.Builder().url(url).build();
+    @Override
+    public void connect(String url, IWebSocketMessageListenerAdapter listener) {
+        Request request = new Request.Builder().url(BASE_WSS + "url").build();
         webSocket = client.newWebSocket(request, this);
         client.dispatcher().executorService().shutdown();
+
+        this.setListener(listener);
     }
 
-    public void sendMessage(String message) {
+        public void sendMessage(String message) {
         if (webSocket != null) {
             webSocket.send(message);
         }
     }
 
+    @Override
     public void close() {
         if (webSocket != null) {
             webSocket.close(1000, "Goodbye!");
@@ -72,7 +78,7 @@ public class ChessWebSocketClient extends WebSocketListener {
             @NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable Response response
     ) {
         super.onFailure(webSocket, t, response);
-        Logger logger = Logger.getLogger(ChessWebSocketClient.class.getName());
+        Logger logger = Logger.getLogger(ChessWebSocketOkhttp3Client.class.getName());
         logger.log(Level.SEVERE, "WebSocket failure: " + t.getMessage(), t);
     }
 }

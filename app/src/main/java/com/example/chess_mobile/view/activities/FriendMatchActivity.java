@@ -60,15 +60,15 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
 
         SocketManager.getInstance().connect(() -> {
             // Sau khi connect thành công, mới subscribe
-            SocketManager.getInstance().subscribeTopic("/user/queue/match",topicMessage->{
+            SocketManager.getInstance().subscribeTopic("/user/queue/match",topicMessage-> {
                 String payload = topicMessage.getPayload();
+                Log.d("FriendMatchActivity_SUCCESS_CONNECTION", topicMessage.getPayload());
                 Gson gson = new Gson();
                 currentMatch = gson.fromJson(payload, MatchResponse.class);
-
-
-                Intent intent = new Intent(FriendMatchActivity.this, FriendMatchLobbyActivity.class);
+                Intent intent = new Intent(this, FriendMatchLobbyActivity.class);
                 intent.putExtra("Match_Info",currentMatch);
                 startActivity(intent);
+                finish();
             });
         },this);
 
@@ -99,60 +99,60 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
     }
     public void setUpOnClickListener() {
         this.whiteButton.setOnClickListener(v->{
-            FriendMatchActivity.this.getIntent().putExtra("Host_White",true);
-            FriendMatchActivity.this.isWhite=true;
-            FriendMatchActivity.this.whiteButton.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this,R.drawable.rounded_button_bg));
-            FriendMatchActivity.this.blackButton.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_gray_button_bg));
+            this.getIntent().putExtra("Host_White",true);
+            this.isWhite=true;
+            this.whiteButton.setBackground(ContextCompat.getDrawable(this,R.drawable.rounded_button_bg));
+            this.blackButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_gray_button_bg));
         });
         this.blackButton.setOnClickListener(v->{
-            FriendMatchActivity.this.getIntent().putExtra("Host_White",false);
-            FriendMatchActivity.this.isWhite=false;
-            FriendMatchActivity.this.whiteButton.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this,R.drawable.rounded_gray_button_bg));
-            FriendMatchActivity.this.blackButton.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_button_bg));
+            this.getIntent().putExtra("Host_White",false);
+            this.isWhite=false;
+            this.whiteButton.setBackground(ContextCompat.getDrawable(this,R.drawable.rounded_gray_button_bg));
+            this.blackButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button_bg));
 
         });
         this.timeButton10.setOnClickListener(v->{
-            FriendMatchActivity.this.getIntent().putExtra("Friend_Play_Time",10);
-            FriendMatchActivity.this.playTime=10;
-            FriendMatchActivity.this.timeButton10.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_button_bg));
-            FriendMatchActivity.this.timeButton15.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this,R.drawable.rounded_gray_button_bg));
-            FriendMatchActivity.this.timeButton20.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_gray_button_bg));
+            this.getIntent().putExtra("Friend_Play_Time",10);
+            this.playTime=10;
+            this.timeButton10.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button_bg));
+            this.timeButton15.setBackground(ContextCompat.getDrawable(this,R.drawable.rounded_gray_button_bg));
+            this.timeButton20.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_gray_button_bg));
         });
         this.timeButton15.setOnClickListener(v->{
-            FriendMatchActivity.this.getIntent().putExtra("Friend_Play_Time",15);
-            FriendMatchActivity.this.playTime=15;
-            FriendMatchActivity.this.timeButton10.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_gray_button_bg));
-            FriendMatchActivity.this.timeButton15.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this,R.drawable.rounded_button_bg));
-            FriendMatchActivity.this.timeButton20.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_gray_button_bg));
+            this.getIntent().putExtra("Friend_Play_Time",15);
+            this.playTime=15;
+            this.timeButton10.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_gray_button_bg));
+            this.timeButton15.setBackground(ContextCompat.getDrawable(this,R.drawable.rounded_button_bg));
+            this.timeButton20.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_gray_button_bg));
 
         });
         this.timeButton20.setOnClickListener(v->{
-            FriendMatchActivity.this.getIntent().putExtra("Friend_Play_Time",20);
-            FriendMatchActivity.this.playTime=20;
-            FriendMatchActivity.this.timeButton10.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_gray_button_bg));
-            FriendMatchActivity.this.timeButton15.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this,R.drawable.rounded_gray_button_bg));
-            FriendMatchActivity.this.timeButton20.setBackground(ContextCompat.getDrawable(FriendMatchActivity.this, R.drawable.rounded_button_bg));
+            this.getIntent().putExtra("Friend_Play_Time",20);
+            this.playTime=20;
+            this.timeButton10.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_gray_button_bg));
+            this.timeButton15.setBackground(ContextCompat.getDrawable(this,R.drawable.rounded_gray_button_bg));
+            this.timeButton20.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button_bg));
         });
         this.createButton.setOnClickListener(v->{
             CreateMatchRequest createFriendMatchRequest = new CreateMatchRequest( EMatch.PRIVATE,
-                    FriendMatchActivity.this.isWhite,getUID(),FriendMatchActivity.this.playTime);
+                    this.isWhite,getUID(),this.playTime);
             String json = new Gson().toJson(createFriendMatchRequest);
             SocketManager.getInstance().sendMessage(json, "/app/chess/create");
 
         });
         this.joinButton.setOnClickListener(v->{
             String matchId = String.valueOf(roomIdInput.getText());
-            FriendMatchActivity.this.getIntent().putExtra("match_id",matchId);
+            this.getIntent().putExtra("match_id",matchId);
             SocketManager.getInstance().subscribeTopic("/topic/match/"+matchId,topicMessage->{
                 Log.d("RESPONSE FROM SERVER", topicMessage.getPayload());
                 MatchResponse matchResponse = new Gson().fromJson(topicMessage.getPayload(),MatchResponse.class);
 
                 SocketManager.getInstance().unsubscribeTopic("/topic/match/"+matchId);
-                Intent intent  = new Intent(FriendMatchActivity.this, FriendGuestActivity.class);
+                Intent intent  = new Intent(this, FriendGuestActivity.class);
                 intent.putExtra("Match_Info", matchResponse);
 
                 startActivity(intent);
-
+                finish();
             });
             SocketManager.getInstance().subscribeTopic("/topic/match/"+matchId+"/error",topicMessage->{
                 Log.d("ERROR FROM SERVER", topicMessage.getPayload());
@@ -163,7 +163,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
                 else {
                     errorMessage = "The match that you are finding does not exist";
                 }
-                new AlertDialog.Builder(FriendMatchActivity.this).
+                new AlertDialog.Builder(this).
                         setTitle(topicMessage.getPayload())
                         .setMessage(errorMessage)
                         .setCancelable(false)
@@ -181,10 +181,10 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
 
     @Override
     public void OnError() {
-        new AlertDialog.Builder(FriendMatchActivity.this).setTitle("Connection Error").
+        new AlertDialog.Builder(this).setTitle("Connection Error").
                 setMessage("Check your wifi connection!").setCancelable(false).setPositiveButton(
                         "Back", (dialog, i) -> {
-                            Intent intent = new Intent( FriendMatchActivity.this,GameModeSelectionActivity.class);
+                            Intent intent = new Intent( this,GameModeSelectionActivity.class);
                             startActivity(intent);
                             finish();
                         }).show();

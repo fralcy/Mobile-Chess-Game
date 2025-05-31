@@ -13,8 +13,7 @@ import java.util.Map;
 
 
 import io.reactivex.CompletableTransformer;
-import io.reactivex.ObservableTransformer;
-import io.reactivex.SingleTransformer;
+import io.reactivex.FlowableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -29,7 +28,6 @@ public  class SocketManager {
     protected StompClient stompClient;
     private final Map<String, Disposable> topicDisposables = new HashMap<>();
     protected CompositeDisposable compositeDisposable;
-    public static final Consumer<StompMessage> EMPTY_CONSUMER = unused -> {};
 
     // implement right singleton pattern
     // constructor have to be private
@@ -42,6 +40,7 @@ public  class SocketManager {
         return instance;
     }
     public static final String beEndPoint = "ws://165.22.241.224:8080/ws";
+//    public static final String beEndPoint = "ws://192.168.1.33:8080/ws";
 
     public void connect(Runnable onConnected, OnErrorWebSocket onError) {
         // Clean up previous connection if call multiple time
@@ -58,16 +57,17 @@ public  class SocketManager {
                 .subscribe(lifecycleEvent -> {
                     switch (lifecycleEvent.getType()) {
                         case OPENED:
-                            Log.d("STOMP", "✅ Connection opened");
+                            Log.d("STOMP_SocketManager", "✅ Connection opened");
                             if (onConnected != null) {
                                 onConnected.run();
                             }
                             break;
                         case ERROR:
                             onError.OnError();
+                            Log.e("STOMP_SocketManager", "❌  Connection error!!" + lifecycleEvent.getException());
                             break;
                         case CLOSED:
-                            Log.d("STOMP", "🔌 Connection closed");
+                            Log.d("STOMP_SocketManager", "🔌 Connection closed");
                             break;
                     }
                 });
@@ -87,10 +87,9 @@ public  class SocketManager {
         }
     }
 
-    public void subscribeTopic(String topic,Consumer<StompMessage> onMessage){
+    public void subscribeTopic(String topic, Consumer<StompMessage> onMessage){
         Disposable disposableTopic = stompClient.topic(topic)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(applyFlowableSchedulers())
                 .subscribe(onMessage, throwable -> Log.e("STOMP", "❌ Error in topic subscription", throwable));
         topicDisposables.put(topic, disposableTopic);
         compositeDisposable.add(disposableTopic);
@@ -105,11 +104,6 @@ public  class SocketManager {
         compositeDisposable.add(sendfDisposable);
     }
 
-    private CompletableTransformer applyCompletableSchedulers() {
-        return upstream -> upstream
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
     public void disconnect() {
         if (stompClient != null) {
             stompClient.disconnect();
@@ -130,13 +124,12 @@ public  class SocketManager {
         }
     }
 
-    private <T> ObservableTransformer<T, T> applyObservableSchedulers() {
+    private <T> FlowableTransformer<T, T> applyFlowableSchedulers() {
         return upstream -> upstream
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
-
-    private <T> SingleTransformer<T, T> applySingleSchedulers() {
+    private CompletableTransformer applyCompletableSchedulers() {
         return upstream -> upstream
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
