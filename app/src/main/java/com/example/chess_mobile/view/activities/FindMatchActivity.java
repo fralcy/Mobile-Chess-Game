@@ -33,7 +33,9 @@ public class FindMatchActivity extends AppCompatActivity implements OnErrorWebSo
 
         SocketManager.getInstance().connect(() -> {
             // Sau khi connect thành công, mới subscribe
-            SocketManager.getInstance().subscribeTopic("/user/queue/match",SocketManager.EMPTY_CONSUMER);
+            SocketManager.getInstance().subscribeTopic("/user/queue/match",tMes->{
+                Log.d("RANK",tMes.getPayload());
+            });
         },this);
 
         int playTime = getIntent().getIntExtra("Rank_Play_Time",0);
