@@ -9,12 +9,6 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.request.CancelMatchRequest;
 import com.example.chess_mobile.dto.response.MatchResponse;
@@ -72,13 +66,10 @@ public class FriendGuestActivity extends Activity implements OnErrorWebSocket {
         this.currentMatchResponse = (MatchResponse) this.getIntent().getSerializableExtra("Match_Info");
         if(this.currentMatchResponse==null) {
             new AlertDialog.Builder(FriendGuestActivity.this).setTitle("Some thing went wrong").
-                    setMessage("Back to the previous screen").setCancelable(false).setPositiveButton("Back", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent( FriendGuestActivity.this,GameModeSelectionActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
+                    setMessage("Back to the previous screen").setCancelable(false).setPositiveButton("Back", (dialogInterface, i) -> {
+                        Intent intent = new Intent( FriendGuestActivity.this,GameModeSelectionActivity.class);
+                        startActivity(intent);
+                        finish();
                     }).show();
         }
         if(currentMatchResponse.getPlayerBlackId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {

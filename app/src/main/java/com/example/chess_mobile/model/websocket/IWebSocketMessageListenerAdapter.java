@@ -1,5 +1,5 @@
 package com.example.chess_mobile.model.websocket;
 
-public interface IWebSocketMessageListener {
+public interface IWebSocketMessageListenerAdapter {
     void onMessageReceived(String message);
 }

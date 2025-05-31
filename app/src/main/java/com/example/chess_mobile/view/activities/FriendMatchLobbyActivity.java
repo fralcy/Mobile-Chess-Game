@@ -73,7 +73,7 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
     @Override
     public void OnError() {
         new AlertDialog.Builder(FriendMatchLobbyActivity.this).setTitle("Connection Error").
-                setMessage("Check your wifi connection!").setCancelable(false).setPositiveButton(
+                setMessage("Check your wifi connection! ").setCancelable(false).setPositiveButton(
                         "Back", (dialog, i) -> {
                             Intent intent = new Intent( FriendMatchLobbyActivity.this,GameModeSelectionActivity.class);
                             startActivity(intent);
@@ -91,7 +91,7 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
     }
     public void loadPlayer() {
         this.currentMatch = (MatchResponse) getIntent().getSerializableExtra("Match_Info");
-
+        assert currentMatch == null;
         this.isBlack =this.currentMatch.getPlayerBlackId()!=null;
         if(this.isBlack) {
             blackName.setText("You");
@@ -104,9 +104,6 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
         this.matchIdText.setText("Match Id: "+this.currentMatch.getMatchId());
 
 
-
-    }
-    public void setupStartButton() {
 
     }
     public void setUpBackButton() {

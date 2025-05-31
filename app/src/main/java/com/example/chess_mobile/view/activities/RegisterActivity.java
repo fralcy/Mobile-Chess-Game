@@ -1,9 +1,11 @@
 package com.example.chess_mobile.view.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -26,7 +28,7 @@ public class RegisterActivity extends AppCompatActivity implements IRegisterView
     EditText txtEmail;
     EditText txtPassword;
     EditText txtName;
-
+    TextView loginLink;
     @Override
     protected void onStart() {
         super.onStart();
@@ -72,7 +74,20 @@ public class RegisterActivity extends AppCompatActivity implements IRegisterView
             String password = txtPassword.getText().toString();
             String name = txtName.getText().toString();
 
+            if (name.isEmpty()) {
+                Toast.makeText(this,  "Please enter field name. Try again!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this,  "Email or password is incorrect. Try again!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             register(email, password, name);
+        });
+
+        loginLink.setOnClickListener(l -> {
+            startActivity(new Intent(this,  LoginActivity.class));
+            finish();
         });
     }
 
@@ -81,6 +96,6 @@ public class RegisterActivity extends AppCompatActivity implements IRegisterView
         txtEmail = findViewById(R.id.registerTextEmail);
         txtPassword = findViewById(R.id.registerTextPassword);
         txtName = findViewById(R.id.registerTextName);
-
+        loginLink = findViewById(R.id.loginLink);
     }
 }

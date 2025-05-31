@@ -44,6 +44,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
     private Player main;
     private Duration duration;
     private Player opponent;
+    private String matchId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,9 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                 .orElse(EMatch.RANKED);
  //               .orElse(EMatch.LOCAL);
 //        PieceImagesInstance.setTheme(EPieceImageTheme.COMIC);
-
+        this.matchId = Optional
+                .ofNullable(getIntent().getStringExtra(MATCH_ID))
+                .orElse("");
         if (savedInstanceState == null) {
             bindFragments(this.matchType, this.main, this.opponent, this.duration);
         }
@@ -88,24 +91,20 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
             (EMatch matchType, ChessBoardFragment chessBoardFragment) {
         DrawResignActionFragment actionFragment = switch (matchType) {
             case RANKED, AI, PRIVATE, LOCAL -> DrawResignActionFragment.newInstance();
-            default -> null;
         };
 
-        if (actionFragment != null) {
-            actionFragment.setActionListener(new DrawResignActionListener() {
-                @Override
-                public void onDrawOffered() {
-                    chessBoardFragment.showDrawOfferDialog();
-                }
-                @Override
-                public void onResigned() {
-                    chessBoardFragment.showResignationDialog();
-                }
-            });
-            return Optional.of(actionFragment);
-        } else {
-            return Optional.empty();
-        }
+        actionFragment.setActionListener(new DrawResignActionListener() {
+            @Override
+            public void onDrawOffered() {
+                chessBoardFragment.showDrawOfferDialog();
+            }
+
+            @Override
+            public void onResigned() {
+                chessBoardFragment.showResignationDialog();
+            }
+        });
+        return Optional.of(actionFragment);
     }
 
     private CongratsCardFragment initCongratsCardFragment(EMatch matchType, Result result,
@@ -135,7 +134,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                 .get(ChessBoardViewModel.getChessViewModel(matchType));
 
         Board board = new Board();
-        chessBoardViewModel.newGame(EPlayer.WHITE, board.initial(), mainPlayer,
+        chessBoardViewModel.newGame(this.matchId, EPlayer.WHITE, board.initial(), mainPlayer,
                 opponentPlayer, duration);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
