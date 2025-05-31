@@ -3,6 +3,7 @@ package com.example.chess_mobile.view.activities;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,6 +15,7 @@ import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.Objects;
 
@@ -26,7 +28,9 @@ public class FindMatchActivity extends AppCompatActivity implements OnErrorWebSo
 
         SocketManager.getInstance().connect(() -> {
             // Sau khi connect thành công, mới subscribe
-            SocketManager.getInstance().subscribeTopic("/user/queue/match",SocketManager.EMPTY_CONSUMER);
+            SocketManager.getInstance().subscribeTopic("user/queue/match",tMessage->{
+                Log.d("RANK",tMessage.getPayload());
+            });
         },this);
 
         int playTime = getIntent().getIntExtra("Rank_Play_Time",0);
@@ -38,8 +42,9 @@ public class FindMatchActivity extends AppCompatActivity implements OnErrorWebSo
         }
         if (getUID().isEmpty()) return;
         CreateMatchRequest request = new CreateMatchRequest(EMatch.RANKED, null, getUID(),playTime );
-        String json = new Gson().toJson(request);
-        SocketManager.getInstance().sendMessage(json,SocketManager.beEndPoint+"/app/chess/create");
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        String json = gson.toJson(request);
+        SocketManager.getInstance().sendMessage(json,"/app/chess/create");
 
     }
     public void FindMatch() {
