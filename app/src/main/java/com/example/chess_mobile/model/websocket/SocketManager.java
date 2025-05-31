@@ -2,8 +2,6 @@ package com.example.chess_mobile.model.websocket;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -93,9 +91,7 @@ public  class SocketManager {
         Disposable disposableTopic = stompClient.topic(topic)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(onMessage, throwable -> {
-                    Log.e("STOMP", "❌ Error in topic subscription", throwable);
-                });
+                .subscribe(onMessage, throwable -> Log.e("STOMP", "❌ Error in topic subscription", throwable));
         topicDisposables.put(topic, disposableTopic);
         compositeDisposable.add(disposableTopic);
     }

@@ -38,6 +38,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
     public static final String OPPONENT_PLAYER = "opponent";
     public static final String DURATION = "duration";
     public static final String TYPE = "type";
+    public static final String MATCH_ID = "matchID";
 
     private EMatch matchType;
     private Player main;
