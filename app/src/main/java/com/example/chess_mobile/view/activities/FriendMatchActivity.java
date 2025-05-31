@@ -147,9 +147,10 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
                 Log.d("RESPONSE FROM SERVER", topicMessage.getPayload());
                 MatchResponse matchResponse = new Gson().fromJson(topicMessage.getPayload(),MatchResponse.class);
 
-
+                SocketManager.getInstance().unsubscribeTopic("/topic/match/"+matchId);
                 Intent intent  = new Intent(FriendMatchActivity.this, FriendGuestActivity.class);
                 intent.putExtra("Match_Info", matchResponse);
+
                 startActivity(intent);
 
             });

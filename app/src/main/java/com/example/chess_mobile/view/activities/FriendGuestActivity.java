@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -15,11 +16,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.chess_mobile.R;
+import com.example.chess_mobile.dto.request.CancelMatchRequest;
 import com.example.chess_mobile.dto.response.MatchResponse;
 import com.example.chess_mobile.model.websocket.SocketManager;
+import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
 
-public class FriendGuestActivity extends Activity {
+public class FriendGuestActivity extends Activity implements OnErrorWebSocket {
     private TextView matchId;
     private TextView whiteName;
     private TextView blackName;
@@ -33,7 +37,22 @@ public class FriendGuestActivity extends Activity {
         bindView();
         LoadCurrentMatch();
         setUpLeaveButton();
+        reSubscribe();
 
+    }
+    public void reSubscribe() {
+        SocketManager.getInstance().subscribeTopic("/topic/match/"+currentMatchResponse.getMatchId(),tMes->{
+            Log.d("DESTROY",tMes.getPayload());
+            if(tMes.getPayload().equals("destroyed")) {
+                new AlertDialog.Builder(FriendGuestActivity.this).setTitle("Host leaved").
+                        setMessage("Host destroyed room, go back").setCancelable(false).setPositiveButton(
+                                "Back", (dialog, i) -> {
+                                    Intent intent = new Intent( FriendGuestActivity.this,GameModeSelectionActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }).show();
+            }
+        });
     }
     public void bindView() {
         this.matchId = findViewById(R.id.fg_match_id);
@@ -43,6 +62,9 @@ public class FriendGuestActivity extends Activity {
     }
     public void setUpLeaveButton() {
         this.leaveButton.setOnClickListener(v->{
+            CancelMatchRequest cancelMatchRequest = new CancelMatchRequest(currentMatchResponse.getMatchId(), FirebaseAuth.getInstance().getCurrentUser().getUid());
+            String jsonMessage = new Gson().toJson(cancelMatchRequest);
+            SocketManager.getInstance().sendMessage(jsonMessage,"/app/chess/cancelMatch");
             finish();
         });
     }
@@ -73,5 +95,15 @@ public class FriendGuestActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
         SocketManager.getInstance().unsubscribeTopic("/topic/match/"+currentMatchResponse.getMatchId());
+    }
+    @Override
+    public void OnError() {
+        new AlertDialog.Builder(FriendGuestActivity.this).setTitle("Connection Error").
+                setMessage("Check your wifi connection!").setCancelable(false).setPositiveButton(
+                        "Back", (dialog, i) -> {
+                            Intent intent = new Intent( FriendGuestActivity.this,GameModeSelectionActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }).show();
     }
 }
