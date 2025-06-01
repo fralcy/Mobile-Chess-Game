@@ -106,6 +106,7 @@ public  class SocketManager {
                 .subscribe(() -> Log.d("STOMP", "📤 Message sent"),
                         throwable -> Log.e("STOMP", "❌ Send error", throwable)
                 );
+        Log.d("STOMP_DISPOSABLE", sendfDisposable.toString());
         compositeDisposable.add(sendfDisposable);
     }
 
