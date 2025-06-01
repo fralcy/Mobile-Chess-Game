@@ -1,7 +1,10 @@
-package com.example.chess_mobile.model.websocket;
+package com.example.chess_mobile.model.websocket.implementations;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+
+import com.example.chess_mobile.model.websocket.interfaces.IChessWebSocketClient;
+import com.example.chess_mobile.model.websocket.interfaces.IWebSocketMessageListenerAdapter;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,7 +15,8 @@ import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
-public class ChessWebSocketOkhttp3Client extends WebSocketListener implements IChessWebSocketClient {
+public class ChessWebSocketOkhttp3Client extends WebSocketListener implements
+        IChessWebSocketClient {
     public static final String BASE_WSS = "wss://s14675.blr1.piesocket.com/v3/1?api_key=LdVY7DsOIGZ7JRqqzPTqbJTO7WjqNZznt589crEg&notify_self=1";
 
     private IWebSocketMessageListenerAdapter _listener;

@@ -1,4 +1,4 @@
-package com.example.chess_mobile.model.websocket;
+package com.example.chess_mobile.model.websocket.interfaces;
 
 import com.example.chess_mobile.dto.response.PlayerResponse;
 

@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.response.MatchResponse;
-import com.example.chess_mobile.model.websocket.SocketManager;
+import com.example.chess_mobile.model.websocket.implementations.SocketManager;
 import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 import com.google.gson.Gson;
 
@@ -34,13 +34,13 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
         bindView();
         loadPlayer();
         setUpBackButton();
-        SocketManager.getInstance().subscribeTopic("/topic/match/"+currentMatch.getMatchId(),tMes->{
+        String matchTopic = String.format(SocketManager.MATCH_TOPIC_TEMPLATE, currentMatch.getMatchId());
+        String errorTopic = String.format(SocketManager.MATCH_ERROR_TOPIC_TEMPLATE, currentMatch.getMatchId());
+        SocketManager.getInstance().subscribeTopic(matchTopic,tMes->{
             Log.d("JOIN", tMes.getPayload());
             displayBaseOntMes(tMes.getPayload());
         });
-        SocketManager.getInstance().subscribeTopic("/topic/match/"+currentMatch.getMatchId()+"/error",tMes->{
-            Log.d("ERROR", tMes.getPayload());
-        });
+        SocketManager.getInstance().subscribeTopic(errorTopic,tMes->Log.d("ERROR", tMes.getPayload()));
 
     }
     public void displayBaseOntMes(String tMes) {
@@ -49,24 +49,24 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
         if(matchResponse.getPlayerBlackId()!=null&&matchResponse.getPlayerWhiteId()!=null) {
             FriendMatchLobbyActivity.this.startButton.setVisibility(View.VISIBLE);
             FriendMatchLobbyActivity.this.progressBar.setVisibility(View.GONE);
-            titleLobby.setText("Opponent joined your room");
+            titleLobby.setText(R.string.opponent_joined_your_room);
             if(this.isBlack) {
-                whiteName.setText("Guest");
+                whiteName.setText(R.string.guest);
             }
             else {
-                blackName.setText("Guest");
+                blackName.setText(R.string.guest);
             }
         }
 
         else {
             FriendMatchLobbyActivity.this.startButton.setVisibility(View.GONE);
             FriendMatchLobbyActivity.this.progressBar.setVisibility(View.VISIBLE);
-            titleLobby.setText("Waiting for Opponent");
+            titleLobby.setText(R.string.waiting_for_opponent);
             if(this.isBlack) {
-                whiteName.setText("Waiting....");
+                whiteName.setText(R.string.waiting);
             }
             else {
-                blackName.setText("Waiting....");
+                blackName.setText(R.string.waiting);
             }
         }
     }
@@ -94,14 +94,15 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
         //assert currentMatch == null;
         this.isBlack =this.currentMatch.getPlayerBlackId()!=null;
         if(this.isBlack) {
-            blackName.setText("You");
-            whiteName.setText("Waiting ...");
+            blackName.setText(R.string.you);
+            whiteName.setText(R.string.waiting);
         }
         else {
-            blackName.setText("Waiting ...");
-            whiteName.setText("You");
+            blackName.setText(R.string.waiting);
+            whiteName.setText(R.string.you);
         }
-        this.matchIdText.setText("Match Id: "+this.currentMatch.getMatchId());
+        String matchIdText = "Match Id: "+ this.currentMatch.getMatchId();
+        this.matchIdText.setText(matchIdText);
 
 
 
