@@ -1,4 +1,4 @@
-package com.example.chess_mobile.model.websocket.interfaces;
+package com.example.chess_mobile.services.websocket.interfaces;
 
 public interface IChessWebSocketClient {
     void connect(String channelEndpoint, IWebSocketMessageListenerAdapter listener);

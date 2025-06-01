@@ -15,7 +15,7 @@ import com.example.chess_mobile.dto.request.CreateMatchRequest;
 import com.example.chess_mobile.dto.request.JoinMatchRequest;
 import com.example.chess_mobile.dto.response.MatchResponse;
 import com.example.chess_mobile.model.match.EMatch;
-import com.example.chess_mobile.model.websocket.implementations.SocketManager;
+import com.example.chess_mobile.services.websocket.implementations.SocketManager;
 import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 import com.example.chess_mobile.view_model.interfaces.IFriendMatchViewModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -68,7 +68,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
         timeButton10.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button_bg));
 
         SocketManager.getInstance().connect(() -> {
-            String topic = String.format(SocketManager.USER_QUEUE_MATCH_TOPIC_TEMPLATE);
+            String topic = String.format(SocketManager.USER_QUEUE_MATCH_APP_TEMPLATE);
             SocketManager.getInstance().subscribeTopic(topic,
                     topicMessage-> {
                 String payload = topicMessage.getPayload();
@@ -89,10 +89,6 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
         SocketManager.getInstance().disconnect();
     }
     public void bindView() {
-//        EditText customMin = findViewById(R.id.friendMatchEditTextMinutes);
-//        EditText customSec = findViewById(R.id.friendMatchEditTextSeconds);
-//        TextView roomIdText = findViewById(R.id.friendMatchTextRoomCreated);
-//        TextView waitingText = findViewById(R.id.friendMatchTextWaiting);
         this.whiteButton = findViewById(R.id.friendMatchButtonWhite);
         this.blackButton = findViewById(R.id.friendMatchButtonBlack);
         this.timeButton10 = findViewById(R.id.friendMatchButton10Min);
@@ -142,7 +138,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
             CreateMatchRequest createFriendMatchRequest = new CreateMatchRequest(EMatch.PRIVATE,
                     this.isWhite,getUID(),this.playTime);
             String json = new Gson().toJson(createFriendMatchRequest);
-            SocketManager.getInstance().sendMessage(json, SocketManager.CHESS_CREATE_TOPIC_TEMPLATE);
+            SocketManager.getInstance().sendMessage(json, SocketManager.CHESS_CREATE_APP_TEMPLATE);
 
         });
         this.joinButton.setOnClickListener(v->{
@@ -154,7 +150,6 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
             }
 
             this.getIntent().putExtra("match_id",matchId);
-            Log.d("Chuoi url",String.format(SocketManager.MATCH_TOPIC_TEMPLATE, matchId) );
             String matchTopic = String.format(SocketManager.MATCH_TOPIC_TEMPLATE, matchId);
             String errorTopic  = String.format(SocketManager.MATCH_ERROR_TOPIC_TEMPLATE, matchId);
 
@@ -198,7 +193,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
 
             JoinMatchRequest joinMatchRequest = new JoinMatchRequest(getUID());
 
-            String chessJoinTopic = String.format(SocketManager.CHESS_JOIN_TOPIC_TEMPLATE, matchId);
+            String chessJoinTopic = String.format(SocketManager.CHESS_JOIN_APP_TEMPLATE, matchId);
             SocketManager.getInstance().sendMessage(new Gson().toJson(joinMatchRequest),chessJoinTopic);
 //            SocketManager.getInstance().sendMessage(json,"/app/chess/join/"+matchId);
         });

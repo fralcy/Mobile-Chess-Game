@@ -1,4 +1,4 @@
-package com.example.chess_mobile.model.http;
+package com.example.chess_mobile.services.http;
 import okhttp3.*;
 import java.io.IOException;
 import java.util.Map;

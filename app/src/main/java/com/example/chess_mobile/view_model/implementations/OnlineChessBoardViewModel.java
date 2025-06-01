@@ -10,8 +10,9 @@ import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.moves.Move;
 import com.example.chess_mobile.model.player.Player;
-import com.example.chess_mobile.model.websocket.implementations.ChessWebSocketStompClient;
-import com.example.chess_mobile.model.websocket.interfaces.IChessWebSocketClient;
+import com.example.chess_mobile.services.websocket.implementations.ChessWebSocketStompClient;
+import com.example.chess_mobile.services.websocket.implementations.SocketManager;
+import com.example.chess_mobile.services.websocket.interfaces.IChessWebSocketClient;
 import com.example.chess_mobile.view_model.enums.ESocketMessageType;
 import com.example.chess_mobile.view_model.interfaces.IOnlineChess;
 import com.google.gson.Gson;
@@ -57,7 +58,8 @@ public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IO
 
     @Override
     public void onGameConnection(String gameID) {
-        socketClient.connect("/chess/move/" + this._matchId, this::handleIncomingMessage);
+        String chesMoveTopic = String.format(SocketManager.CHESS_MOVE_TOPIC_TEMPLATE, this._matchId);
+        socketClient.connect(chesMoveTopic, this::handleIncomingMessage);
     }
 
     @Override

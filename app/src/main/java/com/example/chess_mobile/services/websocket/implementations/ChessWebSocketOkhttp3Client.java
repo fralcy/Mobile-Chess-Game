@@ -1,10 +1,10 @@
-package com.example.chess_mobile.model.websocket.implementations;
+package com.example.chess_mobile.services.websocket.implementations;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 
-import com.example.chess_mobile.model.websocket.interfaces.IChessWebSocketClient;
-import com.example.chess_mobile.model.websocket.interfaces.IWebSocketMessageListenerAdapter;
+import com.example.chess_mobile.services.websocket.interfaces.IChessWebSocketClient;
+import com.example.chess_mobile.services.websocket.interfaces.IWebSocketMessageListenerAdapter;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -9,14 +9,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.response.MatchResponse;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.player.Player;
-import com.example.chess_mobile.model.websocket.implementations.SocketManager;
+import com.example.chess_mobile.services.websocket.implementations.SocketManager;
 import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
+import com.google.android.gms.common.util.Strings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
@@ -49,6 +51,34 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
         });
         SocketManager.getInstance().subscribeTopic(errorTopic,tMes->Log.d("ERROR", tMes.getPayload()));
 
+        String chessStartTopic =
+                SocketManager.CHESS_START_TOPIC_TEMPLATE + '/' + this.currentMatch.getMatchId();
+        Log.d("CHESS_START_TOPIC_LOBBY",chessStartTopic);
+        SocketManager.getInstance().subscribeTopic(chessStartTopic, stompMessage -> {
+            MatchResponse matchResponse = new Gson().fromJson(stompMessage.getPayload(),MatchResponse.class);
+            Log.d("START_GAME",stompMessage.getPayload());
+            if (!Boolean.parseBoolean(
+                    Strings.emptyToNull(matchResponse.getErrorMessage()))) {
+                String matchId = matchResponse.getMatchId();
+                Duration duration = Duration.ofMinutes(matchResponse.getPlayTime());
+                EMatch type = EMatch.PRIVATE;
+
+                String currentPlayerId = getUID();
+                if (currentPlayerId.isEmpty()) return;
+                boolean isMainPlayerWhite =
+                        matchResponse.getPlayerWhiteId().equals(currentPlayerId);
+                Player whitePlayer = new Player(matchResponse.getPlayerWhiteId(), "White",
+                        EPlayer.WHITE);
+                Player blackPlayer = new Player(matchResponse.getPlayerBlackId(), "Black",
+                        EPlayer.BLACK);
+                Player mainPlayer = isMainPlayerWhite ? whitePlayer : blackPlayer;
+                Player opponent = isMainPlayerWhite ? blackPlayer : whitePlayer;
+                startChessRoomActivity(mainPlayer, opponent, duration, matchId, type);
+            } else {
+                startGameModeSelectionActivity();
+                Toast.makeText(this, "Room cancelled", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     public void displayBaseOntMes(String tMes) {
         Gson gson = new Gson();
@@ -121,21 +151,9 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
         });
 
         this.startButton.setOnClickListener(v -> {
-            String matchId = this.currentMatch.getMatchId();
-            Duration duration = Duration.ofMinutes(this.currentMatch.getPlayTime());
-            EMatch type = EMatch.PRIVATE;
-
-            String currentPlayerId = getUID();
-            if (currentPlayerId.isEmpty()) return;
-            boolean isMainPlayerWhite =
-                    this.currentMatch.getPlayerWhiteId().equals(currentPlayerId);
-            Player whitePlayer = new Player(this.currentMatch.getPlayerWhiteId(), "White",
-                    EPlayer.WHITE);
-            Player blackPlayer = new Player(this.currentMatch.getPlayerBlackId(), "Black",
-                    EPlayer.BLACK);
-            Player mainPlayer = isMainPlayerWhite ? whitePlayer : blackPlayer;
-            Player opponent = isMainPlayerWhite ? blackPlayer : whitePlayer;
-            startChessRoomActivity(mainPlayer, opponent, duration, matchId, type);
+            SocketManager.getInstance()
+                    .sendMessage(this.currentMatch.getMatchId(),
+                            SocketManager.CHESS_START_APP_TEMPLATE);
         });
     }
 
@@ -163,8 +181,9 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
     @Override
     public void onDestroy() {
         super.onDestroy();
-        SocketManager.getInstance().unsubscribeTopic("/topic/match/"+currentMatch.getMatchId());
-
+        String chessStartTopic =
+                SocketManager.CHESS_START_TOPIC_TEMPLATE + '/' + this.currentMatch.getMatchId();
+        SocketManager.getInstance().unsubscribeTopic(chessStartTopic);
     }
 
     private boolean isCurrentUserNonExist() {
@@ -173,7 +192,7 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
     private String getUID() {
         if (isCurrentUserNonExist()) {
             String destroyMatchTopic =
-                    String.format(SocketManager.CHESS_DESTROY_MATCH_TOPIC_TEMPLATE,
+                    String.format(SocketManager.CHESS_DESTROY_MATCH_APP_TEMPLATE,
                             this.currentMatch.getMatchId());
             SocketManager.getInstance().sendMessage(null, destroyMatchTopic);
             startActivity(new Intent(this, LoginActivity.class));
