@@ -32,7 +32,7 @@ public class FindMatchActivity extends AppCompatActivity implements OnErrorWebSo
 
         SocketManager.getInstance().connect(() -> {
             // Sau khi connect thành công, mới subscribe
-            SocketManager.getInstance().subscribeTopic("/user/queue/match",tMes->{
+            SocketManager.getInstance().subscribeTopic("/topic/rank-match/"+FirebaseAuth.getInstance().getCurrentUser().getUid(),tMes->{
                 Log.d("RANK",tMes.getPayload());
             });
             int playTime = getIntent().getIntExtra("Rank_Play_Time",0);
@@ -40,7 +40,10 @@ public class FindMatchActivity extends AppCompatActivity implements OnErrorWebSo
             if (getUID().isEmpty()) return;
             CreateMatchRequest request = new CreateMatchRequest(EMatch.RANKED, null, getUID(),playTime );
             String json = new Gson().toJson(request);
-            SocketManager.getInstance().sendMessage(json,SocketManager.beEndPoint+"/app/chess/create");
+            SocketManager.getInstance().sendMessage(json,"/app/chess/create");
+            SocketManager.getInstance().subscribeTopic("/user/queue/match/error",tMes->{
+                Log.d("RANK_ERROR",tMes.getPayload());
+            });
         },this);
 
     }
