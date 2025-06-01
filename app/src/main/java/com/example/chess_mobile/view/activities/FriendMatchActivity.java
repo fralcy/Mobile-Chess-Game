@@ -65,8 +65,9 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
                 Log.d("FriendMatchActivity_SUCCESS_CONNECTION", topicMessage.getPayload());
                 Gson gson = new Gson();
                 currentMatch = gson.fromJson(payload, MatchResponse.class);
-                Intent intent = new Intent(this, FriendMatchLobbyActivity.class);
+                Intent intent = new Intent(FriendMatchActivity.this, FriendMatchLobbyActivity.class);
                 intent.putExtra("Match_Info",currentMatch);
+                FriendMatchActivity.this.getIntent().putExtra("Match_Info",currentMatch);
                 startActivity(intent);
                 finish();
             });
