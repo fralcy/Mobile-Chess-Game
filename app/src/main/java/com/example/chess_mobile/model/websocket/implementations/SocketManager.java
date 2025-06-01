@@ -93,6 +93,7 @@ public static final String beEndPoint = "ws://165.22.241.224:8080/ws";
     }
 
     public void subscribeTopic(String topic, Consumer<StompMessage> onMessage){
+        Log.d("SUBSCRIBE","SUBSCRIBE!!!!!!!!!");
         Disposable disposableTopic = stompClient.topic(topic)
                 .compose(applyFlowableSchedulers())
                 .subscribe(onMessage, throwable -> Log.e("STOMP", "❌ Error in topic subscription", throwable));

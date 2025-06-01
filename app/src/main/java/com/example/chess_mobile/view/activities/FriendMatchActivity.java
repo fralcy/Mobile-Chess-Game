@@ -79,7 +79,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
                 intent.putExtra("Match_Info",currentMatch);
                 FriendMatchActivity.this.getIntent().putExtra("Match_Info",currentMatch);
                 startActivity(intent);
-                finish();
+
             });
         },this);
     }
@@ -172,7 +172,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
                 intent.putExtra("Match_Info", matchResponse);
 
                 startActivity(intent);
-                finish();
+                //finish();
             });
             SocketManager.getInstance().subscribeTopic(errorTopic,topicMessage->{
                 Log.d("ERROR FROM SERVER", topicMessage.getPayload());

@@ -36,6 +36,7 @@ public class FriendGuestActivity extends Activity implements OnErrorWebSocket {
 
     }
     public void reSubscribe() {
+        Log.d("R3ESUBSRIBE","rE SUBSCRIBE");
         String matchTopic = String.format(SocketManager.MATCH_TOPIC_TEMPLATE, currentMatchResponse.getMatchId());
         SocketManager.getInstance().subscribeTopic(matchTopic,tMes->{
             Log.d("DESTROY",tMes.getPayload());
