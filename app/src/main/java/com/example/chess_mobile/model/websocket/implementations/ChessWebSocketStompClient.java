@@ -1,8 +1,11 @@
-package com.example.chess_mobile.model.websocket;
+package com.example.chess_mobile.model.websocket.implementations;
 
 import android.util.Log;
 
-public class ChessWebSocketStompClient implements IChessWebSocketClient{
+import com.example.chess_mobile.model.websocket.interfaces.IChessWebSocketClient;
+import com.example.chess_mobile.model.websocket.interfaces.IWebSocketMessageListenerAdapter;
+
+public class ChessWebSocketStompClient implements IChessWebSocketClient {
     private String _channelEndpoint;
     @Override
     public void connect(String channelEndpoint, IWebSocketMessageListenerAdapter listener) {

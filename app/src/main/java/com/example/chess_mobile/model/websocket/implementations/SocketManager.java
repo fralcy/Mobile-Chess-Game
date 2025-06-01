@@ -1,4 +1,4 @@
-package com.example.chess_mobile.model.websocket;
+package com.example.chess_mobile.model.websocket.implementations;
 
 import android.util.Log;
 
@@ -25,6 +25,11 @@ import ua.naiksoftware.stomp.dto.StompHeader;
 import ua.naiksoftware.stomp.dto.StompMessage;
 
 public  class SocketManager {
+    public static final String MATCH_TOPIC_TEMPLATE = "/topic/match/%s";
+    public static final String MATCH_ERROR_TOPIC_TEMPLATE = "/topic/match/%s/error";
+    public static final String CHESS_JOIN_TOPIC_TEMPLATE = "/app/chess/join/%s";
+    public static final String CHESS_CREATE_TOPIC_TEMPLATE = "/app/chess/create";
+    public static final String USER_QUEUE_MATCH_TOPIC_TEMPLATE = "/user/queue/match";
     protected StompClient stompClient;
     private final Map<String, Disposable> topicDisposables = new HashMap<>();
     protected CompositeDisposable compositeDisposable;
@@ -39,8 +44,8 @@ public  class SocketManager {
         }
         return instance;
     }
-    public static final String beEndPoint = "ws://165.22.241.224:8080/ws";
-//    public static final String beEndPoint = "ws://192.168.1.33:8080/ws";
+//    public static final String beEndPoint = "ws://165.22.241.224:8080/ws";
+    public static final String beEndPoint = "ws://192.168.0.100:8080/ws";
 
     public void connect(Runnable onConnected, OnErrorWebSocket onError) {
         // Clean up previous connection if call multiple time

@@ -2,7 +2,6 @@ package com.example.chess_mobile.view.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,10 +11,12 @@ import android.widget.TextView;
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.request.CancelMatchRequest;
 import com.example.chess_mobile.dto.response.MatchResponse;
-import com.example.chess_mobile.model.websocket.SocketManager;
+import com.example.chess_mobile.model.websocket.implementations.SocketManager;
 import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
+
+import java.util.Objects;
 
 public class FriendGuestActivity extends Activity implements OnErrorWebSocket {
     private TextView matchId;
@@ -35,7 +36,8 @@ public class FriendGuestActivity extends Activity implements OnErrorWebSocket {
 
     }
     public void reSubscribe() {
-        SocketManager.getInstance().subscribeTopic("/topic/match/"+currentMatchResponse.getMatchId(),tMes->{
+        String matchTopic = String.format(SocketManager.MATCH_TOPIC_TEMPLATE, currentMatchResponse.getMatchId());
+        SocketManager.getInstance().subscribeTopic(matchTopic,tMes->{
             Log.d("DESTROY",tMes.getPayload());
             if(tMes.getPayload().equals("destroyed")) {
                 new AlertDialog.Builder(FriendGuestActivity.this).setTitle("Host leaved").
@@ -56,7 +58,9 @@ public class FriendGuestActivity extends Activity implements OnErrorWebSocket {
     }
     public void setUpLeaveButton() {
         this.leaveButton.setOnClickListener(v->{
-            CancelMatchRequest cancelMatchRequest = new CancelMatchRequest(currentMatchResponse.getMatchId(), FirebaseAuth.getInstance().getCurrentUser().getUid());
+            String userId = getUID();
+            if (userId.isEmpty()) return;
+            CancelMatchRequest cancelMatchRequest = new CancelMatchRequest(currentMatchResponse.getMatchId(), userId);
             String jsonMessage = new Gson().toJson(cancelMatchRequest);
             SocketManager.getInstance().sendMessage(jsonMessage,"/app/chess/cancelMatch");
             finish();
@@ -64,28 +68,35 @@ public class FriendGuestActivity extends Activity implements OnErrorWebSocket {
     }
     public void LoadCurrentMatch() {
         this.currentMatchResponse = (MatchResponse) this.getIntent().getSerializableExtra("Match_Info");
-        if(this.currentMatchResponse==null) {
+        if (this.currentMatchResponse==null) {
             new AlertDialog.Builder(FriendGuestActivity.this).setTitle("Some thing went wrong").
-                    setMessage("Back to the previous screen").setCancelable(false).setPositiveButton("Back", (dialogInterface, i) -> {
-                        Intent intent = new Intent( FriendGuestActivity.this,GameModeSelectionActivity.class);
-                        startActivity(intent);
+                    setMessage("Back to the previous screen")
+                    .setCancelable(false)
+                    .setPositiveButton("Back", (dialogInterface, i) -> {
+                        startActivity(new Intent( this,GameModeSelectionActivity.class));
                         finish();
                     }).show();
+            return;
         }
-        if(currentMatchResponse.getPlayerBlackId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-            whiteName.setText("Host");
-            blackName.setText("You");
+        String userId = getUID();
+        if (userId.isEmpty()) return;
+        String blackID = currentMatchResponse.getPlayerBlackId();
+        if(blackID.equals(userId)) {
+            whiteName.setText(R.string.host);
+            blackName.setText(R.string.you);
         }
         else {
-            blackName.setText("Host");
-            whiteName.setText("You");
+            blackName.setText(R.string.host);
+            whiteName.setText(R.string.you);
         }
-        matchId.setText("Match Id: "+this.currentMatchResponse.getMatchId());
+        String matchTxt = "Match Id: "+ this.currentMatchResponse.getMatchId();
+        matchId.setText(matchTxt);
     }
     @Override
     public void onDestroy() {
         super.onDestroy();
-        SocketManager.getInstance().unsubscribeTopic("/topic/match/"+currentMatchResponse.getMatchId());
+        String matchTopic = String.format(SocketManager.MATCH_TOPIC_TEMPLATE, currentMatchResponse.getMatchId());
+        SocketManager.getInstance().unsubscribeTopic(matchTopic);
     }
     @Override
     public void OnError() {
@@ -96,5 +107,18 @@ public class FriendGuestActivity extends Activity implements OnErrorWebSocket {
                             startActivity(intent);
                             finish();
                         }).show();
+    }
+
+
+    private boolean isCurrentUserNonExist() {
+        return FirebaseAuth.getInstance().getCurrentUser() == null;
+    }
+    private String getUID() {
+        if (isCurrentUserNonExist()) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return  "";
+        }
+        return Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
     }
 }

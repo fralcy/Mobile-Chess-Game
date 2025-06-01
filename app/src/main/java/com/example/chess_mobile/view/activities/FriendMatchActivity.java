@@ -15,7 +15,7 @@ import com.example.chess_mobile.dto.request.CreateMatchRequest;
 import com.example.chess_mobile.dto.request.JoinMatchRequest;
 import com.example.chess_mobile.dto.response.MatchResponse;
 import com.example.chess_mobile.model.match.EMatch;
-import com.example.chess_mobile.model.websocket.SocketManager;
+import com.example.chess_mobile.model.websocket.implementations.SocketManager;
 import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 import com.example.chess_mobile.view_model.interfaces.IFriendMatchViewModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,12 +55,22 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_friend_match);
+
+        if (isCurrentUserNonExist()) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+        }
+
         bindView();
         setUpOnClickListener();
 
+        whiteButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button_bg));
+        timeButton10.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button_bg));
+
         SocketManager.getInstance().connect(() -> {
-            // Sau khi connect thành công, mới subscribe
-            SocketManager.getInstance().subscribeTopic("/user/queue/match",topicMessage-> {
+            String topic = String.format(SocketManager.USER_QUEUE_MATCH_TOPIC_TEMPLATE);
+            SocketManager.getInstance().subscribeTopic(topic,
+                    topicMessage-> {
                 String payload = topicMessage.getPayload();
                 Log.d("FriendMatchActivity_SUCCESS_CONNECTION", topicMessage.getPayload());
                 Gson gson = new Gson();
@@ -71,12 +81,6 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
                 finish();
             });
         },this);
-
-        if (isCurrentUserNonExist()) {
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
-        }
-
     }
     @Override
     public void onBackPressed() {
@@ -134,27 +138,42 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
             this.timeButton20.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button_bg));
         });
         this.createButton.setOnClickListener(v->{
-            CreateMatchRequest createFriendMatchRequest = new CreateMatchRequest( EMatch.PRIVATE,
+            CreateMatchRequest createFriendMatchRequest = new CreateMatchRequest(EMatch.PRIVATE,
                     this.isWhite,getUID(),this.playTime);
             String json = new Gson().toJson(createFriendMatchRequest);
-            SocketManager.getInstance().sendMessage(json, "/app/chess/create");
+            SocketManager.getInstance().sendMessage(json, SocketManager.CHESS_CREATE_TOPIC_TEMPLATE);
 
         });
         this.joinButton.setOnClickListener(v->{
             String matchId = String.valueOf(roomIdInput.getText());
+
+            if (matchId.isEmpty()) {
+                roomIdInput.setError("Room ID cannot be empty");
+                return;
+            }
+
             this.getIntent().putExtra("match_id",matchId);
-            SocketManager.getInstance().subscribeTopic("/topic/match/"+matchId,topicMessage->{
+
+            String matchTopic = String.format(SocketManager.MATCH_TOPIC_TEMPLATE, matchId);
+            String errorTopic  = String.format(SocketManager.MATCH_ERROR_TOPIC_TEMPLATE, matchId);
+
+            SocketManager.getInstance().subscribeTopic(matchTopic,topicMessage->{
                 Log.d("RESPONSE FROM SERVER", topicMessage.getPayload());
                 MatchResponse matchResponse = new Gson().fromJson(topicMessage.getPayload(),MatchResponse.class);
 
-                SocketManager.getInstance().unsubscribeTopic("/topic/match/"+matchId);
+                SocketManager.getInstance().unsubscribeTopic(matchTopic);
+                SocketManager.getInstance().unsubscribeTopic(errorTopic);
+                Log.d("Match_Info", matchResponse.getMatchId());
+                Log.d("Match_Info", matchResponse.getMatchState());
+                Log.d("Match_Info", matchResponse.getPlayerBlackId());
+                Log.d("Match_Info", matchResponse.getPlayerWhiteId());
                 Intent intent  = new Intent(this, FriendGuestActivity.class);
                 intent.putExtra("Match_Info", matchResponse);
 
                 startActivity(intent);
                 finish();
             });
-            SocketManager.getInstance().subscribeTopic("/topic/match/"+matchId+"/error",topicMessage->{
+            SocketManager.getInstance().subscribeTopic(errorTopic,topicMessage->{
                 Log.d("ERROR FROM SERVER", topicMessage.getPayload());
                 String errorMessage;
                 if(topicMessage.getPayload().equals("Cannot join this match")) {
@@ -163,6 +182,10 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
                 else {
                     errorMessage = "The match that you are finding does not exist";
                 }
+
+                SocketManager.getInstance().unsubscribeTopic(matchTopic);
+                SocketManager.getInstance().unsubscribeTopic(errorTopic);
+
                 new AlertDialog.Builder(this).
                         setTitle(topicMessage.getPayload())
                         .setMessage(errorMessage)
@@ -173,8 +196,10 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
             if (getUID().isEmpty()) return;
 
             JoinMatchRequest joinMatchRequest = new JoinMatchRequest(getUID());
-            String json = new Gson().toJson(joinMatchRequest);
-            SocketManager.getInstance().sendMessage(json,"/app/chess/join/"+matchId);
+
+            String chessJoinTopic = String.format(SocketManager.CHESS_JOIN_TOPIC_TEMPLATE, matchId);
+            SocketManager.getInstance().sendMessage(new Gson().toJson(joinMatchRequest),chessJoinTopic);
+//            SocketManager.getInstance().sendMessage(json,"/app/chess/join/"+matchId);
         });
 
     }
