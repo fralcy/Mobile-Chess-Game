@@ -154,7 +154,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
             }
 
             this.getIntent().putExtra("match_id",matchId);
-
+            Log.d("Chuoi url",String.format(SocketManager.MATCH_TOPIC_TEMPLATE, matchId) );
             String matchTopic = String.format(SocketManager.MATCH_TOPIC_TEMPLATE, matchId);
             String errorTopic  = String.format(SocketManager.MATCH_ERROR_TOPIC_TEMPLATE, matchId);
 

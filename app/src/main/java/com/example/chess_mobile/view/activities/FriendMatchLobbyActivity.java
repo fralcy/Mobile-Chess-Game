@@ -91,7 +91,7 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
     }
     public void loadPlayer() {
         this.currentMatch = (MatchResponse) getIntent().getSerializableExtra("Match_Info");
-        //assert currentMatch == null;
+        //assert currentMatch != null;
         this.isBlack =this.currentMatch.getPlayerBlackId()!=null;
         if(this.isBlack) {
             blackName.setText(R.string.you);

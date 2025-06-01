@@ -35,14 +35,13 @@ public class FindMatchActivity extends AppCompatActivity implements OnErrorWebSo
             SocketManager.getInstance().subscribeTopic("/user/queue/match",tMes->{
                 Log.d("RANK",tMes.getPayload());
             });
+            int playTime = getIntent().getIntExtra("Rank_Play_Time",0);
+
+            if (getUID().isEmpty()) return;
+            CreateMatchRequest request = new CreateMatchRequest(EMatch.RANKED, null, getUID(),playTime );
+            String json = new Gson().toJson(request);
+            SocketManager.getInstance().sendMessage(json,SocketManager.beEndPoint+"/app/chess/create");
         },this);
-
-        int playTime = getIntent().getIntExtra("Rank_Play_Time",0);
-
-        if (getUID().isEmpty()) return;
-        CreateMatchRequest request = new CreateMatchRequest(EMatch.RANKED, null, getUID(),playTime );
-        String json = new Gson().toJson(request);
-        SocketManager.getInstance().sendMessage(json,SocketManager.beEndPoint+"/app/chess/create");
 
     }
     public void FindMatch() {
