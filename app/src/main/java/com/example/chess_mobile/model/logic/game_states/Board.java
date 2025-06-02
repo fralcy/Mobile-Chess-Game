@@ -9,12 +9,20 @@ import com.example.chess_mobile.model.logic.pieces.Pawn;
 import com.example.chess_mobile.model.logic.pieces.Piece;
 import com.example.chess_mobile.model.logic.pieces.Queen;
 import com.example.chess_mobile.model.logic.pieces.Rook;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Board implements Serializable {
+    @SerializedName("pieces")
+    @Expose
     private final Piece[][] pieces = new Piece[8][8];
+
+    @SerializedName("pawnSkipPositions")
+    @Expose
     private final Map<EPlayer, Position> pawnSkipPositions = new HashMap<>();
 
     public Board() {
@@ -22,22 +30,19 @@ public class Board implements Serializable {
         pawnSkipPositions.put(EPlayer.BLACK, null);
     }
 
+    public Map<EPlayer, Position> getPawnSkipPositions() { return pawnSkipPositions; }
     public Piece getPiece(int row, int col) {
         return pieces[row][col];
     }
-
     public void setPiece(int row, int col, Piece piece) {
         pieces[row][col] = piece;
     }
-
     public Piece getPiece(Position pos) {
         return getPiece(pos.row(), pos.column());
     }
-
     public void setPiece(Position pos, Piece piece) {
         setPiece(pos.row(), pos.column(), piece);
     }
-
     public Position getPawnSkipPosition(EPlayer player) {
         return pawnSkipPositions.get(player);
     }

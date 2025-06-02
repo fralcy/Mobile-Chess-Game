@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.match.EMatch;
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
 import com.example.chess_mobile.utils.implementations.TimeFormater;
 import com.example.chess_mobile.view_model.implementations.ChessBoardViewModel;
 
@@ -21,14 +21,14 @@ public class PlayerCardFragment extends Fragment {
     private static final String PLAYER = "player";
     private static final String TYPE = "matchType";
     ChessBoardViewModel _chessboardViewModel;
-    Player _player;
+    PlayerChess _player;
     EMatch _matchType;
     TextView _timeText;
 
     public PlayerCardFragment() {
         // Required empty public constructor
     }
-    public static PlayerCardFragment newInstance(Player player, EMatch matchType) {
+    public static PlayerCardFragment newInstance(PlayerChess player, EMatch matchType) {
         PlayerCardFragment fragment = new PlayerCardFragment();
         Bundle args = new Bundle();
         args.putSerializable(PLAYER, player);
@@ -41,7 +41,7 @@ public class PlayerCardFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            this._player = (Player) getArguments().getSerializable(PLAYER);
+            this._player = (PlayerChess) getArguments().getSerializable(PLAYER);
             this._matchType = (EMatch) getArguments().getSerializable(TYPE);
         }
 

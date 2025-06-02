@@ -13,9 +13,10 @@ import android.widget.Toast;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.response.MatchResponse;
+import com.example.chess_mobile.helper.GsonConfig;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.match.EMatch;
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
 import com.example.chess_mobile.services.websocket.implementations.SocketManager;
 import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 import com.google.android.gms.common.util.Strings;
@@ -55,7 +56,7 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
                 SocketManager.CHESS_START_TOPIC_TEMPLATE + '/' + this.currentMatch.getMatchId();
         Log.d("CHESS_START_TOPIC_LOBBY",chessStartTopic);
         SocketManager.getInstance().subscribeTopic(chessStartTopic, stompMessage -> {
-            MatchResponse matchResponse = new Gson().fromJson(stompMessage.getPayload(),MatchResponse.class);
+            MatchResponse matchResponse = GsonConfig.getInstance().fromJson(stompMessage.getPayload(),MatchResponse.class);
             Log.d("START_GAME",stompMessage.getPayload());
             if (!Boolean.parseBoolean(
                     Strings.emptyToNull(matchResponse.getErrorMessage()))) {
@@ -67,12 +68,12 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
                 if (currentPlayerId.isEmpty()) return;
                 boolean isMainPlayerWhite =
                         matchResponse.getPlayerWhiteId().equals(currentPlayerId);
-                Player whitePlayer = new Player(matchResponse.getPlayerWhiteId(), "White",
+                PlayerChess whitePlayer = new PlayerChess(matchResponse.getPlayerWhiteId(), "White",
                         EPlayer.WHITE);
-                Player blackPlayer = new Player(matchResponse.getPlayerBlackId(), "Black",
+                PlayerChess blackPlayer = new PlayerChess(matchResponse.getPlayerBlackId(), "Black",
                         EPlayer.BLACK);
-                Player mainPlayer = isMainPlayerWhite ? whitePlayer : blackPlayer;
-                Player opponent = isMainPlayerWhite ? blackPlayer : whitePlayer;
+                PlayerChess mainPlayer = isMainPlayerWhite ? whitePlayer : blackPlayer;
+                PlayerChess opponent = isMainPlayerWhite ? blackPlayer : whitePlayer;
                 startChessRoomActivity(mainPlayer, opponent, duration, matchId, type);
             } else {
                 startGameModeSelectionActivity();
@@ -81,7 +82,7 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
         });
     }
     public void displayBaseOntMes(String tMes) {
-        Gson gson = new Gson();
+        Gson gson = GsonConfig.getInstance();
         MatchResponse matchResponse = gson.fromJson(tMes,MatchResponse.class);
         if(matchResponse.getPlayerBlackId()!=null&&matchResponse.getPlayerWhiteId()!=null) {
             this.startButton.setVisibility(View.VISIBLE);
@@ -157,8 +158,9 @@ public class FriendMatchLobbyActivity extends Activity implements OnErrorWebSock
         });
     }
 
-    private void startChessRoomActivity(Player mainPlayer, Player opponent, Duration duration,
-                                        String matchId, EMatch type) {
+    private void startChessRoomActivity(
+            PlayerChess mainPlayer, PlayerChess opponent, Duration duration,
+            String matchId, EMatch type) {
         Intent roomChessIntent = new Intent(this, RoomChessActivity.class);
         roomChessIntent.putExtra(RoomChessActivity.MAIN_PLAYER, mainPlayer);
         roomChessIntent.putExtra(RoomChessActivity.OPPONENT_PLAYER, opponent);

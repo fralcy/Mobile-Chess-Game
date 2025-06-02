@@ -19,7 +19,7 @@ import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.Result;
 import com.example.chess_mobile.model.match.EMatch;
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
 import com.example.chess_mobile.view.fragments.ChessBoardFragment;
 import com.example.chess_mobile.view.fragments.CongratsCardFragment;
 import com.example.chess_mobile.view.fragments.DrawResignActionFragment;
@@ -41,9 +41,9 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
     public static final String MATCH_ID = "matchID";
 
     private EMatch matchType;
-    private Player main;
+    private PlayerChess main;
     private Duration duration;
-    private Player opponent;
+    private PlayerChess opponent;
     private String matchId;
 
     @Override
@@ -57,11 +57,11 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
             return insets;
         });
         this.main = Optional
-                .ofNullable((Player) getIntent().getSerializableExtra(MAIN_PLAYER))
-                .orElse(new Player("0", "Black Player", EPlayer.WHITE));
+                .ofNullable((PlayerChess) getIntent().getSerializableExtra(MAIN_PLAYER))
+                .orElse(new PlayerChess("0", "Black Player", EPlayer.WHITE));
         this.opponent = Optional
-                .ofNullable((Player) getIntent().getSerializableExtra(OPPONENT_PLAYER))
-                .orElse(new Player("-1", "White Player", EPlayer.BLACK));
+                .ofNullable((PlayerChess) getIntent().getSerializableExtra(OPPONENT_PLAYER))
+                .orElse(new PlayerChess("-1", "White Player", EPlayer.BLACK));
         this.duration = Optional
                 .ofNullable((Duration) getIntent().getSerializableExtra(DURATION))
                 .orElse(Duration.ofSeconds(600));
@@ -79,7 +79,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
 
     }
 
-    private ChessBoardFragment initChessBoardFragment(EMatch matchType, Player mainPlayer) {
+    private ChessBoardFragment initChessBoardFragment(EMatch matchType, PlayerChess mainPlayer) {
         return switch (matchType) {
 //            case LOCAL -> LocalChessBoardFragment.newInstance(8, mainPlayer);
             case RANKED, AI, PRIVATE -> ChessBoardFragment.newInstance(8, mainPlayer, matchType);
@@ -108,7 +108,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
     }
 
     private CongratsCardFragment initCongratsCardFragment(EMatch matchType, Result result,
-                                                          Player mainPlayer) {
+                                                          PlayerChess mainPlayer) {
         return switch (matchType) {
             case AI, RANKED -> OnlineCongratsCardFragment.newInstance(result, mainPlayer);
             default -> CongratsCardFragment.newInstance(result);
@@ -129,7 +129,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
         });
     }
 
-    private void bindFragments(EMatch matchType, Player mainPlayer, Player opponentPlayer, Duration duration) {
+    private void bindFragments(EMatch matchType, PlayerChess mainPlayer, PlayerChess opponentPlayer, Duration duration) {
         ChessBoardViewModel chessBoardViewModel = new ViewModelProvider(this)
                 .get(ChessBoardViewModel.getChessViewModel(matchType));
 

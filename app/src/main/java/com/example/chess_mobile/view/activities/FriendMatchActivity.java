@@ -14,6 +14,7 @@ import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.request.CreateMatchRequest;
 import com.example.chess_mobile.dto.request.JoinMatchRequest;
 import com.example.chess_mobile.dto.response.MatchResponse;
+import com.example.chess_mobile.helper.GsonConfig;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.services.websocket.implementations.SocketManager;
 import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
@@ -73,7 +74,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
                     topicMessage-> {
                 String payload = topicMessage.getPayload();
                 Log.d("FriendMatchActivity_SUCCESS_CONNECTION", topicMessage.getPayload());
-                Gson gson = new Gson();
+                Gson gson = GsonConfig.getInstance();
                 currentMatch = gson.fromJson(payload, MatchResponse.class);
                 Intent intent = new Intent(FriendMatchActivity.this, FriendMatchLobbyActivity.class);
                 intent.putExtra("Match_Info",currentMatch);
@@ -137,7 +138,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
         this.createButton.setOnClickListener(v->{
             CreateMatchRequest createFriendMatchRequest = new CreateMatchRequest(EMatch.PRIVATE,
                     this.isWhite,getUID(),this.playTime);
-            String json = new Gson().toJson(createFriendMatchRequest);
+            String json = GsonConfig.getInstance().toJson(createFriendMatchRequest);
             SocketManager.getInstance().sendMessage(json, SocketManager.CHESS_CREATE_APP_TEMPLATE);
 
         });
@@ -155,7 +156,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
 
             SocketManager.getInstance().subscribeTopic(matchTopic,topicMessage->{
                 Log.d("RESPONSE FROM SERVER", topicMessage.getPayload());
-                MatchResponse matchResponse = new Gson().fromJson(topicMessage.getPayload(),MatchResponse.class);
+                MatchResponse matchResponse = GsonConfig.getInstance().fromJson(topicMessage.getPayload(),MatchResponse.class);
 
                 SocketManager.getInstance().unsubscribeTopic(matchTopic);
                 SocketManager.getInstance().unsubscribeTopic(errorTopic);
@@ -194,7 +195,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
             JoinMatchRequest joinMatchRequest = new JoinMatchRequest(getUID());
 
             String chessJoinTopic = String.format(SocketManager.CHESS_JOIN_APP_TEMPLATE, matchId);
-            SocketManager.getInstance().sendMessage(new Gson().toJson(joinMatchRequest),chessJoinTopic);
+            SocketManager.getInstance().sendMessage(GsonConfig.getInstance().toJson(joinMatchRequest),chessJoinTopic);
 //            SocketManager.getInstance().sendMessage(json,"/app/chess/join/"+matchId);
         });
 

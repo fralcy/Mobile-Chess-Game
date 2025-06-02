@@ -1,22 +1,23 @@
 package com.example.chess_mobile.view_model.implementations;
 
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.chess_mobile.dto.request.MoveRequest;
-import com.example.chess_mobile.model.adapter.DurationAdapter;
+import com.example.chess_mobile.helper.GsonConfig;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.moves.Move;
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
 import com.example.chess_mobile.services.websocket.implementations.ChessWebSocketStompClient;
 import com.example.chess_mobile.services.websocket.implementations.SocketManager;
 import com.example.chess_mobile.services.websocket.interfaces.IChessWebSocketClient;
 import com.example.chess_mobile.view_model.enums.ESocketMessageType;
 import com.example.chess_mobile.view_model.interfaces.IOnlineChess;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.time.Duration;
 import java.util.logging.Level;
@@ -35,7 +36,7 @@ public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IO
 
     @Override
     public void newGame(String matchId, EPlayer startingPlayer, Board board,
-                        Player main, Player opponent, Duration mainSide, Duration opponentSide
+                        PlayerChess main, PlayerChess opponent, Duration mainSide, Duration opponentSide
     ) {
         super.newGame(startingPlayer, board, main, opponent, mainSide, opponentSide);
         this._matchId = matchId;
@@ -43,9 +44,15 @@ public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IO
         this.setOnlineStatus(true);
     }
 
-    private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(Duration.class, new DurationAdapter())
-            .create();
+    private final Gson gson = GsonConfig.getInstance();
+
+    @Override
+    public void setGameState(GameState gs) {
+        super.setGameState(gs);
+        GameState currentState = this._gameState.getValue();
+        if (currentState == null) return;
+        this._result.setValue(currentState.getResult());
+    }
 
     @Override
     public void gameStateMakeMove(Move move) {
@@ -58,7 +65,8 @@ public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IO
 
     @Override
     public void onGameConnection(String gameID) {
-        String chesMoveTopic = String.format(SocketManager.CHESS_MOVE_TOPIC_TEMPLATE, this._matchId);
+        String chesMoveTopic = String.format(SocketManager.CHESS_MOVE_ENDPOINT_TEMPLATE, this._matchId);
+        socketClient.setTopic(chesMoveTopic);
         socketClient.connect(chesMoveTopic, this::handleIncomingMessage);
     }
 
@@ -69,8 +77,10 @@ public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IO
 
     @Override
     public void handleSocketMessage(ESocketMessageType messageType, GameState gameState) {
+        Log.d("OnlineViewModel", "Comming: " + messageType);
         switch (messageType) {
             case MOVE:
+                Log.d("OnlineViewModel", "SetGame: " + gson.toJson(gameState));
                 this.setGameState(gameState);
                 break;
             case RESIGN:

@@ -31,7 +31,7 @@ import com.example.chess_mobile.model.logic.moves.PawnPromotion;
 import com.example.chess_mobile.model.logic.pieces.EPieceType;
 import com.example.chess_mobile.model.logic.pieces.Piece;
 import com.example.chess_mobile.model.match.EMatch;
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
 import com.example.chess_mobile.settings.board_color.BoardColorInstance;
 import com.example.chess_mobile.utils.implementations.ChessTimer;
 import com.example.chess_mobile.settings.piece_images.PieceImagesInstance;
@@ -49,7 +49,7 @@ public class ChessBoardFragment extends Fragment {
     protected static final String MAIN_PLAYER = "mainPlayer";
     protected static final String TYPE = "matchType";
     @NonNull
-    public static ChessBoardFragment newInstance(int size, Player mainPlayer, EMatch matchType) {
+    public static ChessBoardFragment newInstance(int size, PlayerChess mainPlayer, EMatch matchType) {
         ChessBoardFragment fragment = new ChessBoardFragment();
         Bundle args = new Bundle();
         args.putInt(BOARD_SIZE, size);
@@ -62,7 +62,7 @@ public class ChessBoardFragment extends Fragment {
     // Board ui
     protected boolean reversed = true;
     protected int _size;
-    protected Player _mainPlayer;
+    protected PlayerChess _mainPlayer;
     protected EMatch _matchType;
 
     protected ChessBoardViewModel _chessboardViewModel;
@@ -97,7 +97,7 @@ public class ChessBoardFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             this._size = getArguments().getInt(BOARD_SIZE, 8);
-            this._mainPlayer = (Player) getArguments().getSerializable(MAIN_PLAYER);
+            this._mainPlayer = (PlayerChess) getArguments().getSerializable(MAIN_PLAYER);
             this._matchType = (EMatch) getArguments().getSerializable(TYPE);
         }
 
@@ -148,6 +148,7 @@ public class ChessBoardFragment extends Fragment {
         }
 
         gridLayoutSetUp();
+
         return view;
     }
 
@@ -171,7 +172,13 @@ public class ChessBoardFragment extends Fragment {
             }
 
             initializeBoard(this._gridLayout.getWidth(), this._gridLayout.getHeight());
-            drawBoard(this._chessboardViewModel.getBoard());
+//            drawBoard(this._chessboardViewModel.getBoard());
+            _chessboardViewModel.getGameState().observe(getViewLifecycleOwner(), gs -> {
+                if (gs != null) {
+                    drawBoard(gs.getBoard());
+                    showLastMoveColor();
+                }
+            });
         });
     }
     protected void initializeBoard(int gridWidth, int gridHeight) {

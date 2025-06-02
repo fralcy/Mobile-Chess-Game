@@ -12,7 +12,7 @@ import com.example.chess_mobile.model.logic.game_states.Position;
 import com.example.chess_mobile.model.logic.game_states.Result;
 import com.example.chess_mobile.model.logic.moves.Move;
 import com.example.chess_mobile.model.match.EMatch;
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
 import com.example.chess_mobile.view_model.interfaces.IChessViewModel;
 
 import java.time.Duration;
@@ -23,8 +23,8 @@ import java.util.Optional;
 public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     protected final MutableLiveData<GameState> _gameState = new MutableLiveData<>();
     protected final MutableLiveData<Result> _result = new MutableLiveData<>();
-    protected final MutableLiveData<Player> _main = new MutableLiveData<>();
-    protected final MutableLiveData<Player> _opponent = new MutableLiveData<>();
+    protected final MutableLiveData<PlayerChess> _main = new MutableLiveData<>();
+    protected final MutableLiveData<PlayerChess> _opponent = new MutableLiveData<>();
     protected final MutableLiveData<Duration> _whiteTimer = new MutableLiveData<>();
     protected final MutableLiveData<Duration> _blackTimer = new MutableLiveData<>();
 
@@ -36,12 +36,12 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     }
 
     @Override
-    public Player getMainPlayer() {
+    public PlayerChess getMainPlayer() {
         return this._main.getValue();
     }
 
     @Override
-    public Player getOpponentPlayer() {
+    public PlayerChess getOpponentPlayer() {
         return this._opponent.getValue();
     }
 
@@ -63,7 +63,15 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     }
 
     @Override
-    public void newGame(EPlayer startingPlayer, Board board, Player main, Player opponent,
+    public void newGame(
+            String matchId, EPlayer startingPlayer, Board board, PlayerChess main,
+            PlayerChess opponent, Duration mainSide, Duration opponentSide
+    ) {
+        newGame(startingPlayer, board, main, opponent, mainSide, opponentSide);
+    }
+
+    @Override
+    public void newGame(EPlayer startingPlayer, Board board, PlayerChess main, PlayerChess opponent,
                         Duration mainSide, Duration opponentSide)  {
         reset();
         GameState gs = new GameState(startingPlayer, board, mainSide, opponentSide);
@@ -74,7 +82,7 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     }
 
     @Override
-    public void setPlayers(Player main, Player opponent) {
+    public void setPlayers(PlayerChess main, PlayerChess opponent) {
         this._main.setValue(main);
         this._opponent.setValue(opponent);
     }

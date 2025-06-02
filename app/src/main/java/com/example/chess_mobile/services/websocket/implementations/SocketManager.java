@@ -26,7 +26,7 @@ import ua.naiksoftware.stomp.dto.StompMessage;
 
 public  class SocketManager {
     public static final String MATCH_TOPIC_TEMPLATE = "/topic/match/%s";
-    public static final String CHESS_MOVE_TOPIC_TEMPLATE = "/topic/chess/move/%s";
+    public static final String CHESS_MOVE_ENDPOINT_TEMPLATE = "/chess/move/%s";
     public static final String MATCH_ERROR_TOPIC_TEMPLATE = "/topic/match/%s/error";
     public static final String CHESS_START_TOPIC_TEMPLATE = "/topic/chess/start";
     public static final String CHESS_START_APP_TEMPLATE = "/app/chess/start";
@@ -48,8 +48,8 @@ public  class SocketManager {
         }
         return instance;
     }
-//public static final String beEndPoint = "ws://165.22.241.224:8080/ws";
-    public static final String beEndPoint = "ws://192.168.0.100:8080/ws";
+public static final String beEndPoint = "ws://165.22.241.224:8080/ws";
+//    public static final String beEndPoint = "ws://192.168.0.100:8080/ws";
 
     public void connect(Runnable onConnected, OnErrorWebSocket onError) {
         // Clean up previous connection if call multiple time
@@ -97,7 +97,7 @@ public  class SocketManager {
     }
 
     public void subscribeTopic(String topic, Consumer<StompMessage> onMessage){
-        Log.d("SUBSCRIBE","SUBSCRIBE!!!!!!!!!");
+        Log.d("SUBSCRIBE","SUBSCRIBE!!!!!!!!!: " + topic);
         Disposable disposableTopic = stompClient.topic(topic)
                 .compose(applyFlowableSchedulers())
                 .subscribe(onMessage, throwable -> Log.e("STOMP", "❌ Error in topic subscription", throwable));

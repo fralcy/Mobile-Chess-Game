@@ -9,11 +9,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.request.CreateMatchRequest;
+import com.example.chess_mobile.helper.GsonConfig;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.services.websocket.implementations.SocketManager;
 import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.gson.Gson;
 
 import java.util.Objects;
 
@@ -39,7 +39,7 @@ public class FindMatchActivity extends AppCompatActivity implements OnErrorWebSo
 
             if (getUID().isEmpty()) return;
             CreateMatchRequest request = new CreateMatchRequest(EMatch.RANKED, null, getUID(),playTime );
-            String json = new Gson().toJson(request);
+            String json = GsonConfig.getInstance().toJson(request);
             SocketManager.getInstance().sendMessage(json,"/app/chess/create");
             SocketManager.getInstance().subscribeTopic("/user/queue/match/error",tMes->{
                 Log.d("RANK_ERROR",tMes.getPayload());

@@ -12,14 +12,14 @@ import android.widget.Toast;
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.request.CancelMatchRequest;
 import com.example.chess_mobile.dto.response.MatchResponse;
+import com.example.chess_mobile.helper.GsonConfig;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.match.EMatch;
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
 import com.example.chess_mobile.services.websocket.implementations.SocketManager;
 import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 import com.google.android.gms.common.util.Strings;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.gson.Gson;
 
 import java.time.Duration;
 import java.util.Objects;
@@ -61,7 +61,7 @@ public class FriendGuestActivity extends Activity implements OnErrorWebSocket {
             Log.d("START_GAME",stompMessage.getPayload());
             if (!Boolean.parseBoolean(
                     Strings.emptyToNull(this.currentMatchResponse.getErrorMessage()))) {
-                this.currentMatchResponse = new Gson().fromJson(stompMessage.getPayload(),
+                this.currentMatchResponse = GsonConfig.getInstance().fromJson(stompMessage.getPayload(),
                         MatchResponse.class);
                 String matchId = this.currentMatchResponse.getMatchId();
                 Duration duration = Duration.ofMinutes(this.currentMatchResponse.getPlayTime());
@@ -71,12 +71,12 @@ public class FriendGuestActivity extends Activity implements OnErrorWebSocket {
                 if (currentPlayerId.isEmpty()) return;
                 boolean isMainPlayerWhite =
                         this.currentMatchResponse.getPlayerWhiteId().equals(currentPlayerId);
-                Player whitePlayer = new Player(this.currentMatchResponse.getPlayerWhiteId(), "White",
+                PlayerChess whitePlayer = new PlayerChess(this.currentMatchResponse.getPlayerWhiteId(), "White",
                         EPlayer.WHITE);
-                Player blackPlayer = new Player(this.currentMatchResponse.getPlayerBlackId(), "Black",
+                PlayerChess blackPlayer = new PlayerChess(this.currentMatchResponse.getPlayerBlackId(), "Black",
                         EPlayer.BLACK);
-                Player mainPlayer = isMainPlayerWhite ? whitePlayer : blackPlayer;
-                Player opponent = isMainPlayerWhite ? blackPlayer : whitePlayer;
+                PlayerChess mainPlayer = isMainPlayerWhite ? whitePlayer : blackPlayer;
+                PlayerChess opponent = isMainPlayerWhite ? blackPlayer : whitePlayer;
                 startChessRoomActivity(mainPlayer, opponent, duration, matchId, type);
             } else {
                 startGameModeSelectionActivity();
@@ -95,7 +95,7 @@ public class FriendGuestActivity extends Activity implements OnErrorWebSocket {
             String userId = getUID();
             if (userId.isEmpty()) return;
             CancelMatchRequest cancelMatchRequest = new CancelMatchRequest(currentMatchResponse.getMatchId(), userId);
-            String jsonMessage = new Gson().toJson(cancelMatchRequest);
+            String jsonMessage = GsonConfig.getInstance().toJson(cancelMatchRequest);
             SocketManager.getInstance().sendMessage(jsonMessage,"/app/chess/cancelMatch");
             finish();
         });
@@ -161,7 +161,7 @@ public class FriendGuestActivity extends Activity implements OnErrorWebSocket {
 
 
     private void startChessRoomActivity(
-            Player mainPlayer, Player opponent, Duration duration,
+            PlayerChess mainPlayer, PlayerChess opponent, Duration duration,
             String matchId, EMatch type) {
         Intent roomChessIntent = new Intent(this, RoomChessActivity.class);
         roomChessIntent.putExtra(RoomChessActivity.MAIN_PLAYER, mainPlayer);

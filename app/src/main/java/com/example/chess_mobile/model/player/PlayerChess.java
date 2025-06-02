@@ -4,12 +4,12 @@ import com.example.chess_mobile.model.logic.game_states.EPlayer;
 
 import java.io.Serializable;
 
-public class Player implements Serializable {
+public class PlayerChess implements Serializable {
     private String id;
     private EPlayer color;
     private String name;
 
-    public Player(String id, String name, EPlayer color) {
+    public PlayerChess(String id, String name, EPlayer color) {
         this.id = id;
         this.name = name;
         this.color = color;

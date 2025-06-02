@@ -3,10 +3,8 @@ package com.example.chess_mobile.view.fragments;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,14 +13,14 @@ import androidx.core.content.ContextCompat;
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.Result;
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
 
 public class OnlineCongratsCardFragment extends CongratsCardFragment {
     protected static final String RESULT = "RESULT";
     protected static final String MAIN_PLAYER = "MAIN_PLAYER";
 
-    protected Player mainPlayer;
-    public static CongratsCardFragment newInstance(Result result, Player mainPlayer) {
+    protected PlayerChess mainPlayer;
+    public static CongratsCardFragment newInstance(Result result, PlayerChess mainPlayer) {
         CongratsCardFragment fragment = new OnlineCongratsCardFragment();
         Bundle args = new Bundle();
         args.putSerializable(RESULT, result);
@@ -37,7 +35,7 @@ public class OnlineCongratsCardFragment extends CongratsCardFragment {
 
         if (getArguments() != null) {
             result = (Result) getArguments().getSerializable(RESULT);
-            mainPlayer = (Player) getArguments().getSerializable(MAIN_PLAYER);
+            mainPlayer = (PlayerChess) getArguments().getSerializable(MAIN_PLAYER);
         }
     }
 
