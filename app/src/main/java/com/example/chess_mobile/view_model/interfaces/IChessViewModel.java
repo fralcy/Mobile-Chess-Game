@@ -8,15 +8,15 @@ import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.game_states.Position;
 import com.example.chess_mobile.model.logic.game_states.Result;
 import com.example.chess_mobile.model.logic.moves.Move;
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
 public interface IChessViewModel {
-    Player getMainPlayer();
-    Player getOpponentPlayer();
+    PlayerChess getMainPlayer();
+    PlayerChess getOpponentPlayer();
     LiveData<Duration>  getWhiteTimer();
     LiveData<Duration>  getBlackTimer();
     LiveData<GameState> getGameState();
@@ -24,7 +24,7 @@ public interface IChessViewModel {
     Board getBoard();
     EPlayer getCurrentPlayer();
     List<Move> getLegalMovesForPiece(Position pos);
-    void setPlayers(Player white, Player black);
+    void setPlayers(PlayerChess white, PlayerChess black);
     void setGameState(GameState gs);
     void gameStateOnTick();
     void gameStateMakeMove(Move move);
@@ -32,17 +32,14 @@ public interface IChessViewModel {
     void setResult(Result result);
 
     void reset();
-    void newGame(EPlayer startingPlayer, Board board, Player main, Player opponent, Duration mainSide, Duration opponentSide);
+    void newGame(EPlayer startingPlayer, Board board, PlayerChess main, PlayerChess opponent, Duration mainSide, Duration opponentSide);
+
+    void newGame(String matchId, EPlayer startingPlayer, Board board,
+                 PlayerChess main, PlayerChess opponent, Duration mainSide, Duration opponentSide);
 
     default void newGame(String matchId, EPlayer startingPlayer, Board board,
-                         Player main, Player opponent, Duration mainSide, Duration opponentSide)
+                         PlayerChess main, PlayerChess opponent, Duration timePerSide)
     {
-        newGame(startingPlayer, board, main, opponent, mainSide, opponentSide);
-    }
-
-    default void newGame(String matchId, EPlayer startingPlayer, Board board,
-                         Player main, Player opponent, Duration timePerSide)
-    {
-        newGame(startingPlayer, board, main, opponent, timePerSide, timePerSide);
+        newGame(matchId, startingPlayer, board, main, opponent, timePerSide, timePerSide);
     }
 }

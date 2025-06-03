@@ -6,9 +6,9 @@ import android.os.Looper;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.moves.Move;
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
 
-public class ChessAIPlayer extends Player {
+public class ChessAIPlayer extends PlayerChess {
     private final ChessAIService _aiService;
     private final Handler _handler;
 

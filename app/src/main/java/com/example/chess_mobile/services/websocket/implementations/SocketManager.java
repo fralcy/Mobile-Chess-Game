@@ -1,4 +1,4 @@
-package com.example.chess_mobile.model.websocket.implementations;
+package com.example.chess_mobile.services.websocket.implementations;
 
 import android.util.Log;
 
@@ -27,9 +27,13 @@ import ua.naiksoftware.stomp.dto.StompMessage;
 public  class SocketManager {
     public static final String MATCH_TOPIC_TEMPLATE = "/topic/match/%s";
     public static final String MATCH_ERROR_TOPIC_TEMPLATE = "/topic/match/%s/error";
-    public static final String CHESS_JOIN_TOPIC_TEMPLATE = "/app/chess/join/%s";
-    public static final String CHESS_CREATE_TOPIC_TEMPLATE = "/app/chess/create";
-    public static final String USER_QUEUE_MATCH_TOPIC_TEMPLATE = "/user/queue/match";
+    public static final String CHESS_MOVE_ENDPOINT_TEMPLATE = "/chess/move/%s";
+    public static final String CHESS_START_TOPIC_TEMPLATE = "/topic/chess/start";
+    public static final String CHESS_START_APP_TEMPLATE = "/app/chess/start";
+    public static final String CHESS_JOIN_APP_TEMPLATE = "/app/chess/join/%s";
+    public static final String CHESS_CREATE_APP_TEMPLATE = "/app/chess/create";
+    public static final String USER_QUEUE_MATCH_APP_TEMPLATE = "/user/queue/match";
+    public static final String CHESS_DESTROY_MATCH_APP_TEMPLATE = "/app/chess/destroyMatch/%s";
     protected StompClient stompClient;
     private final Map<String, Disposable> topicDisposables = new HashMap<>();
     protected CompositeDisposable compositeDisposable;
@@ -45,7 +49,7 @@ public  class SocketManager {
         return instance;
     }
 public static final String beEndPoint = "ws://165.22.241.224:8080/ws";
-    //public static final String beEndPoint = "ws://192.168.0.100:8080/ws";
+//    public static final String beEndPoint = "ws://192.168.0.100:8080/ws";
 
     public void connect(Runnable onConnected, OnErrorWebSocket onError) {
         // Clean up previous connection if call multiple time

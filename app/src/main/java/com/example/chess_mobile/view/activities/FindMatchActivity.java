@@ -9,11 +9,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.request.CreateMatchRequest;
+import com.example.chess_mobile.helper.GsonConfig;
 import com.example.chess_mobile.model.match.EMatch;
-import com.example.chess_mobile.model.websocket.implementations.SocketManager;
+import com.example.chess_mobile.services.websocket.implementations.SocketManager;
 import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.gson.Gson;
 
 import java.util.Objects;
 
@@ -32,17 +32,19 @@ public class FindMatchActivity extends AppCompatActivity implements OnErrorWebSo
 
         SocketManager.getInstance().connect(() -> {
             // Sau khi connect thành công, mới subscribe
-            SocketManager.getInstance().subscribeTopic("/user/queue/match",tMes->{
+            SocketManager.getInstance().subscribeTopic("/topic/rank-match/"+FirebaseAuth.getInstance().getCurrentUser().getUid(),tMes->{
                 Log.d("RANK",tMes.getPayload());
             });
+            int playTime = getIntent().getIntExtra("Rank_Play_Time",0);
+
+            if (getUID().isEmpty()) return;
+            CreateMatchRequest request = new CreateMatchRequest(EMatch.RANKED, null, getUID(),playTime );
+            String json = GsonConfig.getInstance().toJson(request);
+            SocketManager.getInstance().sendMessage(json,"/app/chess/create");
+            SocketManager.getInstance().subscribeTopic("/user/queue/match/error",tMes->{
+                Log.d("RANK_ERROR",tMes.getPayload());
+            });
         },this);
-
-        int playTime = getIntent().getIntExtra("Rank_Play_Time",0);
-
-        if (getUID().isEmpty()) return;
-        CreateMatchRequest request = new CreateMatchRequest(EMatch.RANKED, null, getUID(),playTime );
-        String json = new Gson().toJson(request);
-        SocketManager.getInstance().sendMessage(json,SocketManager.beEndPoint+"/app/chess/create");
 
     }
     public void FindMatch() {

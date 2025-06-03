@@ -10,14 +10,14 @@ import androidx.annotation.NonNull;
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.logic.game_states.EEndReason;
 import com.example.chess_mobile.model.logic.game_states.Result;
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
 
 public class LocalChessBoardFragment extends ChessBoardFragment{
     private static final String BOARD_SIZE = "boardSize";
     private static final String MAIN_PLAYER = "mainPlayer";
 
     @NonNull
-    public static ChessBoardFragment newInstance(int size, Player mainPlayer) {
+    public static ChessBoardFragment newInstance(int size, PlayerChess mainPlayer) {
         ChessBoardFragment fragment = new LocalChessBoardFragment();
         Bundle args = new Bundle();
         args.putInt(BOARD_SIZE, size);

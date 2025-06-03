@@ -35,11 +35,11 @@ public class MainActivity extends AppCompatActivity {
         String textMessage = "Wanna play?";
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.layout_confirmation_dialog);
-        ((TextView) dialog.findViewById(R.id.dialogMessage)).setText(textMessage);
+        /*((TextView) dialog.findViewById(R.id.dialogMessage)).setText(textMessage);
         dialog.findViewById(R.id.buttonYes).setOnClickListener(l-> startChess());
         dialog.findViewById(R.id.buttonNo).setOnClickListener(l-> dialog.dismiss());
         dialog.setCanceledOnTouchOutside(true);
-        dialog.show();
+        dialog.show();*/
     }
 
     private void bindView() {

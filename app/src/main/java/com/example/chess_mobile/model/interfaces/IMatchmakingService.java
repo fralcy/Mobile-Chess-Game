@@ -1,6 +1,6 @@
 package com.example.chess_mobile.model.interfaces;
 
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 
 public interface IMatchmakingService {
@@ -10,7 +10,7 @@ public interface IMatchmakingService {
         // Simulate finding match after delay
         new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
             if (listener != null) {
-                Player opponent = new Player("opponent_id", "Random Player", EPlayer.BLACK);
+                PlayerChess opponent = new PlayerChess("opponent_id", "Random Player", EPlayer.BLACK);
                 listener.onMatchFound(opponent);
             }
         }, 2000);

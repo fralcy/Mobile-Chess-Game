@@ -15,15 +15,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.chess_mobile.R;
-import com.example.chess_mobile.dto.request.PlayerRegisterRequest;
 import com.example.chess_mobile.model.authentication.firebase.FirebaseAccount;
 import com.example.chess_mobile.model.authentication.firebase.FirebaseAuthenticationService;
 import com.example.chess_mobile.model.authentication.interfaces.IAuthenticationService;
-import com.example.chess_mobile.model.websocket.implementations.SocketManager;
 import com.example.chess_mobile.view_model.interfaces.IRegisterViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.gson.Gson;
 
 public class RegisterActivity extends AppCompatActivity implements IRegisterViewModel {
     IAuthenticationService authenticationService;

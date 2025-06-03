@@ -2,7 +2,7 @@ package com.example.chess_mobile.utils.interfaces;
 
 import android.content.Context;
 import android.content.Intent;
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
 import com.example.chess_mobile.view.activities.*;
 
 public interface INavigationHelper {
@@ -31,7 +31,7 @@ public interface INavigationHelper {
         context.startActivity(intent);
     }
 
-    default void navigateToChessGame(Context context, Player mainPlayer, Player opponent) {
+    default void navigateToChessGame(Context context, PlayerChess mainPlayer, PlayerChess opponent) {
         Intent intent = new Intent(context, RoomChessActivity.class);
         intent.putExtra("MAIN_PLAYER", mainPlayer);
         intent.putExtra("OPPONENT_PLAYER", opponent);

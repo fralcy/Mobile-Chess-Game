@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.chess_mobile.R;
+import com.example.chess_mobile.dto.request.MoveRequest;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EEndReason;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
@@ -31,14 +32,19 @@ import com.example.chess_mobile.model.logic.moves.PawnPromotion;
 import com.example.chess_mobile.model.logic.pieces.EPieceType;
 import com.example.chess_mobile.model.logic.pieces.Piece;
 import com.example.chess_mobile.model.match.EMatch;
-import com.example.chess_mobile.model.player.Player;
+import com.example.chess_mobile.model.player.PlayerChess;
+import com.example.chess_mobile.services.websocket.implementations.SocketManager;
 import com.example.chess_mobile.settings.board_color.BoardColorInstance;
 import com.example.chess_mobile.utils.implementations.ChessTimer;
 import com.example.chess_mobile.settings.piece_images.PieceImagesInstance;
 import com.example.chess_mobile.utils.interfaces.IChessTimer;
 import com.example.chess_mobile.settings.piece_images.IPieceImagesTheme;
+import com.example.chess_mobile.view.activities.RoomChessActivity;
 import com.example.chess_mobile.view.interfaces.IGameOverListener;
+import com.example.chess_mobile.view_model.enums.ESocketMessageType;
 import com.example.chess_mobile.view_model.implementations.ChessBoardViewModel;
+import com.example.chess_mobile.view_model.implementations.OnlineChessBoardViewModel;
+import com.google.gson.Gson;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +55,7 @@ public class ChessBoardFragment extends Fragment {
     protected static final String MAIN_PLAYER = "mainPlayer";
     protected static final String TYPE = "matchType";
     @NonNull
-    public static ChessBoardFragment newInstance(int size, Player mainPlayer, EMatch matchType) {
+    public static ChessBoardFragment newInstance(int size, PlayerChess mainPlayer, EMatch matchType) {
         ChessBoardFragment fragment = new ChessBoardFragment();
         Bundle args = new Bundle();
         args.putInt(BOARD_SIZE, size);
@@ -62,7 +68,7 @@ public class ChessBoardFragment extends Fragment {
     // Board ui
     protected boolean reversed = true;
     protected int _size;
-    protected Player _mainPlayer;
+    protected PlayerChess _mainPlayer;
     protected EMatch _matchType;
 
     protected ChessBoardViewModel _chessboardViewModel;
@@ -77,6 +83,8 @@ public class ChessBoardFragment extends Fragment {
 
     // interface logic
     private IGameOverListener gameOverListener;
+
+
 
     public ChessBoardFragment() {
         // Required empty public constructor
@@ -97,7 +105,7 @@ public class ChessBoardFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             this._size = getArguments().getInt(BOARD_SIZE, 8);
-            this._mainPlayer = (Player) getArguments().getSerializable(MAIN_PLAYER);
+            this._mainPlayer = (PlayerChess) getArguments().getSerializable(MAIN_PLAYER);
             this._matchType = (EMatch) getArguments().getSerializable(TYPE);
         }
 
@@ -112,6 +120,9 @@ public class ChessBoardFragment extends Fragment {
         }
         this._chessboardViewModel =
                 new ViewModelProvider(requireActivity()).get(ChessBoardViewModel.getChessViewModel(_matchType));
+        if(this._chessboardViewModel instanceof  OnlineChessBoardViewModel onlineChessBoardViewModel) {
+
+        }
         this._squares = new ImageView[this._size][this._size];
 
         if (this._timer == null) {
@@ -148,6 +159,7 @@ public class ChessBoardFragment extends Fragment {
         }
 
         gridLayoutSetUp();
+
         return view;
     }
 
@@ -171,7 +183,13 @@ public class ChessBoardFragment extends Fragment {
             }
 
             initializeBoard(this._gridLayout.getWidth(), this._gridLayout.getHeight());
-            drawBoard(this._chessboardViewModel.getBoard());
+//            drawBoard(this._chessboardViewModel.getBoard());
+            _chessboardViewModel.getGameState().observe(getViewLifecycleOwner(), gs -> {
+                if (gs != null) {
+                    drawBoard(gs.getBoard());
+                    showLastMoveColor();
+                }
+            });
         });
     }
     protected void initializeBoard(int gridWidth, int gridHeight) {
@@ -415,17 +433,33 @@ public class ChessBoardFragment extends Fragment {
     }
 
     public void showResignationDialog() {
+
         Dialog dialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
         dialog.setContentView(R.layout.layout_confirmation_dialog);
         ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(R.string.resignation_message);
         dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
+            MoveRequest moveRequest = new MoveRequest(ESocketMessageType.RESIGN,RoomChessActivity.publicMatchId, null);
+            String json = new Gson().toJson(moveRequest);
+            SocketManager.getInstance().sendMessage(json,"/topic"+ String.format(SocketManager.CHESS_MOVE_ENDPOINT_TEMPLATE,moveRequest.getCurrentMatchId()));
             EPlayer winner = this._chessboardViewModel.getCurrentPlayer() == EPlayer.BLACK ?
                     EPlayer.WHITE : EPlayer.BLACK;
+            if(this._chessboardViewModel instanceof OnlineChessBoardViewModel onlineChessBoardViewModel) {
+                onlineChessBoardViewModel.setIsCurrentResign(true);
+                winner = this._chessboardViewModel.getMainPlayer().getColor()==EPlayer.BLACK?EPlayer.WHITE:EPlayer.BLACK;
+            }
+
             this._chessboardViewModel
                     .setResult(Result.win(winner, EEndReason.RESIGNATION));
+            Log.d("CALL SET WINNER","CALL SET WINNER");
+            Log.d("EWINNER",this._chessboardViewModel.getCurrentPlayer().toString());
+            Log.d("RESULT",this._chessboardViewModel.getResult().getValue().getResult());
             dialog.dismiss();
         });
         dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());
         dialog.show();
     }
+    public ChessBoardViewModel getChessBoardViewModel() {
+        return this._chessboardViewModel;
+    }
+
 }
