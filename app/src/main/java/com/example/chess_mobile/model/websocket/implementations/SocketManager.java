@@ -44,8 +44,8 @@ public  class SocketManager {
         }
         return instance;
     }
-//    public static final String beEndPoint = "ws://165.22.241.224:8080/ws";
-    public static final String beEndPoint = "ws://192.168.0.100:8080/ws";
+public static final String beEndPoint = "ws://165.22.241.224:8080/ws";
+    //public static final String beEndPoint = "ws://192.168.0.100:8080/ws";
 
     public void connect(Runnable onConnected, OnErrorWebSocket onError) {
         // Clean up previous connection if call multiple time
