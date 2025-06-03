@@ -31,6 +31,7 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     static public Class<? extends ChessBoardViewModel>  getChessViewModel(EMatch matchType) {
         return switch (matchType) {
             case RANKED, PRIVATE -> OnlineChessBoardViewModel.class;
+            case AI -> AIChessBoardViewModel.class;
             default -> ChessBoardViewModel.class;
         };
     }

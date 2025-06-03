@@ -72,19 +72,4 @@ public class ChessAIPlayer extends PlayerChess {
             default -> "Unknown";
         };
     }
-
-    // Add getDifficulty method to ChessAIService
-    public static class ChessAIService extends com.example.chess_mobile.model.ai.ChessAIService {
-        private int difficulty = 1;
-
-        @Override
-        public void setDifficulty(int level) {
-            super.setDifficulty(level);
-            this.difficulty = level;
-        }
-
-        public int getDifficulty() {
-            return difficulty;
-        }
-    }
 }

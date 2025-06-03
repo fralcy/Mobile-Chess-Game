@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 
 public class ChessAIService implements IAIService {
     private int _difficulty = 1;
+    public int getDifficulty() {
+        return this._difficulty;
+    }
     private boolean _isThinking = false;
     private final Random _random = new Random();
 
@@ -36,7 +39,6 @@ public class ChessAIService implements IAIService {
         this._isThinking = true;
 
         Move bestMove = switch (difficulty) {
-            case 1 -> calculateRandomMove(board);
             case 2 -> calculateBasicMove(board);
             case 3 -> calculateNormalMove(board);
             case 4 -> calculateHardMove(board);

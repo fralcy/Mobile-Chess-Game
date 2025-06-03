@@ -40,6 +40,12 @@ public class GameModeSelectionActivity extends Activity implements IGameModeSele
             Intent  intent = new Intent(GameModeSelectionActivity.this, FriendMatchActivity.class);
             startActivity(intent);
         });
+
+        ConstraintLayout aiMatchLayout = findViewById(R.id.gameModeSelectionCardAI);
+        aiMatchLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(GameModeSelectionActivity.this, AIMatchActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void showLoginRequestDialog() {

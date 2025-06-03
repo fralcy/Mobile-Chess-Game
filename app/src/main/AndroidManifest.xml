@@ -39,7 +39,10 @@
             android:exported="true" />
         <activity
             android:name=".view.activities.RankedMatchActivity"
-            android:exported="true" /> <!-- <activity android:name=".view.activities.AIMatchActivity" android:exported="true"/> -->
+            android:exported="true" />
+        <activity
+            android:name=".view.activities.AIMatchActivity"
+            android:exported="true"/>
         <activity
             android:name=".view.activities.MainActivity"
             android:exported="true" />
