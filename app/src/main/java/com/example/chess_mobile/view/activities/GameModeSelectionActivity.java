@@ -40,6 +40,10 @@ public class GameModeSelectionActivity extends Activity implements IGameModeSele
             Intent  intent = new Intent(GameModeSelectionActivity.this, FriendMatchActivity.class);
             startActivity(intent);
         });
+        findViewById(R.id.gameModeSelectionButtonProfile).setOnClickListener(v->{
+            switchToInfoActivity();
+        });
+
     }
 
     private void showLoginRequestDialog() {
@@ -54,5 +58,9 @@ public class GameModeSelectionActivity extends Activity implements IGameModeSele
         dialog.findViewById(R.id.buttonNo).setOnClickListener(l-> dialog.dismiss());
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
+    }
+    private void switchToInfoActivity() {
+        Intent intent = new Intent(this, InfoActivity.class);
+        startActivity(intent);
     }
 }

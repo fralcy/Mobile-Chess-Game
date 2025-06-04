@@ -30,6 +30,7 @@
     <string name="game_over">Game Over</string>
     <string name="new_game_label">New Game</string>
     <string name="back_label">Back</string>
+    <string name="logout">Do you want to logout?</string>
 
     <!-- New strings for game mode selection -->
     <string name="user_profile">User Profile</string>
