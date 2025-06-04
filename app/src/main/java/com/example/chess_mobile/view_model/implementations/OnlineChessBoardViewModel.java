@@ -32,6 +32,9 @@ public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IO
     private String _matchId = "";
 
     private boolean isCurrentResign=false;
+    private boolean isCurrentSendDrawOffer=false;
+    private ChessBoardFragment chessBoardFragment;
+
 
 
     @Override
@@ -101,9 +104,18 @@ public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IO
 //                handleResignation(gameState);
                 break;
             case DRAW_OFFER:
+                if(!isCurrentSendDrawOffer) {
+                    chessBoardFragment.showDrawOfferDialog();
+                }
 //                handleDrawOffer(gameState);
                 break;
             // Thêm các trường hợp khác nếu cần
+            case ACCEPT_DRAW_OFFER:
+                this.setResult(Result.draw(EEndReason.DRAW));
+                break;
+            case REJECT_DRAW_OFFER:
+                this.chessBoardFragment.showRejectMessage();
+                break;
         }
     }
 
@@ -136,6 +148,15 @@ public class OnlineChessBoardViewModel extends ChessBoardViewModel implements IO
     }
     public void handleResignation(GameState gameState) {
 
+    }
+    public boolean getIsCurrentSendDrawOffer() {
+        return this.isCurrentSendDrawOffer;
+    }
+    public void setIsCurrentSendDrawOffer(boolean isCurrentSendDrawOffer) {
+        this.isCurrentSendDrawOffer= isCurrentSendDrawOffer;
+    }
+    public void setChessBoardFragment(ChessBoardFragment chessBoardFragment) {
+        this.chessBoardFragment= chessBoardFragment;
     }
 
 

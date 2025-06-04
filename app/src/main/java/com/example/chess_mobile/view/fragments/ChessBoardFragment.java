@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.request.MoveRequest;
@@ -121,7 +122,7 @@ public class ChessBoardFragment extends Fragment {
         this._chessboardViewModel =
                 new ViewModelProvider(requireActivity()).get(ChessBoardViewModel.getChessViewModel(_matchType));
         if(this._chessboardViewModel instanceof  OnlineChessBoardViewModel onlineChessBoardViewModel) {
-
+            onlineChessBoardViewModel.setChessBoardFragment(this);
         }
         this._squares = new ImageView[this._size][this._size];
 
@@ -424,12 +425,43 @@ public class ChessBoardFragment extends Fragment {
         ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(R.string.draw_offer_message);
         dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
             this._chessboardViewModel.setResult(Result.draw(EEndReason.DRAW));
+            MoveRequest moveRequest = new MoveRequest(ESocketMessageType.ACCEPT_DRAW_OFFER,RoomChessActivity.publicMatchId, null);
+            String json = new Gson().toJson(moveRequest);
+            SocketManager.getInstance().sendMessage(json,"/topic"+ String.format(SocketManager.CHESS_MOVE_ENDPOINT_TEMPLATE,moveRequest.getCurrentMatchId()));
             dialog.dismiss();
         });
-        dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());
+        dialog.findViewById(R.id.buttonNo).setOnClickListener(l ->{
+            MoveRequest moveRequest = new MoveRequest(ESocketMessageType.REJECT_DRAW_OFFER,RoomChessActivity.publicMatchId, null);
+            String json = new Gson().toJson(moveRequest);
+            SocketManager.getInstance().sendMessage(json,"/topic"+ String.format(SocketManager.CHESS_MOVE_ENDPOINT_TEMPLATE,moveRequest.getCurrentMatchId()));
+            dialog.dismiss();});
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
 
+    }
+    public void showConfirmOfferDialog() {
+        Dialog dialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
+        dialog.setContentView(R.layout.layout_confirmation_dialog);
+        ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(R.string.draw_confirm_message);
+        dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
+            if(_chessboardViewModel instanceof  OnlineChessBoardViewModel onlineChessBoardViewModel) {
+                onlineChessBoardViewModel.setIsCurrentSendDrawOffer(true);
+            MoveRequest moveRequest = new MoveRequest(ESocketMessageType.DRAW_OFFER,RoomChessActivity.publicMatchId, null);
+            String json = new Gson().toJson(moveRequest);
+            SocketManager.getInstance().sendMessage(json,"/topic"+ String.format(SocketManager.CHESS_MOVE_ENDPOINT_TEMPLATE,moveRequest.getCurrentMatchId())); }
+            else {
+
+            }
+            dialog.dismiss();
+        });
+        dialog.findViewById(R.id.buttonNo).setOnClickListener(l ->{
+
+            dialog.dismiss();});
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
+    }
+    public void showRejectMessage() {
+        Toast.makeText(this.getContext(), "Opponent reject draw offer, continue",Toast.LENGTH_LONG).show();
     }
 
     public void showResignationDialog() {

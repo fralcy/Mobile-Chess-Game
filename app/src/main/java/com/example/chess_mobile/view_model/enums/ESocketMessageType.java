@@ -7,4 +7,6 @@ package com.example.chess_mobile.view_model.enums;
     //    ERROR,
         RESIGN,
         DRAW_OFFER,
+        ACCEPT_DRAW_OFFER,
+        REJECT_DRAW_OFFER
     }

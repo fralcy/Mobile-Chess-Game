@@ -112,7 +112,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
             @Override
             public void onDrawOffered() {
                 
-                chessBoardFragment.showDrawOfferDialog();
+                chessBoardFragment.showConfirmOfferDialog();
             }
 
             @Override
@@ -190,7 +190,10 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
         String textMessage = result.getResult();
         Log.d("RESULT-TEXXXXT", textMessage);
         String endReasonMessage = result.getPurpose();
-        if((textMessage.equals("White win")&&this.main.getColor()==EPlayer.WHITE)||(textMessage.equals("Black win")&&this.main.getColor()==EPlayer.BLACK)) {
+        if(textMessage.equals("Draw")) {
+            textMessage="Draw";
+        }
+        else if((textMessage.equals("White win")&&this.main.getColor()==EPlayer.WHITE)||(textMessage.equals("Black win")&&this.main.getColor()==EPlayer.BLACK)) {
             textMessage ="You win!";
         }
         else {
@@ -222,5 +225,13 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();*/
 
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        MoveRequest moveRequest = new MoveRequest(ESocketMessageType.RESIGN, this.matchId,null);
+        Gson gson = new Gson();
+        String json = gson.toJson(moveRequest);
+        SocketManager.getInstance().sendMessage(json, "/topic"+String.format(SocketManager.CHESS_MOVE_ENDPOINT_TEMPLATE,this.matchId));
     }
 }
