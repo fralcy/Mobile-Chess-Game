@@ -97,7 +97,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
 
     private ChessBoardFragment initChessBoardFragment(EMatch matchType, PlayerChess mainPlayer) {
         return switch (matchType) {
-            case LOCAL -> LocalChessBoardFragment.newInstance(8, mainPlayer);
+            case LOCAL -> (ChessBoardFragment) LocalChessBoardFragment.newInstance(8, mainPlayer, matchType);
             case RANKED, AI, PRIVATE -> ChessBoardFragment.newInstance(8, mainPlayer, matchType);
             default -> ChessBoardFragment.newInstance(8, mainPlayer, matchType);
         };
