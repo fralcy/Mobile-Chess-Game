@@ -9,10 +9,12 @@ import androidx.annotation.NonNull;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.logic.game_states.EEndReason;
+import com.example.chess_mobile.model.logic.game_states.EPlayer;
+import com.example.chess_mobile.model.logic.game_states.Position;
 import com.example.chess_mobile.model.logic.game_states.Result;
 import com.example.chess_mobile.model.player.PlayerChess;
 
-public class LocalChessBoardFragment extends ChessBoardFragment{
+public class LocalChessBoardFragment extends ChessBoardFragment {
     private static final String BOARD_SIZE = "boardSize";
     private static final String MAIN_PLAYER = "mainPlayer";
 
@@ -27,13 +29,48 @@ public class LocalChessBoardFragment extends ChessBoardFragment{
     }
 
     @Override
+    protected void handleSquareClick(int row, int col) {
+        // Trong local match, kiểm tra xem có phải lượt của player hiện tại không
+        // Điều này đảm bảo luật chơi đúng: white và black thay phiên nhau
+
+        showLastMoveColor();
+        if (this._selectedPos == null) {
+            showLastMoveColor();
+            onFromPositionSelected(new Position(row, col));
+        } else {
+            onToPositionSelected(new Position(row, col));
+            showLastMoveColor();
+        }
+    }
+
+    @Override
     public void showDrawOfferDialog() {
-        Log.d("MATCH_TYPE", String.valueOf(R.string.draw_confirm_message));
+        Log.d("LOCAL_MATCH", "Draw offer in local match");
         Dialog dialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
         dialog.setContentView(R.layout.layout_confirmation_dialog);
         ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(R.string.draw_confirm_message);
         dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
             this._chessboardViewModel.setResult(Result.draw(EEndReason.DRAW));
+            dialog.dismiss();
+        });
+        dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());
+        dialog.show();
+    }
+
+    @Override
+    public void showResignationDialog() {
+        Dialog dialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
+        dialog.setContentView(R.layout.layout_confirmation_dialog);
+
+        String currentPlayerName = this._chessboardViewModel.getCurrentPlayer() == EPlayer.WHITE ?
+                "White Player" : "Black Player";
+        String message = currentPlayerName + " wants to resign. Confirm?";
+
+        ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(message);
+        dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
+            EPlayer winner = this._chessboardViewModel.getCurrentPlayer() == EPlayer.WHITE ?
+                    EPlayer.BLACK : EPlayer.WHITE;
+            this._chessboardViewModel.setResult(Result.win(winner, EEndReason.RESIGNATION));
             dialog.dismiss();
         });
         dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());

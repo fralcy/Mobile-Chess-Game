@@ -29,10 +29,11 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     protected final MutableLiveData<Duration> _blackTimer = new MutableLiveData<>();
 
 
-    static public Class<? extends ChessBoardViewModel>  getChessViewModel(EMatch matchType) {
+    static public Class<? extends ChessBoardViewModel> getChessViewModel(EMatch matchType) {
         return switch (matchType) {
             case RANKED, PRIVATE -> OnlineChessBoardViewModel.class;
             case AI -> AIChessBoardViewModel.class;
+            case LOCAL -> LocalChessBoardViewModel.class; // Local có ViewModel riêng
             default -> ChessBoardViewModel.class;
         };
     }
@@ -82,6 +83,7 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
         _whiteTimer.setValue(gs.getWhiteTimer());
         _blackTimer.setValue(gs.getBlackTimer());
     }
+
 
     @Override
     public void setPlayers(PlayerChess main, PlayerChess opponent) {

@@ -55,6 +55,9 @@
             android:name=".view.activities.AIMatchActivity"
             android:exported="true"/>
         <activity
+            android:name=".view.activities.LocalMatchActivity"
+            android:exported="true"/>
+        <activity
             android:name=".view.activities.MainActivity"
             android:exported="true" />
         <activity

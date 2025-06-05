@@ -27,6 +27,7 @@ import com.example.chess_mobile.services.websocket.implementations.SocketManager
 import com.example.chess_mobile.view.fragments.ChessBoardFragment;
 import com.example.chess_mobile.view.fragments.CongratsCardFragment;
 import com.example.chess_mobile.view.fragments.DrawResignActionFragment;
+import com.example.chess_mobile.view.fragments.LocalChessBoardFragment;
 import com.example.chess_mobile.view.interfaces.DrawResignActionListener;
 import com.example.chess_mobile.view.fragments.OnlineCongratsCardFragment;
 import com.example.chess_mobile.view.fragments.PlayerCardFragment;
@@ -96,7 +97,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
 
     private ChessBoardFragment initChessBoardFragment(EMatch matchType, PlayerChess mainPlayer) {
         return switch (matchType) {
-//            case LOCAL -> LocalChessBoardFragment.newInstance(8, mainPlayer);
+            case LOCAL -> LocalChessBoardFragment.newInstance(8, mainPlayer);
             case RANKED, AI, PRIVATE -> ChessBoardFragment.newInstance(8, mainPlayer, matchType);
             default -> ChessBoardFragment.newInstance(8, mainPlayer, matchType);
         };
@@ -154,8 +155,20 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                 .get(ChessBoardViewModel.getChessViewModel(matchType));
 
         Board board = new Board();
+
+        // Xử lý thời gian khác nhau cho white và black trong local match
+        Duration whiteTime = duration;
+        Duration blackTime = duration;
+
+        if (matchType == EMatch.LOCAL) {
+            whiteTime = Optional.ofNullable((Duration) getIntent().getSerializableExtra("WHITE_TIME"))
+                    .orElse(duration);
+            blackTime = Optional.ofNullable((Duration) getIntent().getSerializableExtra("BLACK_TIME"))
+                    .orElse(duration);
+        }
+
         chessBoardViewModel.newGame(this.matchId, EPlayer.WHITE, board.initial(), mainPlayer,
-                opponentPlayer, duration);
+                opponentPlayer, whiteTime, blackTime);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         this.chessBoardFragment = this.initChessBoardFragment(matchType,
@@ -173,7 +186,6 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                         PlayerCardFragment.newInstance(chessBoardViewModel.getMainPlayer(), matchType))
                 .replace(R.id.roomChessFrameLayoutBoard, chessBoardFragment)
                 .commit();
-
     }
 
     private void backToHome() {
