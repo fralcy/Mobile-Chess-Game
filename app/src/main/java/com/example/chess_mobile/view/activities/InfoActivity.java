@@ -3,6 +3,7 @@ package com.example.chess_mobile.view.activities;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
@@ -29,6 +30,9 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class InfoActivity extends AppCompatActivity {
+    public static String playerNameExtraString = "player_name";
+    public static String playerEmailExtraString="player_email";
+    public static String playerIdExtraString = "player_id";
     private TextView playerName;
     private TextView playerEmail;
     private TextView rank;
@@ -37,6 +41,7 @@ public class InfoActivity extends AppCompatActivity {
     private Button editProfileButton;
     private Button logoutButton;
     private Player currentPlayer;
+    private TextView playerId;
 
 
     @Override
@@ -45,6 +50,7 @@ public class InfoActivity extends AppCompatActivity {
         setContentView(R.layout.player_info);
         bindView();
         setUpLogoutButton();
+
         callUserAPI();
         //loadCurrentPlayer();
     }
@@ -55,6 +61,7 @@ public class InfoActivity extends AppCompatActivity {
         this.rank= findViewById(R.id.profile_rank);
         this.elo= findViewById(R.id.profile_elo);
         this.matches = findViewById(R.id.profile_matches);
+        this.playerId= findViewById(R.id.profile_id);
         this.editProfileButton = findViewById(R.id.btnEditInfo);
         this.logoutButton = findViewById(R.id.btnLogout);
 
@@ -118,6 +125,7 @@ public class InfoActivity extends AppCompatActivity {
                     InfoActivity.this.currentPlayer = gson.fromJson(responseJson,Player.class);
                     runOnUiThread(()->{
                         loadCurrentPlayer();
+                        setUpPressEditButton();
                     });
                 }
                 else {
@@ -143,5 +151,15 @@ public class InfoActivity extends AppCompatActivity {
         InfoActivity.this.rank.setText("Player rank "+this.currentPlayer.getRank());
         InfoActivity.this.elo.setText("Player Elo: "+this.currentPlayer.getScore());
         InfoActivity.this.matches.setText("Player matches: "+this.currentPlayer.getMatches());
+        InfoActivity.this.playerId.setText("Player Id: "+this.currentPlayer.getPlayerId());
+    }
+    public void setUpPressEditButton() {
+        this.editProfileButton.setOnClickListener(v->{
+            Intent intent = new Intent(this, EditInfoActivity.class);
+            intent.putExtra(playerNameExtraString,this.currentPlayer.getPlayerName());
+            intent.putExtra(playerEmailExtraString, this.currentPlayer.getEmail());
+            intent.putExtra(playerIdExtraString, this.currentPlayer.getPlayerId());
+            startActivity(intent);
+        });
     }
 }

@@ -80,6 +80,6 @@ public class Player implements Comparable<Player>{
 
     @Override
     public int compareTo(Player player) {
-        return 0;
+        return Integer.compare(this.score,player.score);
     }
 }

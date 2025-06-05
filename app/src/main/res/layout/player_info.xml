@@ -32,6 +32,14 @@
             android:padding="16dp"
             android:layout_marginBottom="24dp"
             android:elevation="4dp">
+            <TextView
+                android:id="@+id/profile_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Id: 1234566"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:layout_marginBottom="8dp"/>
 
             <TextView
                 android:id="@+id/profile_name"
