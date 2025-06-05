@@ -17,6 +17,17 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".view.activities.LeaderboardActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".view.activities.EditInfoActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".view.activities.InfoActivity"
+            android:exported="true" />
+        <activity
             android:name=".view.activities.FriendGuestActivity"
             android:exported="true" />
         <activity

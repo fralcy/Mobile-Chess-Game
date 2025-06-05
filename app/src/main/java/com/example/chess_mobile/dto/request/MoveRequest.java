@@ -4,9 +4,9 @@ import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.view_model.enums.ESocketMessageType;
 
 public class MoveRequest {
-    private final ESocketMessageType messageType;
-    private final String currentMatchId;
-    private final GameState gameState;
+    protected final ESocketMessageType messageType;
+    protected final String currentMatchId;
+    protected final GameState gameState;
 
     public MoveRequest(ESocketMessageType messageType, String matchId, GameState gameState) {
         this.messageType = messageType;

@@ -18,8 +18,10 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.chess_mobile.R;
+import com.example.chess_mobile.dto.request.MoveRequest;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EEndReason;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
@@ -32,13 +34,18 @@ import com.example.chess_mobile.model.logic.pieces.EPieceType;
 import com.example.chess_mobile.model.logic.pieces.Piece;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.player.PlayerChess;
+import com.example.chess_mobile.services.websocket.implementations.SocketManager;
 import com.example.chess_mobile.settings.board_color.BoardColorInstance;
 import com.example.chess_mobile.utils.implementations.ChessTimer;
 import com.example.chess_mobile.settings.piece_images.PieceImagesInstance;
 import com.example.chess_mobile.utils.interfaces.IChessTimer;
 import com.example.chess_mobile.settings.piece_images.IPieceImagesTheme;
+import com.example.chess_mobile.view.activities.RoomChessActivity;
 import com.example.chess_mobile.view.interfaces.IGameOverListener;
+import com.example.chess_mobile.view_model.enums.ESocketMessageType;
 import com.example.chess_mobile.view_model.implementations.ChessBoardViewModel;
+import com.example.chess_mobile.view_model.implementations.OnlineChessBoardViewModel;
+import com.google.gson.Gson;
 
 import java.util.HashMap;
 import java.util.List;
@@ -78,6 +85,8 @@ public class ChessBoardFragment extends Fragment {
     // interface logic
     private IGameOverListener gameOverListener;
 
+
+
     public ChessBoardFragment() {
         // Required empty public constructor
     }
@@ -112,6 +121,9 @@ public class ChessBoardFragment extends Fragment {
         }
         this._chessboardViewModel =
                 new ViewModelProvider(requireActivity()).get(ChessBoardViewModel.getChessViewModel(_matchType));
+        if(this._chessboardViewModel instanceof  OnlineChessBoardViewModel onlineChessBoardViewModel) {
+            onlineChessBoardViewModel.setChessBoardFragment(this);
+        }
         this._squares = new ImageView[this._size][this._size];
 
         if (this._timer == null) {
@@ -413,26 +425,73 @@ public class ChessBoardFragment extends Fragment {
         ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(R.string.draw_offer_message);
         dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
             this._chessboardViewModel.setResult(Result.draw(EEndReason.DRAW));
+            MoveRequest moveRequest = new MoveRequest(ESocketMessageType.ACCEPT_DRAW_OFFER,RoomChessActivity.publicMatchId, null);
+            String json = new Gson().toJson(moveRequest);
+            SocketManager.getInstance().sendMessage(json,"/topic"+ String.format(SocketManager.CHESS_MOVE_ENDPOINT_TEMPLATE,moveRequest.getCurrentMatchId()));
             dialog.dismiss();
         });
-        dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());
+        dialog.findViewById(R.id.buttonNo).setOnClickListener(l ->{
+            MoveRequest moveRequest = new MoveRequest(ESocketMessageType.REJECT_DRAW_OFFER,RoomChessActivity.publicMatchId, null);
+            String json = new Gson().toJson(moveRequest);
+            SocketManager.getInstance().sendMessage(json,"/topic"+ String.format(SocketManager.CHESS_MOVE_ENDPOINT_TEMPLATE,moveRequest.getCurrentMatchId()));
+            dialog.dismiss();});
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
 
     }
+    public void showConfirmOfferDialog() {
+        Dialog dialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
+        dialog.setContentView(R.layout.layout_confirmation_dialog);
+        ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(R.string.draw_confirm_message);
+        dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
+            if(_chessboardViewModel instanceof  OnlineChessBoardViewModel onlineChessBoardViewModel) {
+                onlineChessBoardViewModel.setIsCurrentSendDrawOffer(true);
+            MoveRequest moveRequest = new MoveRequest(ESocketMessageType.DRAW_OFFER,RoomChessActivity.publicMatchId, null);
+            String json = new Gson().toJson(moveRequest);
+            SocketManager.getInstance().sendMessage(json,"/topic"+ String.format(SocketManager.CHESS_MOVE_ENDPOINT_TEMPLATE,moveRequest.getCurrentMatchId())); }
+            else {
+
+            }
+            dialog.dismiss();
+        });
+        dialog.findViewById(R.id.buttonNo).setOnClickListener(l ->{
+
+            dialog.dismiss();});
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
+    }
+    public void showRejectMessage() {
+        Toast.makeText(this.getContext(), "Opponent reject draw offer, continue",Toast.LENGTH_LONG).show();
+    }
 
     public void showResignationDialog() {
+
         Dialog dialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
         dialog.setContentView(R.layout.layout_confirmation_dialog);
         ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(R.string.resignation_message);
         dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
+            MoveRequest moveRequest = new MoveRequest(ESocketMessageType.RESIGN,RoomChessActivity.publicMatchId, null);
+            String json = new Gson().toJson(moveRequest);
+            SocketManager.getInstance().sendMessage(json,"/topic"+ String.format(SocketManager.CHESS_MOVE_ENDPOINT_TEMPLATE,moveRequest.getCurrentMatchId()));
             EPlayer winner = this._chessboardViewModel.getCurrentPlayer() == EPlayer.BLACK ?
                     EPlayer.WHITE : EPlayer.BLACK;
+            if(this._chessboardViewModel instanceof OnlineChessBoardViewModel onlineChessBoardViewModel) {
+                onlineChessBoardViewModel.setIsCurrentResign(true);
+                winner = this._chessboardViewModel.getMainPlayer().getColor()==EPlayer.BLACK?EPlayer.WHITE:EPlayer.BLACK;
+            }
+
             this._chessboardViewModel
                     .setResult(Result.win(winner, EEndReason.RESIGNATION));
+            Log.d("CALL SET WINNER","CALL SET WINNER");
+            Log.d("EWINNER",this._chessboardViewModel.getCurrentPlayer().toString());
+            Log.d("RESULT",this._chessboardViewModel.getResult().getValue().getResult());
             dialog.dismiss();
         });
         dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());
         dialog.show();
     }
+    public ChessBoardViewModel getChessBoardViewModel() {
+        return this._chessboardViewModel;
+    }
+
 }

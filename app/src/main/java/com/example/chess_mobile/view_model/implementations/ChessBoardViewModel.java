@@ -28,6 +28,7 @@ public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     protected final MutableLiveData<Duration> _whiteTimer = new MutableLiveData<>();
     protected final MutableLiveData<Duration> _blackTimer = new MutableLiveData<>();
 
+
     static public Class<? extends ChessBoardViewModel>  getChessViewModel(EMatch matchType) {
         return switch (matchType) {
             case RANKED, PRIVATE -> OnlineChessBoardViewModel.class;

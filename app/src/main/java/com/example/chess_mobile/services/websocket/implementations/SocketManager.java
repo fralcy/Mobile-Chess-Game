@@ -26,8 +26,8 @@ import ua.naiksoftware.stomp.dto.StompMessage;
 
 public  class SocketManager {
     public static final String MATCH_TOPIC_TEMPLATE = "/topic/match/%s";
-    public static final String CHESS_MOVE_ENDPOINT_TEMPLATE = "/chess/move/%s";
     public static final String MATCH_ERROR_TOPIC_TEMPLATE = "/topic/match/%s/error";
+    public static final String CHESS_MOVE_ENDPOINT_TEMPLATE = "/chess/move/%s";
     public static final String CHESS_START_TOPIC_TEMPLATE = "/topic/chess/start";
     public static final String CHESS_START_APP_TEMPLATE = "/app/chess/start";
     public static final String CHESS_JOIN_APP_TEMPLATE = "/app/chess/join/%s";
@@ -97,7 +97,6 @@ public static final String beEndPoint = "ws://165.22.241.224:8080/ws";
     }
 
     public void subscribeTopic(String topic, Consumer<StompMessage> onMessage){
-        Log.d("SUBSCRIBE","SUBSCRIBE!!!!!!!!!: " + topic);
         Disposable disposableTopic = stompClient.topic(topic)
                 .compose(applyFlowableSchedulers())
                 .subscribe(onMessage, throwable -> Log.e("STOMP", "❌ Error in topic subscription", throwable));
