@@ -20,6 +20,7 @@ public class ChessAIPlayer extends PlayerChess {
         super("ai_player", name, color);
         _aiService = new ChessAIService();
         _aiService.setDifficulty(difficulty);
+        _aiService.setAIColor(color); // Set màu cho AI service
         _handler = new Handler(Looper.getMainLooper());
     }
 

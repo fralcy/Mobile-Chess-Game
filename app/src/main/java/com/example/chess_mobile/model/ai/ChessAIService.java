@@ -16,11 +16,9 @@ import java.util.stream.Collectors;
 
 public class ChessAIService implements IAIService {
     private int _difficulty = 1;
-    public int getDifficulty() {
-        return this._difficulty;
-    }
     private boolean _isThinking = false;
     private final Random _random = new Random();
+    private EPlayer _aiColor = EPlayer.BLACK; // AI color, mặc định là đen
 
     // Piece values for evaluation
     private static final Map<EPieceType, Integer> PIECE_VALUES = new HashMap<>();
@@ -31,6 +29,27 @@ public class ChessAIService implements IAIService {
         PIECE_VALUES.put(EPieceType.ROOK, 500);
         PIECE_VALUES.put(EPieceType.QUEEN, 900);
         PIECE_VALUES.put(EPieceType.KING, 20000);
+    }
+
+    // Getters
+    public int getDifficulty() { return this._difficulty; }
+
+    @Override
+    public boolean isThinking() { return this._isThinking; }
+
+    @Override
+    public void setDifficulty(int level) {
+        this._difficulty = Math.max(1, Math.min(5, level));
+    }
+
+    // Setter cho màu quân của AI
+    public void setAIColor(EPlayer color) {
+        this._aiColor = color;
+    }
+
+    // Trả về màu quân người chơi (ngược với AI)
+    private EPlayer getOpponentColor() {
+        return _aiColor == EPlayer.BLACK ? EPlayer.WHITE : EPlayer.BLACK;
     }
 
     @Override
@@ -50,52 +69,30 @@ public class ChessAIService implements IAIService {
         return bestMove;
     }
 
-    @Override
-    public void setDifficulty(int level) {
-        this._difficulty = Math.max(1, Math.min(5, level));
-    }
+    // ------------------ CÁC LEVEL ------------------
 
-    @Override
-    public boolean isThinking() {
-        return this._isThinking;
-    }
-
-    // Level 1: Random moves
     private Move calculateRandomMove(Board board) {
-        List<Move> allMoves = getAllPossibleMoves(board, EPlayer.BLACK);
-        if (allMoves.isEmpty()) {
-            return getRandomMove(board);
-        }
-        return allMoves.get(_random.nextInt(allMoves.size()));
+        List<Move> allMoves = getAllPossibleMoves(board, _aiColor);
+        return allMoves.isEmpty() ? getRandomMove(board) : allMoves.get(_random.nextInt(allMoves.size()));
     }
 
-    // Level 2: Basic logic (capture pieces, avoid losing pieces)
     private Move calculateBasicMove(Board board) {
-        List<Move> allMoves = getAllPossibleMoves(board, EPlayer.BLACK);
-        if (allMoves.isEmpty()) {
-            return getRandomMove(board);
-        }
+        List<Move> allMoves = getAllPossibleMoves(board, _aiColor);
+        if (allMoves.isEmpty()) return getRandomMove(board);
 
-        // Try to find capturing moves first
+        // Tìm nước ăn quân trước
         for (Move move : allMoves) {
             if (!board.isEmpty(move.getToPos())) {
-                Piece capturedPiece = board.getPiece(move.getToPos());
-                if (capturedPiece.getPlayerColor() == EPlayer.WHITE) {
-                    return move;
-                }
+                Piece target = board.getPiece(move.getToPos());
+                if (target.getPlayerColor() == getOpponentColor()) return move;
             }
         }
-
-        // If no captures, make random move
         return allMoves.get(_random.nextInt(allMoves.size()));
     }
 
-    // Level 3: Normal logic (material evaluation)
     private Move calculateNormalMove(Board board) {
-        List<Move> allMoves = getAllPossibleMoves(board, EPlayer.BLACK);
-        if (allMoves.isEmpty()) {
-            return getRandomMove(board);
-        }
+        List<Move> allMoves = getAllPossibleMoves(board, _aiColor);
+        if (allMoves.isEmpty()) return getRandomMove(board);
 
         Move bestMove = allMoves.get(0);
         int bestScore = Integer.MIN_VALUE;
@@ -107,101 +104,127 @@ public class ChessAIService implements IAIService {
                 bestMove = move;
             }
         }
-
         return bestMove;
     }
 
-    // Level 4: Hard logic (look ahead 1-2 moves)
     private Move calculateHardMove(Board board) {
-        List<Move> allMoves = getAllPossibleMoves(board, EPlayer.BLACK);
-        if (allMoves.isEmpty()) {
-            return getRandomMove(board);
-        }
+        List<Move> allMoves = getAllPossibleMoves(board, _aiColor);
+        if (allMoves.isEmpty()) return getRandomMove(board);
 
         Move bestMove = allMoves.get(0);
         int bestScore = Integer.MIN_VALUE;
 
         for (Move move : allMoves) {
-            Board tempBoard = board.copy();
-            move.execute(tempBoard);
-
-            // Look ahead one move for opponent
-            int score = evaluateBoard(tempBoard) - getBestOpponentResponse(tempBoard);
-
+            Board temp = board.copy();
+            move.execute(temp);
+            int score = evaluateBoard(temp) - getBestOpponentResponse(temp);
             if (score > bestScore) {
                 bestScore = score;
                 bestMove = move;
             }
         }
-
         return bestMove;
     }
 
-    // Level 5: Expert logic (minimax with alpha-beta pruning)
     private Move calculateExpertMove(Board board) {
-        List<Move> allMoves = getAllPossibleMoves(board, EPlayer.BLACK);
-        if (allMoves.isEmpty()) {
-            return getRandomMove(board);
-        }
+        List<Move> allMoves = getAllPossibleMoves(board, _aiColor);
+        if (allMoves.isEmpty()) return getRandomMove(board);
 
         Move bestMove = allMoves.get(0);
         int bestScore = Integer.MIN_VALUE;
 
         for (Move move : allMoves) {
-            Board tempBoard = board.copy();
-            move.execute(tempBoard);
-
-            // Use minimax with depth 2
-            int score = minimax(tempBoard, 2, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
-
+            Board temp = board.copy();
+            move.execute(temp);
+            int score = minimax(temp, 2, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
             if (score > bestScore) {
                 bestScore = score;
                 bestMove = move;
             }
         }
-
         return bestMove;
     }
 
-    // Minimax algorithm with alpha-beta pruning
-    private int minimax(Board board, int depth, int alpha, int beta, boolean isMaximizing) {
-        if (depth == 0) {
-            return evaluateBoard(board);
-        }
+    private int minimax(Board board, int depth, int alpha, int beta, boolean isMax) {
+        if (depth == 0) return evaluateBoard(board);
 
-        EPlayer player = isMaximizing ? EPlayer.BLACK : EPlayer.WHITE;
-        List<Move> moves = getAllPossibleMoves(board, player);
+        EPlayer current = isMax ? _aiColor : getOpponentColor();
+        List<Move> moves = getAllPossibleMoves(board, current);
+        if (moves.isEmpty()) return evaluateBoard(board);
 
-        if (moves.isEmpty()) {
-            return evaluateBoard(board);
-        }
-
-        if (isMaximizing) {
-            int maxScore = Integer.MIN_VALUE;
+        if (isMax) {
+            int max = Integer.MIN_VALUE;
             for (Move move : moves) {
-                Board tempBoard = board.copy();
-                move.execute(tempBoard);
-                int score = minimax(tempBoard, depth - 1, alpha, beta, false);
-                maxScore = Math.max(maxScore, score);
+                Board temp = board.copy();
+                move.execute(temp);
+                int score = minimax(temp, depth - 1, alpha, beta, false);
+                max = Math.max(max, score);
                 alpha = Math.max(alpha, score);
                 if (beta <= alpha) break; // Alpha-beta pruning
             }
-            return maxScore;
+            return max;
         } else {
-            int minScore = Integer.MAX_VALUE;
+            int min = Integer.MAX_VALUE;
             for (Move move : moves) {
-                Board tempBoard = board.copy();
-                move.execute(tempBoard);
-                int score = minimax(tempBoard, depth - 1, alpha, beta, true);
-                minScore = Math.min(minScore, score);
+                Board temp = board.copy();
+                move.execute(temp);
+                int score = minimax(temp, depth - 1, alpha, beta, true);
+                min = Math.min(min, score);
                 beta = Math.min(beta, score);
                 if (beta <= alpha) break; // Alpha-beta pruning
             }
-            return minScore;
+            return min;
         }
     }
 
-    // Get all possible moves for a player
+    // ------------------ EVALUATION ------------------
+
+    private int evaluateMove(Board board, Move move) {
+        int score = 0;
+
+        // Điểm ăn quân
+        if (!board.isEmpty(move.getToPos())) {
+            Piece captured = board.getPiece(move.getToPos());
+            if (captured.getPlayerColor() == getOpponentColor()) {
+                score += PIECE_VALUES.get(captured.getType());
+            }
+        }
+
+        // Điểm kiểm soát trung tâm
+        Position[] centerSquares = {
+                new Position(3, 3), new Position(3, 4),
+                new Position(4, 3), new Position(4, 4)
+        };
+        for (Position center : centerSquares) {
+            if (move.getToPos().equals(center)) score += 50;
+        }
+
+        return score;
+    }
+
+    private int evaluateBoard(Board board) {
+        int score = 0;
+        for (Position pos : board.getPiecePositions()) {
+            Piece piece = board.getPiece(pos);
+            int val = PIECE_VALUES.get(piece.getType());
+            // Cộng điểm cho AI, trừ điểm cho đối thủ
+            score += piece.getPlayerColor() == _aiColor ? val : -val;
+        }
+        return score;
+    }
+
+    private int getBestOpponentResponse(Board board) {
+        List<Move> moves = getAllPossibleMoves(board, getOpponentColor());
+        if (moves.isEmpty()) return 0;
+
+        int best = Integer.MIN_VALUE;
+        for (Move move : moves) {
+            int score = evaluateMove(board, move);
+            best = Math.max(best, score);
+        }
+        return best;
+    }
+
     private List<Move> getAllPossibleMoves(Board board, EPlayer player) {
         return board.getPiecePositionsFor(player).stream()
                 .flatMap(pos -> board.getPiece(pos).getMoves(pos, board).stream())
@@ -209,63 +232,9 @@ public class ChessAIService implements IAIService {
                 .collect(Collectors.toList());
     }
 
-    // Evaluate a single move
-    private int evaluateMove(Board board, Move move) {
-        int score = 0;
-
-        // Capture value
-        if (!board.isEmpty(move.getToPos())) {
-            Piece capturedPiece = board.getPiece(move.getToPos());
-            if (capturedPiece.getPlayerColor() == EPlayer.WHITE) {
-                score += PIECE_VALUES.get(capturedPiece.getType());
-            }
-        }
-
-        // Center control
-        Position center1 = new Position(3, 3);
-        Position center2 = new Position(3, 4);
-        Position center3 = new Position(4, 3);
-        Position center4 = new Position(4, 4);
-
-        if (move.getToPos().equals(center1) || move.getToPos().equals(center2) ||
-                move.getToPos().equals(center3) || move.getToPos().equals(center4)) {
-            score += 50;
-        }
-
-        return score;
-    }
-
-    // Evaluate board position
-    private int evaluateBoard(Board board) {
-        int score = 0;
-
-        for (Position pos : board.getPiecePositions()) {
-            Piece piece = board.getPiece(pos);
-            int pieceValue = PIECE_VALUES.get(piece.getType());
-
-            if (piece.getPlayerColor() == EPlayer.BLACK) {
-                score += pieceValue;
-            } else {
-                score -= pieceValue;
-            }
-        }
-
-        return score;
-    }
-
-    // Get best opponent response (simplified)
-    private int getBestOpponentResponse(Board board) {
-        List<Move> opponentMoves = getAllPossibleMoves(board, EPlayer.WHITE);
-        if (opponentMoves.isEmpty()) {
-            return 0;
-        }
-
-        int bestOpponentScore = Integer.MIN_VALUE;
-        for (Move move : opponentMoves) {
-            int score = evaluateMove(board, move);
-            bestOpponentScore = Math.max(bestOpponentScore, score);
-        }
-
-        return bestOpponentScore;
+    @Override
+    public Move getRandomMove(Board board) {
+        List<Move> allMoves = getAllPossibleMoves(board, _aiColor);
+        return allMoves.isEmpty() ? null : allMoves.get(_random.nextInt(allMoves.size()));
     }
 }

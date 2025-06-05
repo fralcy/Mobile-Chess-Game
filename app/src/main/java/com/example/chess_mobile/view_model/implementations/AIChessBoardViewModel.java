@@ -3,6 +3,7 @@ package com.example.chess_mobile.view_model.implementations;
 import com.example.chess_mobile.model.ai.ChessAIPlayer;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
+import com.example.chess_mobile.model.logic.game_states.GameState;
 import com.example.chess_mobile.model.logic.moves.Move;
 import com.example.chess_mobile.model.player.PlayerChess;
 
@@ -17,9 +18,14 @@ public class AIChessBoardViewModel extends ChessBoardViewModel {
                         PlayerChess main, PlayerChess opponent, Duration mainSide, Duration opponentSide) {
         super.newGame(startingPlayer, board, main, opponent, mainSide, opponentSide);
 
-        // Tạo AI player
-        EPlayer aiColor = main.getColor() == EPlayer.WHITE ? EPlayer.BLACK : EPlayer.WHITE;
-        _aiPlayer = new ChessAIPlayer("AI Bot", aiColor, _aiDifficulty);
+        // Sử dụng màu của opponent player (đã được set đúng từ AIMatchActivity)
+        EPlayer aiColor = opponent.getColor();
+        _aiPlayer = new ChessAIPlayer(opponent.getName(), aiColor, _aiDifficulty);
+
+        // Nếu AI là WHITE (đi trước), thực hiện nước đi đầu tiên
+        if (_aiPlayer.getColor() == EPlayer.WHITE) {
+            makeAIMove();
+        }
     }
 
     @Override
