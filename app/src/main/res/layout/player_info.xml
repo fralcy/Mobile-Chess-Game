@@ -1,111 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#1E1E1E"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="#222222"
+    android:padding="24dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Title -->
+    <TextView
+        android:id="@+id/textViewProfileTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:padding="8dp">
+        android:layout_marginTop="24dp"
+        android:text="@string/player_profile"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/textViewProfileTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Player Profile"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+    <!-- Profile Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/profileCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        app:cardBackgroundColor="#333333"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewProfileTitle">
 
-        <!-- Info Box -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="#333333"
-            android:padding="16dp"
-            android:layout_marginBottom="24dp"
-            android:elevation="4dp">
+            android:padding="24dp">
+
+            <!-- Player ID -->
             <TextView
                 android:id="@+id/profile_id"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Id: 1234566"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="12dp"
+                android:text="@string/id_1234566"
+                android:textColor="#CCCCCC"
+                android:textSize="14sp" />
 
+            <!-- Player Name -->
             <TextView
                 android:id="@+id/profile_name"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Name: John Doe"
+                android:layout_marginBottom="12dp"
+                android:text="@string/name_john_doe"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:layout_marginBottom="8dp"/>
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
+            <!-- Player Email -->
             <TextView
                 android:id="@+id/profile_email"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Email: john@example.com"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="20dp"
+                android:text="@string/email_john_example_com"
+                android:textColor="#CCCCCC"
+                android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/profile_rank"
-                android:layout_width="wrap_content"
+            <!-- Stats Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Rank: Gold"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:layout_marginBottom="8dp"/>
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:baselineAligned="false">
 
-            <TextView
-                android:id="@+id/profile_elo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ELO: 1500"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:layout_marginBottom="8dp"/>
+                <!-- Rank -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/profile_matches"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Matches Played: 25"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/rank"
+                        android:textColor="#CCCCCC"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/profile_rank"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/gold"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- ELO -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/elo"
+                        android:textColor="#CCCCCC"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/profile_elo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/_1500"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Matches -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/matches"
+                        android:textColor="#CCCCCC"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/profile_matches"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/_25"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-        <!-- Buttons -->
-        <Button
-            android:id="@+id/btnEditInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Edit Info"
-            android:background="#4CAF50"
-            android:textColor="#FFFFFF"
-            android:layout_marginBottom="16dp"
-            android:drawableLeft="@android:drawable/ic_menu_edit"
-            android:padding="12dp" />
+    <!-- Edit Info Button -->
+    <Button
+        android:id="@+id/btnEditInfo"
+        android:layout_width="280dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded_button_bg"
+        android:minHeight="48dp"
+        android:text="@string/edit_profile"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileCard" />
 
-        <Button
-            android:id="@+id/btnLogout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Logout"
-            android:background="#F44336"
-            android:textColor="#FFFFFF"
-            android:drawableLeft="@android:drawable/ic_lock_power_off"
-            android:padding="12dp" />
-    </LinearLayout>
-</ScrollView>
+    <!-- Logout Button -->
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="280dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/rounded_gray_button_bg"
+        android:minHeight="48dp"
+        android:text="@string/_logout"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnEditInfo" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
