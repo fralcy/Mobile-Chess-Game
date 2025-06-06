@@ -18,8 +18,8 @@ public class GameModeSelectionActivity extends Activity implements IGameModeSele
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_mode_selection);
         bindView();
-
     }
+
     public void bindView() {
         ConstraintLayout rankedMatchLayout = findViewById(R.id.rank_match);
         rankedMatchLayout.setOnClickListener(v->{
@@ -40,10 +40,22 @@ public class GameModeSelectionActivity extends Activity implements IGameModeSele
             Intent  intent = new Intent(GameModeSelectionActivity.this, FriendMatchActivity.class);
             startActivity(intent);
         });
+
+        // Thêm AI Match
+        findViewById(R.id.gameModeSelectionCardAI).setOnClickListener(v->{
+            Intent intent = new Intent(GameModeSelectionActivity.this, AIMatchActivity.class);
+            startActivity(intent);
+        });
+
+        // Thêm Local Match - không cần login
+        findViewById(R.id.gameModeSelectionCardLocal).setOnClickListener(v->{
+            Intent intent = new Intent(GameModeSelectionActivity.this, LocalMatchActivity.class);
+            startActivity(intent);
+        });
+
         findViewById(R.id.gameModeSelectionButtonProfile).setOnClickListener(v->{
             switchToInfoActivity();
         });
-
     }
 
     private void showLoginRequestDialog() {
@@ -59,6 +71,7 @@ public class GameModeSelectionActivity extends Activity implements IGameModeSele
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
     }
+
     private void switchToInfoActivity() {
         Intent intent = new Intent(this, InfoActivity.class);
         startActivity(intent);

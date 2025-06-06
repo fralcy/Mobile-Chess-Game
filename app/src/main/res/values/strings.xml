@@ -8,7 +8,7 @@
     <string name="name_text">name</string>
     <string name="player_avatar">player avatar</string>
     <string name="_10_00">10:00</string>
-    <string name="player_name">player name</string>
+    <string name="player_name">Player Name</string>
     <string name="player_nation_flag">nation_flag</string>
     <string name="click_to_play">Click to play!</string>
     <string name="dialog_message">dialog_message</string>
@@ -90,4 +90,27 @@
     <string name="waiting">Waiting....</string>
     <string name="you">You</string>
     <string name="host">Host</string>
+    <string name="leaderboard">LEADERBOARD</string>
+    <string name="top_players">Top Players</string>
+    <string name="_1">1</string>
+    <string name="nguy_n_v_n_a">Nguyễn Văn A</string>
+    <string name="i_m_1500_t_l_th_ng_75">Điểm: 1500 • Tỉ lệ thắng: 75%</string>
+    <string name="score">Score</string>
+    <string name="_1500">1500</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="email">Email</string>
+    <string name="your_email_example_com">your.email@example.com</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="cancel">Cancel</string>
+    <string name="player_profile">Player Profile</string>
+    <string name="id_1234566">ID: 1234566</string>
+    <string name="name_john_doe">Name: John Doe</string>
+    <string name="email_john_example_com">Email: john@example.com</string>
+    <string name="rank">Rank</string>
+    <string name="elo">ELO</string>
+    <string name="matches">Matches</string>
+    <string name="_25">25</string>
+    <string name="gold">Gold</string>
+    <string name="_logout">Logout</string>
 </resources>
