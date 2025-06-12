@@ -20,6 +20,7 @@ public class ChessAIPlayer extends PlayerChess {
         super("ai_player", name, color);
         _aiService = new ChessAIService();
         _aiService.setDifficulty(difficulty);
+        _aiService.setAIColor(color); // Set màu cho AI service
         _handler = new Handler(Looper.getMainLooper());
     }
 
@@ -71,20 +72,5 @@ public class ChessAIPlayer extends PlayerChess {
             case 5 -> "Expert";
             default -> "Unknown";
         };
-    }
-
-    // Add getDifficulty method to ChessAIService
-    public static class ChessAIService extends com.example.chess_mobile.model.ai.ChessAIService {
-        private int difficulty = 1;
-
-        @Override
-        public void setDifficulty(int level) {
-            super.setDifficulty(level);
-            this.difficulty = level;
-        }
-
-        public int getDifficulty() {
-            return difficulty;
-        }
     }
 }
