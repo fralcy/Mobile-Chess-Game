@@ -1,4 +1,4 @@
-package com.example.chess_mobile.view;
+package com.example.chess_mobile.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;

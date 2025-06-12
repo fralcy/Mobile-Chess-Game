@@ -2,21 +2,15 @@ package com.example.chess_mobile.view.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.player.Player;
 import com.example.chess_mobile.services.http.HttpClient;
-import com.example.chess_mobile.view.LeaderboardAdapter;
+import com.example.chess_mobile.adapter.LeaderboardAdapter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

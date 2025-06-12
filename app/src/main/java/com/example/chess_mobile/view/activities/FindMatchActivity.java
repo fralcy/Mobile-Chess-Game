@@ -106,6 +106,7 @@ public class FindMatchActivity extends AppCompatActivity implements OnErrorWebSo
             startActivity(intent);
             finish();
         });
+        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
     }
 

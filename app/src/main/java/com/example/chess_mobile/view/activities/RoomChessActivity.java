@@ -187,17 +187,41 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
     @Override
     public void onGameOver() {
         Result result= this.chessBoardFragment.getChessBoardViewModel().getResult().getValue();
-        String textMessage = result.getResult();
-        Log.d("RESULT-TEXXXXT", textMessage);
-        String endReasonMessage = result.getPurpose();
-        if(textMessage.equals("Draw")) {
-            textMessage="Draw";
-        }
-        else if((textMessage.equals("White win")&&this.main.getColor()==EPlayer.WHITE)||(textMessage.equals("Black win")&&this.main.getColor()==EPlayer.BLACK)) {
-            textMessage ="You win!";
+        String textMessage="";
+        String endReasonMessage="";
+        if(result==null) {
+            endReasonMessage="By Timeout";
+            Duration whiteDuration = this.chessBoardFragment.getChessBoardViewModel().getWhiteTimer().getValue();
+            Duration blackDuration = this.chessBoardFragment.getChessBoardViewModel().getBlackTimer().getValue();
+            if(whiteDuration==Duration.ZERO) {
+                if(this.main.getColor()==EPlayer.WHITE) {
+                    textMessage="You lose!";
+                }
+                else {
+                    textMessage="You win!";
+                }
+            }
+            else if(blackDuration==Duration.ZERO) {
+                if(this.main.getColor()==EPlayer.WHITE) {
+                    textMessage="You win!";
+                }
+                else {
+                    textMessage="You lose!";
+                }
+            }
+
         }
         else {
-            textMessage="You lose!";
+            textMessage = result.getResult();
+            Log.d("RESULT-TEXXXXT", textMessage);
+            endReasonMessage = result.getPurpose();
+            if (textMessage.equals("Draw")) {
+                textMessage = "Draw";
+            } else if ((textMessage.equals("White win") && this.main.getColor() == EPlayer.WHITE) || (textMessage.equals("Black win") && this.main.getColor() == EPlayer.BLACK)) {
+                textMessage = "You win!";
+            } else {
+                textMessage = "You lose!";
+            }
         }
 
         Dialog dialog = new Dialog(this, R.style.Dialog_Full_Width);
