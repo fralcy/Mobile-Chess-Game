@@ -183,64 +183,20 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- Critical Hit Feature Section -->
-    <TextView
-        android:id="@+id/aiMatchTextGameFeatures"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/game_features"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="@+id/aiMatchColorOptionsLayout"
-        app:layout_constraintTop_toBottomOf="@+id/aiMatchDifficultyOptionsLayout" />
-
-    <!-- Critical Hit Checkbox Container -->
-    <LinearLayout
-        android:id="@+id/aiMatchCriticalHitContainer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/rounded_card_bg"
-        android:orientation="vertical"
-        android:padding="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/aiMatchColorOptionsLayout"
-        app:layout_constraintStart_toStartOf="@+id/aiMatchColorOptionsLayout"
-        app:layout_constraintTop_toBottomOf="@+id/aiMatchTextGameFeatures">
-
-        <CheckBox
-            android:id="@+id/aiMatchCheckBoxCriticalHit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/critical_hit_feature"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/critical_hit_description"
-            android:textColor="#CCCCCC"
-            android:textSize="12sp"
-            android:layout_marginStart="32dp" />
-
-    </LinearLayout>
-
     <!-- Play Button -->
     <Button
         android:id="@+id/aiMatchButtonPlay"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="48dp"
         android:background="@drawable/rounded_button_bg"
         android:minHeight="48dp"
         android:text="@string/play"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/aiMatchCriticalHitContainer"
-        app:layout_constraintStart_toStartOf="@+id/aiMatchCriticalHitContainer"
-        app:layout_constraintTop_toBottomOf="@+id/aiMatchCriticalHitContainer" />
+        app:layout_constraintEnd_toEndOf="@+id/aiMatchColorOptionsLayout"
+        app:layout_constraintStart_toStartOf="@+id/aiMatchColorOptionsLayout"
+        app:layout_constraintTop_toBottomOf="@+id/aiMatchDifficultyOptionsLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

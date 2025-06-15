@@ -3,17 +3,21 @@ package com.example.chess_mobile.view.fragments;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.example.chess_mobile.R;
+import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EEndReason;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.Position;
 import com.example.chess_mobile.model.logic.game_states.Result;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.player.PlayerChess;
+import com.example.chess_mobile.view_model.implementations.LocalChessBoardViewModel;
 
 public class LocalChessBoardFragment extends ChessBoardFragment {
     private static final String BOARD_SIZE = "boardSize";
@@ -33,9 +37,7 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
 
     @Override
     protected void handleSquareClick(int row, int col) {
-        // Trong local match, cho phép cả 2 màng đều có thể chơi
-        // Không cần kiểm tra main player color như online match
-
+        // Trong local match, cho phép cả 2 màu đều có thể chơi
         showLastMoveColor();
         if (this._selectedPos == null) {
             showLastMoveColor();
@@ -44,6 +46,112 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
             onToPositionSelected(new Position(row, col));
             showLastMoveColor();
         }
+    }
+
+    @Override
+    protected void drawBoard(Board board) {
+        super.drawBoard(board); // Gọi method cha để vẽ board bình thường
+
+        // Sau khi vẽ board, update critical hit highlight
+        updateCriticalHitHighlight();
+    }
+    @Override
+    protected void showLastMoveColor() {
+        super.showLastMoveColor(); // Gọi logic cha trước
+
+        // Sau đó apply critical hit highlight
+        highlightCriticalHitPiece();
+    }
+
+    @Override
+    protected void showHighlights() {
+        super.showHighlights(); // Gọi logic cha trước
+
+        // Sau đó apply critical hit highlight
+        highlightCriticalHitPiece();
+    }
+
+    /**
+     * Highlight quân đang trong critical hit state
+     */
+    private void highlightCriticalHitPiece() {
+        if (!(_chessboardViewModel instanceof LocalChessBoardViewModel)) {
+            return;
+        }
+
+        LocalChessBoardViewModel localViewModel = (LocalChessBoardViewModel) _chessboardViewModel;
+
+        if (localViewModel.hasCriticalHit()) {
+            Position critPos = localViewModel.getCriticalHitPiecePosition();
+            EPlayer critPlayer = localViewModel.getCriticalHitPlayer();
+            EPlayer currentPlayer = localViewModel.getCurrentPlayer();
+
+            if (critPos != null && critPlayer == currentPlayer) {
+                int boardRow = reversed ? (7 - critPos.row()) : critPos.row();
+                int boardCol = reversed ? (7 - critPos.column()) : critPos.column();
+
+                if (boardRow >= 0 && boardRow < _size && boardCol >= 0 && boardCol < _size) {
+                    // Highlight với màu xanh ngọc đặc biệt cho critical hit
+                    _squares[boardRow][boardCol].setBackgroundColor(0xFF03DAC5); // Material Teal
+                }
+            }
+        }
+    }
+
+    /**
+     * Hiển thị message critical hit
+     */
+    private void updateCriticalHitMessage() {
+        if (!(_chessboardViewModel instanceof LocalChessBoardViewModel)) {
+            return;
+        }
+
+        LocalChessBoardViewModel localViewModel = (LocalChessBoardViewModel) _chessboardViewModel;
+
+        if (localViewModel.hasCriticalHit()) {
+            String message = localViewModel.getLastCriticalHitMessage();
+            EPlayer critPlayer = localViewModel.getCriticalHitPlayer();
+            EPlayer currentPlayer = localViewModel.getCurrentPlayer();
+
+            if (!message.isEmpty() && critPlayer == currentPlayer) {
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
+
+    /**
+     * Update critical hit highlight và message
+     */
+    private void updateCriticalHitHighlight() {
+        highlightCriticalHitPiece();
+        updateCriticalHitMessage();
+    }
+
+    @Override
+    protected void onFromPositionSelected(Position pos) {
+        // Kiểm tra nếu đang trong critical hit turn và chọn sai quân
+        if (_chessboardViewModel instanceof LocalChessBoardViewModel) {
+            LocalChessBoardViewModel localViewModel = (LocalChessBoardViewModel) _chessboardViewModel;
+
+            if (localViewModel.hasCriticalHit()) {
+                Position critPos = localViewModel.getCriticalHitPiecePosition();
+                EPlayer critPlayer = localViewModel.getCriticalHitPlayer();
+                EPlayer currentPlayer = localViewModel.getCurrentPlayer();
+
+                if (critPlayer == currentPlayer && critPos != null && !pos.equals(critPos)) {
+                    if (getContext() != null) {
+                        Toast.makeText(getContext(),
+                                "Chỉ được đi quân vừa critical hit!",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    return; // Không cho phép select
+                }
+            }
+        }
+
+        super.onFromPositionSelected(pos);
     }
 
     @Override
@@ -96,7 +204,6 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
 
         ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(message);
         dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
-            // Trong local match, trực tiếp hiển thị dialog cho đối thủ
             showDrawOfferDialog();
             dialog.dismiss();
         });

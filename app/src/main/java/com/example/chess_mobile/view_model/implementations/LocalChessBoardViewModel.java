@@ -4,31 +4,101 @@ import com.example.chess_mobile.model.logic.features.CriticalHitSystem;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.GameState;
+import com.example.chess_mobile.model.logic.game_states.Position;
 import com.example.chess_mobile.model.logic.moves.Move;
 import com.example.chess_mobile.model.logic.pieces.Piece;
 import com.example.chess_mobile.model.player.PlayerChess;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LocalChessBoardViewModel extends ChessBoardViewModel {
     private PlayerChess _currentDisplayPlayer;
+
+    // Critical Hit System
     private boolean _criticalHitEnabled = false;
     private boolean _hasCriticalHit = false;
     private String _lastCriticalHitMessage = "";
-    private EPlayer _criticalHitPlayer = null; // Ai đang trong trạng thái chí mạng
+    private EPlayer _criticalHitPlayer = null;
+    private Position _criticalHitPiecePosition = null; // Vị trí quân được critical hit
 
     @Override
     public void newGame(String matchId, EPlayer startingPlayer, Board board,
                         PlayerChess main, PlayerChess opponent, Duration mainSide, Duration opponentSide) {
         super.newGame(startingPlayer, board, main, opponent, mainSide, opponentSide);
         updateCurrentDisplayPlayer();
-
-        // Reset critical hit state khi bắt đầu game mới
-        _hasCriticalHit = false;
-        _criticalHitPlayer = null;
-        _lastCriticalHitMessage = "";
+        resetCriticalHitState();
     }
 
+    @Override
+    public void gameStateMakeMove(Move move) {
+        GameState currentState = getGameState().getValue();
+        if (currentState == null || currentState.isGameOver()) return;
+
+        Piece movingPiece = currentState.getBoard().getPiece(move.getFromPos());
+        boolean isCapture = !currentState.getBoard().isEmpty(move.getToPos());
+        EPlayer currentPlayer = getCurrentPlayer();
+
+        // Thực hiện nước đi KHÔNG chuyển lượt
+        boolean captureOrPawn = currentState.makeMoveWithoutTurnChange(move);
+
+        // XỬ LÝ CRITICAL HIT
+        boolean shouldKeepTurn = false;
+
+        // Chỉ cho phép critical hit nếu:
+        // 1. Critical hit được bật
+        // 2. Có bắt quân
+        // 3. Có quân di chuyển
+        // 4. KHÔNG đang trong critical hit turn (ngăn stack)
+        if (_criticalHitEnabled && isCapture && movingPiece != null &&
+                !(_hasCriticalHit && _criticalHitPlayer == currentPlayer)) {
+
+            boolean criticalHit = CriticalHitSystem.isCriticalHit(movingPiece.getType(), true);
+
+            if (criticalHit) {
+                shouldKeepTurn = true;
+                _hasCriticalHit = true;
+                _criticalHitPlayer = currentPlayer;
+                _criticalHitPiecePosition = move.getToPos(); // Lưu vị trí quân critical hit
+            }
+        }
+
+        // Xử lý kết thúc critical hit turn
+        if (_hasCriticalHit && _criticalHitPlayer == currentPlayer) {
+            // Kết thúc critical hit nếu:
+            // 1. Không bắt quân trong lượt critical hit, HOẶC
+            // 2. Bắt quân nhưng không được critical hit mới
+            if (!isCapture || !shouldKeepTurn) {
+                resetCriticalHitState();
+                shouldKeepTurn = false;
+            }
+        }
+
+        // Chuyển lượt chỉ khi KHÔNG có critical hit
+        if (!shouldKeepTurn) {
+            currentState.setCurrentPlayer(currentPlayer.getOpponent());
+        }
+
+        // Update game state
+        currentState.updateAfterMove(captureOrPawn);
+        this._result.setValue(currentState.getResult());
+        updateCurrentDisplayPlayer();
+    }
+
+    @Override
+    public List<Move> getLegalMovesForPiece(Position pos) {
+        // Nếu đang trong critical hit turn, chỉ cho phép đi quân critical hit
+        if (_hasCriticalHit && _criticalHitPlayer == getCurrentPlayer()) {
+            if (_criticalHitPiecePosition != null && !pos.equals(_criticalHitPiecePosition)) {
+                return new ArrayList<>(); // Không cho phép đi quân khác
+            }
+        }
+
+        return super.getLegalMovesForPiece(pos);
+    }
+
+    // Critical Hit Methods
     public void setCriticalHitEnabled(boolean enabled) {
         this._criticalHitEnabled = enabled;
     }
@@ -45,94 +115,35 @@ public class LocalChessBoardViewModel extends ChessBoardViewModel {
         return _lastCriticalHitMessage;
     }
 
-    @Override
-    public void gameStateMakeMove(Move move) {
-        GameState currentState = getGameState().getValue();
-        if (currentState == null || currentState.isGameOver()) return;
-
-        Piece movingPiece = currentState.getBoard().getPiece(move.getFromPos());
-        boolean isCapture = !currentState.getBoard().isEmpty(move.getToPos());
-        EPlayer currentPlayer = getCurrentPlayer();
-
-        // Thực hiện nước đi bình thường - GameState vẫn hoạt động như cũ
-        super.gameStateMakeMove(move);
-
-        // XỬ LÝ CRITICAL HIT CHỈ TRONG VIEWMODEL
-        if (_criticalHitEnabled && isCapture && movingPiece != null) {
-            boolean criticalHit = CriticalHitSystem.isCriticalHit(movingPiece.getType(), true);
-
-            if (criticalHit) {
-                // Set critical hit state
-                _hasCriticalHit = true;
-                _criticalHitPlayer = currentPlayer;
-                String pieceName = CriticalHitSystem.getPieceNameInVietnamese(movingPiece.getType());
-                _lastCriticalHitMessage = pieceName + " chí mạng! Được đi thêm một lượt!";
-
-                // HACK: Đảo ngược lại current player trong GameState
-                // vì super.gameStateMakeMove() đã chuyển lượt
-                currentState = getGameState().getValue();
-                if (currentState != null) {
-                    // Sử dụng reflection hoặc method có sẵn để set lại current player
-                    forceSetCurrentPlayer(currentState, currentPlayer);
-                }
-                return; // Không cập nhật display player
-            }
-        }
-
-        // Kiểm tra xem có phải đang trong critical hit turn không
-        if (_hasCriticalHit && _criticalHitPlayer == currentPlayer) {
-            // Nếu không bắt quân trong lượt critical hit, kết thúc critical hit
-            if (!isCapture) {
-                endCriticalHitTurn();
-            }
-        } else {
-            // Reset critical hit nếu không trong trạng thái critical hit
-            _hasCriticalHit = false;
-            _criticalHitPlayer = null;
-            _lastCriticalHitMessage = "";
-        }
-
-        updateCurrentDisplayPlayer();
+    public Position getCriticalHitPiecePosition() {
+        return _criticalHitPiecePosition;
     }
 
-    /**
-     * Force set current player trong GameState (hack để không sửa GameState)
-     */
-    private void forceSetCurrentPlayer(GameState gameState, EPlayer player) {
-        try {
-            // Option 1: Nếu có setter
-            // gameState.setCurrentPlayer(player);
-
-            // Option 2: Sử dụng reflection (nếu field private)
-            java.lang.reflect.Field field = GameState.class.getDeclaredField("currentPlayer");
-            field.setAccessible(true);
-            field.set(gameState, player);
-        } catch (Exception e) {
-            // Fallback: Log error nhưng vẫn tiếp tục
-            android.util.Log.e("CRITICAL_HIT", "Cannot set current player: " + e.getMessage());
-        }
+    public EPlayer getCriticalHitPlayer() {
+        return _criticalHitPlayer;
     }
 
-    /**
-     * Kết thúc lượt critical hit
-     */
+    private void resetCriticalHitState() {
+        _hasCriticalHit = false;
+        _criticalHitPlayer = null;
+        _lastCriticalHitMessage = "";
+        _criticalHitPiecePosition = null;
+    }
+
     public void endCriticalHitTurn() {
         if (_hasCriticalHit) {
-            _hasCriticalHit = false;
-            _criticalHitPlayer = null;
-            _lastCriticalHitMessage = "";
+            resetCriticalHitState();
 
-            // Chuyển lượt bình thường
             GameState currentState = getGameState().getValue();
             if (currentState != null) {
                 EPlayer nextPlayer = getCurrentPlayer().getOpponent();
-                forceSetCurrentPlayer(currentState, nextPlayer);
+                currentState.setCurrentPlayer(nextPlayer);
             }
-
             updateCurrentDisplayPlayer();
         }
     }
 
+    // Display Player Management
     private void updateCurrentDisplayPlayer() {
         EPlayer currentPlayerColor = getCurrentPlayer();
         if (currentPlayerColor != null) {

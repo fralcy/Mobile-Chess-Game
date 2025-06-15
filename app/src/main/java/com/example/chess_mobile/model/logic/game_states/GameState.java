@@ -78,6 +78,23 @@ public class GameState implements Serializable {
         checkForGameOver();
     }
 
+    public boolean makeMoveWithoutTurnChange(Move move) {
+        board.setPawnSkipPosition(currentPlayer, null);
+        return move.execute(board);
+    }
+
+    public void updateAfterMove(boolean captureOrPawn) {
+        if (captureOrPawn) {
+            noCaptureOrPawnMoves = 0;
+            stateHistory.clear();
+        } else {
+            noCaptureOrPawnMoves++;
+        }
+
+        updateStateString();
+        checkForGameOver();
+    }
+
     public List<Move> getAllLegalMovesFor(EPlayer player) {
         List<Move> legalMoves = new ArrayList<>();
 

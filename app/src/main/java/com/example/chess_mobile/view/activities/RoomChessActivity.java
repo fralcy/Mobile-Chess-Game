@@ -33,7 +33,9 @@ import com.example.chess_mobile.view.fragments.OnlineCongratsCardFragment;
 import com.example.chess_mobile.view.fragments.PlayerCardFragment;
 import com.example.chess_mobile.view.interfaces.IGameOverListener;
 import com.example.chess_mobile.view_model.enums.ESocketMessageType;
+import com.example.chess_mobile.view_model.implementations.AIChessBoardViewModel;
 import com.example.chess_mobile.view_model.implementations.ChessBoardViewModel;
+import com.example.chess_mobile.view_model.implementations.LocalChessBoardViewModel;
 import com.example.chess_mobile.view_model.interfaces.IChessViewModel;
 import com.google.gson.Gson;
 
@@ -165,6 +167,12 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                     .orElse(duration);
             blackTime = Optional.ofNullable((Duration) getIntent().getSerializableExtra("BLACK_TIME"))
                     .orElse(duration);
+
+            boolean criticalHitEnabled = getIntent().getBooleanExtra("CRITICAL_HIT_ENABLED", false);
+
+            if (chessBoardViewModel instanceof LocalChessBoardViewModel) {
+                ((LocalChessBoardViewModel) chessBoardViewModel).setCriticalHitEnabled(criticalHitEnabled);
+            }
         }
 
         chessBoardViewModel.newGame(this.matchId, EPlayer.WHITE, board.initial(), mainPlayer,

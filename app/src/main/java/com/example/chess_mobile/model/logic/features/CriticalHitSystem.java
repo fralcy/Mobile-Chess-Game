@@ -53,18 +53,4 @@ public class CriticalHitSystem {
             case KING -> 0.0; // Vua không thể chí mạng
         };
     }
-
-    /**
-     * Lấy tên tiếng Việt của loại quân để hiển thị
-     */
-    public static String getPieceNameInVietnamese(EPieceType pieceType) {
-        return switch (pieceType) {
-            case QUEEN -> "Hậu";
-            case ROOK -> "Xe";
-            case BISHOP -> "Tượng";
-            case KNIGHT -> "Mã";
-            case PAWN -> "Tốt";
-            case KING -> "Vua";
-        };
-    }
 }
