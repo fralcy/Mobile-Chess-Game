@@ -192,4 +192,7 @@ public class GameState implements Serializable {
         Board newBoard = board.copy();
         return new GameState(currentPlayer, newBoard);
     }
+    public void setCurrentPlayer(EPlayer player) {
+        this.currentPlayer = player;
+    }
 }

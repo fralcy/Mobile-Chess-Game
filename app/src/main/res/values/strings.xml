@@ -113,4 +113,22 @@
     <string name="_25">25</string>
     <string name="gold">Gold</string>
     <string name="_logout">Logout</string>
+
+    <!-- Critical Hit strings -->
+    <string name="critical_hit_feature">Enable Critical Hit</string>
+    <string name="critical_hit_description">When a piece captures an opponent, it has a chance to get an extra turn. Probabilities: Queen 2%, Rook 3%, Bishop 4%, Knight &amp; Pawn 6%. King cannot critical hit.</string>
+    <string name="critical_hit_enabled">Tính năng chí mạng: BẬT</string>
+    <string name="critical_hit_disabled">Tính năng chí mạng: TẮT</string>
+    <string name="critical_hit_end">Lượt chí mạng kết thúc!</string>
+
+    <!-- Vietnamese piece names for critical hit messages -->
+    <string name="piece_queen_vn">Hậu</string>
+    <string name="piece_rook_vn">Xe</string>
+    <string name="piece_bishop_vn">Tượng</string>
+    <string name="piece_knight_vn">Mã</string>
+    <string name="piece_pawn_vn">Tốt</string>
+    <string name="piece_king_vn">Vua</string>
+
+    <!-- Game features section -->
+    <string name="game_features">Game Features</string>
 </resources>
