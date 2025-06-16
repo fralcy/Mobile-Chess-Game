@@ -57,10 +57,18 @@ public class LocalChessBoardViewModel extends ChessBoardViewModel {
             boolean criticalHit = CriticalHitSystem.isCriticalHit(movingPiece.getType(), true);
 
             if (criticalHit) {
-                shouldKeepTurn = true;
-                _hasCriticalHit = true;
-                _criticalHitPlayer = currentPlayer;
-                _criticalHitPiecePosition = move.getToPos(); // Lưu vị trí quân critical hit
+                // KIỂM TRA QUÂN CRITICAL HIT CÓ NƯỚC ĐI HỢP LỆ KHÔNG
+                Position critPos = move.getToPos();
+                List<Move> critMoves = currentState.getLegalMovesForPiece(critPos);
+
+                if (!critMoves.isEmpty()) {
+                    // Chỉ cho critical hit khi quân còn nước đi
+                    shouldKeepTurn = true;
+                    _hasCriticalHit = true;
+                    _criticalHitPlayer = currentPlayer;
+                    _criticalHitPiecePosition = move.getToPos(); // Lưu vị trí quân critical hit
+                }
+                // Nếu quân không còn nước đi -> bỏ qua lượt thưởng (không làm gì)
             }
         }
 

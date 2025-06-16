@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -33,7 +32,6 @@ import com.example.chess_mobile.view.fragments.OnlineCongratsCardFragment;
 import com.example.chess_mobile.view.fragments.PlayerCardFragment;
 import com.example.chess_mobile.view.interfaces.IGameOverListener;
 import com.example.chess_mobile.view_model.enums.ESocketMessageType;
-import com.example.chess_mobile.view_model.implementations.AIChessBoardViewModel;
 import com.example.chess_mobile.view_model.implementations.ChessBoardViewModel;
 import com.example.chess_mobile.view_model.implementations.LocalChessBoardViewModel;
 import com.example.chess_mobile.view_model.interfaces.IChessViewModel;
@@ -130,7 +128,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
     private CongratsCardFragment initCongratsCardFragment(EMatch matchType, Result result,
                                                           PlayerChess mainPlayer) {
         return switch (matchType) {
-            case AI, RANKED,PRIVATE -> OnlineCongratsCardFragment.newInstance(result, mainPlayer);
+            case RANKED,PRIVATE -> OnlineCongratsCardFragment.newInstance(result, mainPlayer);
             default -> CongratsCardFragment.newInstance(result);
         };
     }

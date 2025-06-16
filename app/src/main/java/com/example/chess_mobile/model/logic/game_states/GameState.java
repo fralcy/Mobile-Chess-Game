@@ -113,6 +113,16 @@ public class GameState implements Serializable {
     }
 
     private void checkForGameOver() {
+        if (!board.hasKing(EPlayer.WHITE)) {
+            setResult(Result.win(EPlayer.BLACK, EEndReason.CHECKMATE));
+            return;
+        }
+
+        if (!board.hasKing(EPlayer.BLACK)) {
+            setResult(Result.win(EPlayer.WHITE, EEndReason.CHECKMATE));
+            return;
+        }
+
         List<Move> moves = getAllLegalMovesFor(currentPlayer);
 
         if (moves.isEmpty()) {
