@@ -1,28 +1,23 @@
 package com.example.chess_mobile.view.fragments;
 
-import android.app.Dialog;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 
-import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.logic.game_states.Board;
-import com.example.chess_mobile.model.logic.game_states.EEndReason;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.Position;
-import com.example.chess_mobile.model.logic.game_states.Result;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.model.player.PlayerChess;
+import com.example.chess_mobile.view.components.EmotionManager;
 import com.example.chess_mobile.view_model.implementations.LocalChessBoardViewModel;
 
 public class LocalChessBoardFragment extends ChessBoardFragment {
     private static final String BOARD_SIZE = "boardSize";
     private static final String MAIN_PLAYER = "mainPlayer";
     private static final String TYPE = "matchType";
+
+    private EmotionManager _emotionManager;
 
     @NonNull
     public static LocalChessBoardFragment newInstance(int size, PlayerChess mainPlayer, EMatch matchType) {
@@ -34,10 +29,13 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
         fragment.setArguments(args);
         return fragment;
     }
-
     @Override
     protected void handleSquareClick(int row, int col) {
-        // Trong local match, cho phép cả 2 màu đều có thể chơi
+        // Clear emotion data trước khi xử lý click mới
+        if (_chessboardViewModel instanceof LocalChessBoardViewModel) {
+            ((LocalChessBoardViewModel) _chessboardViewModel).clearEmotionData();
+        }
+
         showLastMoveColor();
         if (this._selectedPos == null) {
             showLastMoveColor();
@@ -50,24 +48,24 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
 
     @Override
     protected void drawBoard(Board board) {
-        super.drawBoard(board); // Gọi method cha để vẽ board bình thường
+        super.drawBoard(board);
 
-        // Sau khi vẽ board, update critical hit highlight
+        // Update critical hit highlight
         updateCriticalHitHighlight();
+
+        // Update emotion display
+        updateEmotionDisplay();
     }
+
     @Override
     protected void showLastMoveColor() {
-        super.showLastMoveColor(); // Gọi logic cha trước
-
-        // Sau đó apply critical hit highlight
+        super.showLastMoveColor();
         highlightCriticalHitPiece();
     }
 
     @Override
     protected void showHighlights() {
-        super.showHighlights(); // Gọi logic cha trước
-
-        // Sau đó apply critical hit highlight
+        super.showHighlights();
         highlightCriticalHitPiece();
     }
 
@@ -91,7 +89,6 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
                 int boardCol = reversed ? (7 - critPos.column()) : critPos.column();
 
                 if (boardRow >= 0 && boardRow < _size && boardCol >= 0 && boardCol < _size) {
-                    // Highlight với màu xanh ngọc đặc biệt cho critical hit
                     _squares[boardRow][boardCol].setBackgroundColor(0xFF03DAC5); // Material Teal
                 }
             }
@@ -129,6 +126,42 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
         updateCriticalHitMessage();
     }
 
+    /**
+     * Update emotion display
+     */
+    private void updateEmotionDisplay() {
+        if (!(_chessboardViewModel instanceof LocalChessBoardViewModel) || _emotionManager == null) {
+            return;
+        }
+
+        LocalChessBoardViewModel localViewModel = (LocalChessBoardViewModel) _chessboardViewModel;
+
+        if (localViewModel.hasNewEmotion()) {
+            Position emotionPos = localViewModel.getLastEmotionPosition();
+            var emotionType = localViewModel.getLastEmotionShown();
+            String emotionMessage = localViewModel.getLastEmotionMessage();
+
+            if (emotionPos != null && emotionType != null) {
+                // Convert position for display (handle board reversal)
+                int displayRow = reversed ? (7 - emotionPos.row()) : emotionPos.row();
+                int displayCol = reversed ? (7 - emotionPos.column()) : emotionPos.column();
+                Position displayPos = new Position(displayRow, displayCol);
+
+                // Hiển thị emotion
+                if (emotionType == com.example.chess_mobile.model.logic.features.EmotionSystem.EmotionType.COOL) {
+                    _emotionManager.showCriticalHitEmotion(displayPos);
+                } else {
+                    _emotionManager.showEmotion(displayPos, emotionType);
+                }
+
+                // Hiển thị message nếu có
+                if (!emotionMessage.isEmpty() && getContext() != null) {
+                    Toast.makeText(getContext(), emotionMessage, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
     @Override
     protected void onFromPositionSelected(Position pos) {
         // Kiểm tra nếu đang trong critical hit turn và chọn sai quân
@@ -146,7 +179,7 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
                                 "Chỉ được đi quân vừa critical hit!",
                                 Toast.LENGTH_SHORT).show();
                     }
-                    return; // Không cho phép select
+                    return;
                 }
             }
         }
@@ -154,60 +187,32 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
         super.onFromPositionSelected(pos);
     }
 
-    @Override
-    public void showDrawOfferDialog() {
-        Log.d("LOCAL_MATCH", "Draw offer in local match");
-        Dialog dialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
-        dialog.setContentView(R.layout.layout_confirmation_dialog);
+    /**
+     * Set emotion enabled state
+     */
+    public void setEmotionEnabled(boolean enabled) {
+        if (_emotionManager != null) {
+            _emotionManager.setEmotionEnabled(enabled);
+        }
 
-        String currentPlayerName = this._chessboardViewModel.getCurrentPlayer() == EPlayer.WHITE ?
-                "White Player" : "Black Player";
-        String message = currentPlayerName + " offers a draw. Do you accept?";
+        if (_chessboardViewModel instanceof LocalChessBoardViewModel) {
+            ((LocalChessBoardViewModel) _chessboardViewModel).setEmotionEnabled(enabled);
+        }
+    }
 
-        ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(message);
-        dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
-            this._chessboardViewModel.setResult(Result.draw(EEndReason.DRAW));
-            dialog.dismiss();
-        });
-        dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());
-        dialog.show();
+    /**
+     * Clear all emotions from board
+     */
+    public void clearAllEmotions() {
+        if (_emotionManager != null) {
+            _emotionManager.clearAllEmotions();
+        }
     }
 
     @Override
-    public void showResignationDialog() {
-        Dialog dialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
-        dialog.setContentView(R.layout.layout_confirmation_dialog);
-
-        String currentPlayerName = this._chessboardViewModel.getCurrentPlayer() == EPlayer.WHITE ?
-                "White Player" : "Black Player";
-        String message = currentPlayerName + " wants to resign. Confirm?";
-
-        ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(message);
-        dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
-            EPlayer winner = this._chessboardViewModel.getCurrentPlayer() == EPlayer.WHITE ?
-                    EPlayer.BLACK : EPlayer.WHITE;
-            this._chessboardViewModel.setResult(Result.win(winner, EEndReason.RESIGNATION));
-            dialog.dismiss();
-        });
-        dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());
-        dialog.show();
-    }
-
-    @Override
-    public void showConfirmOfferDialog() {
-        Dialog dialog = new Dialog(requireContext(), R.style.Dialog_Full_Width);
-        dialog.setContentView(R.layout.layout_confirmation_dialog);
-
-        String currentPlayerName = this._chessboardViewModel.getCurrentPlayer() == EPlayer.WHITE ?
-                "White Player" : "Black Player";
-        String message = currentPlayerName + " wants to offer a draw. Confirm?";
-
-        ((TextView)dialog.findViewById(R.id.dialogMessage)).setText(message);
-        dialog.findViewById(R.id.buttonYes).setOnClickListener(l -> {
-            showDrawOfferDialog();
-            dialog.dismiss();
-        });
-        dialog.findViewById(R.id.buttonNo).setOnClickListener(l -> dialog.dismiss());
-        dialog.show();
+    public void onDestroy() {
+        super.onDestroy();
+        // Clear emotions khi destroy
+        clearAllEmotions();
     }
 }

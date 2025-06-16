@@ -203,7 +203,26 @@
             android:textSize="12sp"
             android:layout_marginStart="32dp" />
 
+        <!-- Emotion Feature Section -->
+        <CheckBox
+            android:id="@+id/checkBoxEmotion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/emotion_feature"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/emotion_description"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp"
+            android:layout_marginStart="32dp" />
+
     </LinearLayout>
+
 
     <!-- Play Button -->
     <Button

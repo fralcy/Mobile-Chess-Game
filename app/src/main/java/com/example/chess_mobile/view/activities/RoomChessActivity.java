@@ -167,9 +167,11 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                     .orElse(duration);
 
             boolean criticalHitEnabled = getIntent().getBooleanExtra("CRITICAL_HIT_ENABLED", false);
+            boolean emotedEnabled = getIntent().getBooleanExtra("EMOTION_ENABLED", false);
 
             if (chessBoardViewModel instanceof LocalChessBoardViewModel) {
                 ((LocalChessBoardViewModel) chessBoardViewModel).setCriticalHitEnabled(criticalHitEnabled);
+                ((LocalChessBoardViewModel) chessBoardViewModel).setEmotionEnabled(emotedEnabled);
             }
         }
 

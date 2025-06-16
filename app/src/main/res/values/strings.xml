@@ -117,9 +117,9 @@
     <!-- Critical Hit strings -->
     <string name="critical_hit_feature">Enable Critical Hit</string>
     <string name="critical_hit_description">When a piece captures an opponent, it has a chance to get an extra turn. Probabilities: Queen 2%, Rook 3%, Bishop 4%, Knight &amp; Pawn 6%. King cannot critical hit.</string>
-    <string name="critical_hit_enabled">Tính năng chí mạng: BẬT</string>
-    <string name="critical_hit_disabled">Tính năng chí mạng: TẮT</string>
-    <string name="critical_hit_end">Lượt chí mạng kết thúc!</string>
+    <string name="critical_hit_enabled">Critical Feature: ON</string>
+    <string name="critical_hit_disabled">Critical Feature: OFF</string>
+    <string name="critical_hit_end">Critical Turn Ends!</string>
 
     <!-- Vietnamese piece names for critical hit messages -->
     <string name="piece_queen_vn">Hậu</string>
@@ -131,4 +131,10 @@
 
     <!-- Game features section -->
     <string name="game_features">Game Features</string>
+
+    <!-- Emotion Feature strings -->
+    <string name="emotion_feature">Enable emotes for chess pieces</string>
+    <string name="emotion_description">Chess pieces will show random emotes or reactions to moves.</string>
+    <string name="emotion_enabled">Expressive feature: ON</string>
+    <string name="emotion_disabled">Expressive feature: OFF</string>
 </resources>

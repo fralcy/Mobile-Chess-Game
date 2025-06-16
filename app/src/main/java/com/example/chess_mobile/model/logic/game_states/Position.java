@@ -20,4 +20,10 @@ public record Position(int row, int column) implements Serializable {
     public Position plus(Direction dir) {
         return new Position(row + dir.getRowDelta(), column + dir.getColumnDelta());
     }
+    public int getRow() {
+        return row;
+    }
+    public int getCol() {
+        return column;
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.chess_mobile.view_model.implementations;
 
 import com.example.chess_mobile.model.logic.features.CriticalHitSystem;
+import com.example.chess_mobile.model.logic.features.EmotionSystem;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.GameState;
@@ -21,7 +22,13 @@ public class LocalChessBoardViewModel extends ChessBoardViewModel {
     private boolean _hasCriticalHit = false;
     private String _lastCriticalHitMessage = "";
     private EPlayer _criticalHitPlayer = null;
-    private Position _criticalHitPiecePosition = null; // Vị trí quân được critical hit
+    private Position _criticalHitPiecePosition = null;
+
+    // Emotion System
+    private boolean _emotionEnabled = false;
+    private EmotionSystem.EmotionType _lastEmotionShown = null;
+    private Position _lastEmotionPosition = null;
+    private String _lastEmotionMessage = "";
 
     @Override
     public void newGame(String matchId, EPlayer startingPlayer, Board board,
@@ -29,6 +36,7 @@ public class LocalChessBoardViewModel extends ChessBoardViewModel {
         super.newGame(startingPlayer, board, main, opponent, mainSide, opponentSide);
         updateCurrentDisplayPlayer();
         resetCriticalHitState();
+        resetEmotionState();
     }
 
     @Override
@@ -45,43 +53,37 @@ public class LocalChessBoardViewModel extends ChessBoardViewModel {
 
         // XỬ LÝ CRITICAL HIT
         boolean shouldKeepTurn = false;
+        boolean isCriticalHit = false;
 
-        // Chỉ cho phép critical hit nếu:
-        // 1. Critical hit được bật
-        // 2. Có bắt quân
-        // 3. Có quân di chuyển
-        // 4. KHÔNG đang trong critical hit turn (ngăn stack)
         if (_criticalHitEnabled && isCapture && movingPiece != null &&
                 !(_hasCriticalHit && _criticalHitPlayer == currentPlayer)) {
 
             boolean criticalHit = CriticalHitSystem.isCriticalHit(movingPiece.getType(), true);
 
             if (criticalHit) {
-                // KIỂM TRA QUÂN CRITICAL HIT CÓ NƯỚC ĐI HỢP LỆ KHÔNG
                 Position critPos = move.getToPos();
                 List<Move> critMoves = currentState.getLegalMovesForPiece(critPos);
 
                 if (!critMoves.isEmpty()) {
-                    // Chỉ cho critical hit khi quân còn nước đi
                     shouldKeepTurn = true;
+                    isCriticalHit = true;
                     _hasCriticalHit = true;
                     _criticalHitPlayer = currentPlayer;
                     _criticalHitPiecePosition = move.getToPos(); // Lưu vị trí quân critical hit
                 }
-                // Nếu quân không còn nước đi -> bỏ qua lượt thưởng (không làm gì)
             }
         }
 
         // Xử lý kết thúc critical hit turn
         if (_hasCriticalHit && _criticalHitPlayer == currentPlayer) {
-            // Kết thúc critical hit nếu:
-            // 1. Không bắt quân trong lượt critical hit, HOẶC
-            // 2. Bắt quân nhưng không được critical hit mới
             if (!isCapture || !shouldKeepTurn) {
                 resetCriticalHitState();
                 shouldKeepTurn = false;
             }
         }
+
+        // XỬ LÝ EMOTION SYSTEM
+        handleEmotionAfterMove(move, isCapture, isCriticalHit, movingPiece);
 
         // Chuyển lượt chỉ khi KHÔNG có critical hit
         if (!shouldKeepTurn) {
@@ -94,19 +96,86 @@ public class LocalChessBoardViewModel extends ChessBoardViewModel {
         updateCurrentDisplayPlayer();
     }
 
+    /**
+     * Xử lý emotion sau khi di chuyển
+     */
+    private void handleEmotionAfterMove(Move move, boolean isCapture, boolean isCriticalHit, Piece movingPiece) {
+        if (!_emotionEnabled || movingPiece == null) {
+            return;
+        }
+
+        // Xác định context
+        EmotionSystem.EmotionContext context;
+        if (isCriticalHit) {
+            context = EmotionSystem.EmotionContext.CRITICAL_HIT;
+        } else if (isCapture) {
+            context = EmotionSystem.EmotionContext.CAPTURE_PIECE;
+        } else {
+            context = EmotionSystem.EmotionContext.NORMAL_MOVE;
+        }
+
+        // Kiểm tra có nên hiện biểu cảm không
+        if (!EmotionSystem.shouldShowEmotion(context)) {
+            return;
+        }
+
+        // Tính toán biểu cảm
+        EmotionSystem.EmotionType emotion = EmotionSystem.calculateEmotion(
+                movingPiece.getType(), context
+        );
+
+        if (emotion != null) {
+            _lastEmotionShown = emotion;
+            _lastEmotionPosition = move.getToPos();
+            _lastEmotionMessage = createEmotionMessage(emotion, movingPiece.getType(), context);
+        }
+    }
+
+    /**
+     * Tạo message cho emotion
+     */
+    private String createEmotionMessage(EmotionSystem.EmotionType emotion,
+                                        com.example.chess_mobile.model.logic.pieces.EPieceType pieceType,
+                                        EmotionSystem.EmotionContext context) {
+        String pieceNameVn = getPieceNameVietnamese(pieceType);
+
+        return switch (emotion) {
+            case HAPPY -> pieceNameVn + " vui vẻ " + emotion.getEmoji();
+            case ANGRY -> pieceNameVn + " tức giận " + emotion.getEmoji();
+            case SURPRISED -> pieceNameVn + " ngạc nhiên " + emotion.getEmoji();
+            case COOL -> pieceNameVn + " ngầu quá " + emotion.getEmoji();
+            case WORRIED -> pieceNameVn + " lo lắng " + emotion.getEmoji();
+            case NEUTRAL -> pieceNameVn + " bình tĩnh " + emotion.getEmoji();
+        };
+    }
+
+    /**
+     * Lấy tên quân cờ tiếng Việt
+     */
+    private String getPieceNameVietnamese(com.example.chess_mobile.model.logic.pieces.EPieceType pieceType) {
+        return switch (pieceType) {
+            case QUEEN -> "Hậu";
+            case ROOK -> "Xe";
+            case BISHOP -> "Tượng";
+            case KNIGHT -> "Mã";
+            case PAWN -> "Tốt";
+            case KING -> "Vua";
+        };
+    }
+
     @Override
     public List<Move> getLegalMovesForPiece(Position pos) {
         // Nếu đang trong critical hit turn, chỉ cho phép đi quân critical hit
         if (_hasCriticalHit && _criticalHitPlayer == getCurrentPlayer()) {
             if (_criticalHitPiecePosition != null && !pos.equals(_criticalHitPiecePosition)) {
-                return new ArrayList<>(); // Không cho phép đi quân khác
+                return new ArrayList<>();
             }
         }
 
         return super.getLegalMovesForPiece(pos);
     }
 
-    // Critical Hit Methods
+    // ============ CRITICAL HIT METHODS ============
     public void setCriticalHitEnabled(boolean enabled) {
         this._criticalHitEnabled = enabled;
     }
@@ -151,7 +220,45 @@ public class LocalChessBoardViewModel extends ChessBoardViewModel {
         }
     }
 
-    // Display Player Management
+    // ============ EMOTION METHODS ============
+    public void setEmotionEnabled(boolean enabled) {
+        this._emotionEnabled = enabled;
+        if (!enabled) {
+            resetEmotionState();
+        }
+    }
+
+    public boolean isEmotionEnabled() {
+        return _emotionEnabled;
+    }
+
+    public EmotionSystem.EmotionType getLastEmotionShown() {
+        return _lastEmotionShown;
+    }
+
+    public Position getLastEmotionPosition() {
+        return _lastEmotionPosition;
+    }
+
+    public String getLastEmotionMessage() {
+        return _lastEmotionMessage;
+    }
+
+    public boolean hasNewEmotion() {
+        return _lastEmotionShown != null && _lastEmotionPosition != null;
+    }
+
+    public void clearEmotionData() {
+        resetEmotionState();
+    }
+
+    private void resetEmotionState() {
+        _lastEmotionShown = null;
+        _lastEmotionPosition = null;
+        _lastEmotionMessage = "";
+    }
+
+    // ============ DISPLAY PLAYER MANAGEMENT ============
     private void updateCurrentDisplayPlayer() {
         EPlayer currentPlayerColor = getCurrentPlayer();
         if (currentPlayerColor != null) {
