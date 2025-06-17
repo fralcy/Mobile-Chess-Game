@@ -3,6 +3,7 @@ package com.example.chess_mobile.view.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.CheckBox;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +23,9 @@ public class LocalMatchActivity extends AppCompatActivity implements ILocalMatch
     private Button buttonWhite10, buttonWhite15, buttonWhite20;
     private Button buttonBlack10, buttonBlack15, buttonBlack20;
     private Button buttonPlay;
+    // Features checkboxes
+    private CheckBox checkBoxCriticalHit;
+    private CheckBox checkBoxEmotion;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,8 @@ public class LocalMatchActivity extends AppCompatActivity implements ILocalMatch
         buttonBlack20 = findViewById(R.id.localMatchBlackButton20Min);
 
         buttonPlay = findViewById(R.id.localMatchButtonPlay);
+        checkBoxCriticalHit = findViewById(R.id.checkBoxCriticalHit);
+        checkBoxEmotion = findViewById(R.id.checkBoxEmotion);
     }
 
     private void setupWhiteTimeButtons() {
@@ -138,6 +144,9 @@ public class LocalMatchActivity extends AppCompatActivity implements ILocalMatch
         intent.putExtra(RoomChessActivity.TYPE, EMatch.LOCAL);
         intent.putExtra("WHITE_TIME", whitePlayerTime);
         intent.putExtra("BLACK_TIME", blackPlayerTime);
+
+        intent.putExtra("CRITICAL_HIT_ENABLED", checkBoxCriticalHit.isChecked());
+        intent.putExtra("EMOTION_ENABLED", checkBoxEmotion.isChecked());
 
         startActivity(intent);
     }

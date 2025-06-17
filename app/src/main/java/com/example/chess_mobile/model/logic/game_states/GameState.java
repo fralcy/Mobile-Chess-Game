@@ -78,6 +78,23 @@ public class GameState implements Serializable {
         checkForGameOver();
     }
 
+    public boolean makeMoveWithoutTurnChange(Move move) {
+        board.setPawnSkipPosition(currentPlayer, null);
+        return move.execute(board);
+    }
+
+    public void updateAfterMove(boolean captureOrPawn) {
+        if (captureOrPawn) {
+            noCaptureOrPawnMoves = 0;
+            stateHistory.clear();
+        } else {
+            noCaptureOrPawnMoves++;
+        }
+
+        updateStateString();
+        checkForGameOver();
+    }
+
     public List<Move> getAllLegalMovesFor(EPlayer player) {
         List<Move> legalMoves = new ArrayList<>();
 
@@ -96,6 +113,16 @@ public class GameState implements Serializable {
     }
 
     private void checkForGameOver() {
+        if (!board.hasKing(EPlayer.WHITE)) {
+            setResult(Result.win(EPlayer.BLACK, EEndReason.CHECKMATE));
+            return;
+        }
+
+        if (!board.hasKing(EPlayer.BLACK)) {
+            setResult(Result.win(EPlayer.WHITE, EEndReason.CHECKMATE));
+            return;
+        }
+
         List<Move> moves = getAllLegalMovesFor(currentPlayer);
 
         if (moves.isEmpty()) {
@@ -191,5 +218,8 @@ public class GameState implements Serializable {
     public GameState copy() {
         Board newBoard = board.copy();
         return new GameState(currentPlayer, newBoard);
+    }
+    public void setCurrentPlayer(EPlayer player) {
+        this.currentPlayer = player;
     }
 }

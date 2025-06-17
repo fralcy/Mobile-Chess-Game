@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ChessBoardViewModel extends ViewModel implements IChessViewModel {
+public abstract class ChessBoardViewModel extends ViewModel implements IChessViewModel {
     protected final MutableLiveData<GameState> _gameState = new MutableLiveData<>();
     protected final MutableLiveData<Result> _result = new MutableLiveData<>();
     protected final MutableLiveData<PlayerChess> _main = new MutableLiveData<>();
