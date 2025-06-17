@@ -1,9 +1,10 @@
 package com.example.chess_mobile.view.fragments;
 
 import android.os.Bundle;
-import android.widget.Toast;
+import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
+import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.logic.game_states.Position;
@@ -109,12 +110,6 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
             String message = localViewModel.getLastCriticalHitMessage();
             EPlayer critPlayer = localViewModel.getCriticalHitPlayer();
             EPlayer currentPlayer = localViewModel.getCurrentPlayer();
-
-            if (!message.isEmpty() && critPlayer == currentPlayer) {
-                if (getContext() != null) {
-                    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-                }
-            }
         }
     }
 
@@ -153,11 +148,6 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
                 } else {
                     getEmotionManager().showEmotion(displayPos, emotionType);
                 }
-
-                // Hiển thị message nếu có
-                if (!emotionMessage.isEmpty() && getContext() != null) {
-                    Toast.makeText(getContext(), emotionMessage, Toast.LENGTH_SHORT).show();
-                }
             }
         }
     }
@@ -172,15 +162,6 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
                 Position critPos = localViewModel.getCriticalHitPiecePosition();
                 EPlayer critPlayer = localViewModel.getCriticalHitPlayer();
                 EPlayer currentPlayer = localViewModel.getCurrentPlayer();
-
-                if (critPlayer == currentPlayer && critPos != null && !pos.equals(critPos)) {
-                    if (getContext() != null) {
-                        Toast.makeText(getContext(),
-                                "Chỉ được đi quân vừa critical hit!",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                    return;
-                }
             }
         }
 
@@ -217,7 +198,10 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
     }
     private EmotionManager getEmotionManager() {
         if (_emotionManager == null && getContext() != null && _gridLayout != null) {
-            _emotionManager = new EmotionManager(getContext(), _gridLayout);
+            // Lấy view từ getView() hoặc từ _gridLayout.getParent()
+            ViewGroup emotionContainer = (ViewGroup) getView().findViewById(R.id.emotionContainer);
+
+            _emotionManager = new EmotionManager(getContext(), emotionContainer);
 
             // Set emotion enabled state từ ViewModel
             if (_chessboardViewModel instanceof LocalChessBoardViewModel) {

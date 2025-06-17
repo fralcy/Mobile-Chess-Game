@@ -78,8 +78,17 @@ public class EmotionManager {
         TextView emotionView = activeEmotions.get(posKey);
 
         if (emotionView != null) {
-            chessboardContainer.removeView(emotionView);
-            activeEmotions.remove(posKey);
+            // ✓ Fade out animation thay vì remove ngay
+            emotionView.animate()
+                    .alpha(0f)
+                    .scaleX(0.8f)
+                    .scaleY(0.8f)
+                    .setDuration(400)
+                    .withEndAction(() -> {
+                        chessboardContainer.removeView(emotionView);
+                        activeEmotions.remove(posKey);
+                    })
+                    .start();
         }
     }
 
@@ -120,7 +129,7 @@ public class EmotionManager {
                 .alpha(1f)
                 .scaleX(1f)
                 .scaleY(1f)
-                .setDuration(300)
+                .setDuration(600)
                 .start();
 
         return emotionView;
@@ -136,7 +145,7 @@ public class EmotionManager {
 
         // Tính toán vị trí pixel
         int x = position.getCol() * squareSize + squareSize / 2;
-        int y = position.getRow() * squareSize + squareSize / 4; // Hiện ở phần trên ô cờ
+        int y = position.getRow() * squareSize; // ✓ Bỏ + squareSize / 4
 
         // Set layout params
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
@@ -145,9 +154,9 @@ public class EmotionManager {
         );
         emotionView.setLayoutParams(params);
 
-        // Set vị trí
-        emotionView.setX(x - dpToPx(16)); // Center horizontally
-        emotionView.setY(y - dpToPx(16)); // Offset vertically
+        // Set vị trí với offset nhiều hơn
+        emotionView.setX(x - dpToPx(16));
+        emotionView.setY(y - dpToPx(32)); // ✓ Tăng offset từ 16 lên 32
     }
 
     /**
