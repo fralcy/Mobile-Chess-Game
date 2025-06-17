@@ -32,7 +32,12 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
     }
     @Override
     protected void handleSquareClick(int row, int col) {
-        // Clear emotion data trước khi xử lý click mới
+        // Clear all emotions before processing new move
+        if (getEmotionManager() != null) {
+            getEmotionManager().clearAllEmotions();
+        }
+
+        // Clear emotion data from ViewModel
         if (_chessboardViewModel instanceof LocalChessBoardViewModel) {
             ((LocalChessBoardViewModel) _chessboardViewModel).clearEmotionData();
         }
@@ -74,11 +79,9 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
      * Highlight quân đang trong critical hit state
      */
     private void highlightCriticalHitPiece() {
-        if (!(_chessboardViewModel instanceof LocalChessBoardViewModel)) {
+        if (!(_chessboardViewModel instanceof LocalChessBoardViewModel localViewModel)) {
             return;
         }
-
-        LocalChessBoardViewModel localViewModel = (LocalChessBoardViewModel) _chessboardViewModel;
 
         if (localViewModel.hasCriticalHit()) {
             Position critPos = localViewModel.getCriticalHitPiecePosition();
@@ -96,58 +99,43 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
         }
     }
 
-    /**
-     * Hiển thị message critical hit
-     */
-    private void updateCriticalHitMessage() {
-        if (!(_chessboardViewModel instanceof LocalChessBoardViewModel)) {
-            return;
-        }
 
-        LocalChessBoardViewModel localViewModel = (LocalChessBoardViewModel) _chessboardViewModel;
-
-        if (localViewModel.hasCriticalHit()) {
-            String message = localViewModel.getLastCriticalHitMessage();
-            EPlayer critPlayer = localViewModel.getCriticalHitPlayer();
-            EPlayer currentPlayer = localViewModel.getCurrentPlayer();
-        }
-    }
 
     /**
      * Update critical hit highlight và message
      */
     private void updateCriticalHitHighlight() {
         highlightCriticalHitPiece();
-        updateCriticalHitMessage();
     }
 
     /**
-     * Update emotion display
+     * Update emotion display - Clear all emotions first to ensure only one emote appears
      */
     private void updateEmotionDisplay() {
-        if (!(_chessboardViewModel instanceof LocalChessBoardViewModel) || getEmotionManager() == null) {
+        if (!(_chessboardViewModel instanceof LocalChessBoardViewModel localViewModel) || getEmotionManager() == null) {
             return;
         }
-
-        LocalChessBoardViewModel localViewModel = (LocalChessBoardViewModel) _chessboardViewModel;
 
         if (localViewModel.hasNewEmotion()) {
             Position emotionPos = localViewModel.getLastEmotionPosition();
             var emotionType = localViewModel.getLastEmotionShown();
-            String emotionMessage = localViewModel.getLastEmotionMessage();
 
             if (emotionPos != null && emotionType != null) {
+                // CLEAR ALL EXISTING EMOTIONS FIRST to ensure only one emote on screen
+                getEmotionManager().clearAllEmotions();
+
                 // Convert position for display (handle board reversal)
                 int displayRow = reversed ? (7 - emotionPos.row()) : emotionPos.row();
                 int displayCol = reversed ? (7 - emotionPos.column()) : emotionPos.column();
-                Position displayPos = new Position(displayRow, displayCol);
 
-                // Hiển thị emotion
-                if (emotionType == com.example.chess_mobile.model.logic.features.EmotionSystem.EmotionType.COOL) {
-                    getEmotionManager().showCriticalHitEmotion(displayPos);
-                } else {
-                    getEmotionManager().showEmotion(displayPos, emotionType);
-                }
+                // Create display position
+                Position displayPosition = new Position(displayRow, displayCol);
+
+                // Show the new emotion
+                getEmotionManager().showEmotion(displayPosition, emotionType);
+
+                // Clear emotion data from ViewModel after displaying
+                localViewModel.clearEmotionData();
             }
         }
     }
@@ -155,30 +143,14 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
     @Override
     protected void onFromPositionSelected(Position pos) {
         // Kiểm tra nếu đang trong critical hit turn và chọn sai quân
-        if (_chessboardViewModel instanceof LocalChessBoardViewModel) {
-            LocalChessBoardViewModel localViewModel = (LocalChessBoardViewModel) _chessboardViewModel;
+        if (_chessboardViewModel instanceof LocalChessBoardViewModel localViewModel) {
 
             if (localViewModel.hasCriticalHit()) {
-                Position critPos = localViewModel.getCriticalHitPiecePosition();
-                EPlayer critPlayer = localViewModel.getCriticalHitPlayer();
-                EPlayer currentPlayer = localViewModel.getCurrentPlayer();
+                localViewModel.getCurrentPlayer();
             }
         }
 
         super.onFromPositionSelected(pos);
-    }
-
-    /**
-     * Set emotion enabled state
-     */
-    public void setEmotionEnabled(boolean enabled) {
-        if (getEmotionManager() != null) {
-            getEmotionManager().setEmotionEnabled(enabled);
-        }
-
-        if (_chessboardViewModel instanceof LocalChessBoardViewModel) {
-            ((LocalChessBoardViewModel) _chessboardViewModel).setEmotionEnabled(enabled);
-        }
     }
 
     /**
@@ -199,13 +171,12 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
     private EmotionManager getEmotionManager() {
         if (_emotionManager == null && getContext() != null && _gridLayout != null) {
             // Lấy view từ getView() hoặc từ _gridLayout.getParent()
-            ViewGroup emotionContainer = (ViewGroup) getView().findViewById(R.id.emotionContainer);
+            ViewGroup emotionContainer = getView().findViewById(R.id.emotionContainer);
 
             _emotionManager = new EmotionManager(getContext(), emotionContainer);
 
             // Set emotion enabled state từ ViewModel
-            if (_chessboardViewModel instanceof LocalChessBoardViewModel) {
-                LocalChessBoardViewModel localViewModel = (LocalChessBoardViewModel) _chessboardViewModel;
+            if (_chessboardViewModel instanceof LocalChessBoardViewModel localViewModel) {
                 _emotionManager.setEmotionEnabled(localViewModel.isEmotionEnabled());
             }
         }

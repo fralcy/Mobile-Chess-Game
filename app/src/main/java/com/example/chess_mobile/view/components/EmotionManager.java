@@ -3,11 +3,10 @@ package com.example.chess_mobile.view.components;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import androidx.core.content.ContextCompat;
+
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.model.logic.features.EmotionSystem;
 import com.example.chess_mobile.model.logic.game_states.Position;
@@ -44,16 +43,17 @@ public class EmotionManager {
 
     /**
      * Hiển thị biểu cảm tại vị trí cụ thể
+     * Clear all emotions first to ensure only one emote on screen
      */
     public void showEmotion(Position position, EmotionSystem.EmotionType emotion) {
         if (!emotionEnabled || emotion == null) {
             return;
         }
 
-        String posKey = position.getRow() + "," + position.getCol();
+        // CLEAR ALL EXISTING EMOTIONS FIRST
+        clearAllEmotions();
 
-        // Xóa biểu cảm cũ tại vị trí này nếu có
-        hideEmotion(position);
+        String posKey = position.getRow() + "," + position.getCol();
 
         // Tạo TextView cho biểu cảm
         TextView emotionView = createEmotionView(emotion);
@@ -92,12 +92,25 @@ public class EmotionManager {
         }
     }
 
-    /**
-     * Xóa tất cả biểu cảm
-     */
     public void clearAllEmotions() {
+        // Remove all pending hide tasks
+        handler.removeCallbacksAndMessages(null);
+
+        // Animate out and remove all emotion views
         for (TextView emotionView : activeEmotions.values()) {
-            chessboardContainer.removeView(emotionView);
+            if (emotionView.getParent() != null) {
+                emotionView.animate()
+                        .alpha(0f)
+                        .scaleX(0.5f)
+                        .scaleY(0.5f)
+                        .setDuration(150)
+                        .withEndAction(() -> {
+                            if (emotionView.getParent() != null) {
+                                chessboardContainer.removeView(emotionView);
+                            }
+                        })
+                        .start();
+            }
         }
         activeEmotions.clear();
     }
@@ -167,32 +180,4 @@ public class EmotionManager {
         return Math.round(dp * density);
     }
 
-    /**
-     * Hiển thị biểu cảm với animation đặc biệt cho critical hit
-     */
-    public void showCriticalHitEmotion(Position position) {
-        if (!emotionEnabled) return;
-
-        showEmotion(position, EmotionSystem.EmotionType.COOL);
-
-        // Thêm effect đặc biệt cho critical hit
-        String posKey = position.getRow() + "," + position.getCol();
-        TextView emotionView = activeEmotions.get(posKey);
-
-        if (emotionView != null) {
-            // Bouncing animation
-            emotionView.animate()
-                    .scaleX(1.3f)
-                    .scaleY(1.3f)
-                    .setDuration(200)
-                    .withEndAction(() -> {
-                        emotionView.animate()
-                                .scaleX(1f)
-                                .scaleY(1f)
-                                .setDuration(200)
-                                .start();
-                    })
-                    .start();
-        }
-    }
 }
