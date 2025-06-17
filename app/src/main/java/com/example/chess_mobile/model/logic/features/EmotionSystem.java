@@ -31,7 +31,7 @@ public class EmotionSystem {
     }
 
     // Tỉ lệ hiện biểu cảm ngẫu nhiên (5%)
-    private static final double RANDOM_EMOTION_CHANCE = 5.0;
+    private static final double RANDOM_EMOTION_CHANCE = 50.0;
 
     /**
      * Tính toán biểu cảm cho quân cờ dựa trên context
@@ -119,10 +119,10 @@ public class EmotionSystem {
      */
     public static boolean shouldShowEmotion(EmotionContext context) {
         return switch (context) {
-            case CAPTURE_PIECE, CRITICAL_HIT -> true;  // Luôn hiện khi bắt quân hoặc crit
-            case BEING_THREATENED, UNDER_ATTACK -> random.nextDouble() < 0.7; // 70% cơ hội
-            case ESCAPED_DANGER -> random.nextDouble() < 0.5; // 50% cơ hội
-            case NORMAL_MOVE -> random.nextDouble() < 0.05;   // 5% cơ hội
+            case CAPTURE_PIECE, CRITICAL_HIT -> true;  // Luôn hiện
+            case BEING_THREATENED, UNDER_ATTACK -> random.nextDouble() < 0.9; // 90%
+            case ESCAPED_DANGER -> random.nextDouble() < 0.8; // 80%
+            case NORMAL_MOVE -> random.nextDouble() < 0.6;   // 60%
         };
     }
 }

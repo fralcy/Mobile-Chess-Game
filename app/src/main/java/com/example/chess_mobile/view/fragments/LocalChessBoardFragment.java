@@ -130,7 +130,7 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
      * Update emotion display
      */
     private void updateEmotionDisplay() {
-        if (!(_chessboardViewModel instanceof LocalChessBoardViewModel) || _emotionManager == null) {
+        if (!(_chessboardViewModel instanceof LocalChessBoardViewModel) || getEmotionManager() == null) {
             return;
         }
 
@@ -149,9 +149,9 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
 
                 // Hiển thị emotion
                 if (emotionType == com.example.chess_mobile.model.logic.features.EmotionSystem.EmotionType.COOL) {
-                    _emotionManager.showCriticalHitEmotion(displayPos);
+                    getEmotionManager().showCriticalHitEmotion(displayPos);
                 } else {
-                    _emotionManager.showEmotion(displayPos, emotionType);
+                    getEmotionManager().showEmotion(displayPos, emotionType);
                 }
 
                 // Hiển thị message nếu có
@@ -191,8 +191,8 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
      * Set emotion enabled state
      */
     public void setEmotionEnabled(boolean enabled) {
-        if (_emotionManager != null) {
-            _emotionManager.setEmotionEnabled(enabled);
+        if (getEmotionManager() != null) {
+            getEmotionManager().setEmotionEnabled(enabled);
         }
 
         if (_chessboardViewModel instanceof LocalChessBoardViewModel) {
@@ -204,8 +204,8 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
      * Clear all emotions from board
      */
     public void clearAllEmotions() {
-        if (_emotionManager != null) {
-            _emotionManager.clearAllEmotions();
+        if (getEmotionManager() != null) {
+            getEmotionManager().clearAllEmotions();
         }
     }
 
@@ -214,5 +214,17 @@ public class LocalChessBoardFragment extends ChessBoardFragment {
         super.onDestroy();
         // Clear emotions khi destroy
         clearAllEmotions();
+    }
+    private EmotionManager getEmotionManager() {
+        if (_emotionManager == null && getContext() != null && _gridLayout != null) {
+            _emotionManager = new EmotionManager(getContext(), _gridLayout);
+
+            // Set emotion enabled state từ ViewModel
+            if (_chessboardViewModel instanceof LocalChessBoardViewModel) {
+                LocalChessBoardViewModel localViewModel = (LocalChessBoardViewModel) _chessboardViewModel;
+                _emotionManager.setEmotionEnabled(localViewModel.isEmotionEnabled());
+            }
+        }
+        return _emotionManager;
     }
 }
