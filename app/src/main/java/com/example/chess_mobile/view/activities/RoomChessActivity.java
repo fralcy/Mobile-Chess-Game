@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.request.MoveRequest;
+import com.example.chess_mobile.dto.request.SaveMatchRequest;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EEndReason;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
