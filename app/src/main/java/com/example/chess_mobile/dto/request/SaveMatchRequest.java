@@ -12,7 +12,7 @@ public class SaveMatchRequest {
     }
     public SaveMatchRequest(String matchId, String result, String type) {
         this.matchId=matchId;
-        this.result= result;
+        this.result=result;
         this.type=type;
     }
 

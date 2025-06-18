@@ -221,7 +221,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
         SaveMatchRequest saveMatchRequest = new SaveMatchRequest(this.matchId,result,type);
         Gson gson= new Gson();
         String message = gson.toJson(saveMatchRequest);
-        SocketManager.getInstance().sendMessage(message,"/app/chess/endMatch/"+this.matchId);
+        SocketManager.getInstance().sendMessage(message,"/app/chess/endMatch");
 
 
     }
@@ -240,11 +240,13 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                 }
                 else {
                     textMessage="You win!";
+                    onSaveMatch(false);
                 }
             }
             else if(blackDuration==Duration.ZERO) {
                 if(this.main.getColor()==EPlayer.WHITE) {
                     textMessage="You win!";
+                    onSaveMatch(false);
                 }
                 else {
                     textMessage="You lose!";
@@ -260,6 +262,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                 textMessage = "Draw";
             } else if ((textMessage.equals("White win") && this.main.getColor() == EPlayer.WHITE) || (textMessage.equals("Black win") && this.main.getColor() == EPlayer.BLACK)) {
                 textMessage = "You win!";
+                onSaveMatch(false);
             } else {
                 textMessage = "You lose!";
             }
@@ -294,9 +297,9 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
     @Override
     public void onDestroy() {
         super.onDestroy();
-        MoveRequest moveRequest = new MoveRequest(ESocketMessageType.RESIGN, this.matchId,null);
+        /*MoveRequest moveRequest = new MoveRequest(ESocketMessageType.RESIGN, this.matchId,null);
         Gson gson = new Gson();
         String json = gson.toJson(moveRequest);
-        SocketManager.getInstance().sendMessage(json, "/topic"+String.format(SocketManager.CHESS_MOVE_ENDPOINT_TEMPLATE,this.matchId));
+        SocketManager.getInstance().sendMessage(json, "/topic"+String.format(SocketManager.CHESS_MOVE_ENDPOINT_TEMPLATE,this.matchId));*/
     }
 }
