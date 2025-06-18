@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.request.MoveRequest;
+import com.example.chess_mobile.dto.request.SaveMatchRequest;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EEndReason;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
@@ -34,6 +35,7 @@ import com.example.chess_mobile.view.fragments.PlayerCardFragment;
 import com.example.chess_mobile.view.interfaces.IGameOverListener;
 import com.example.chess_mobile.view_model.enums.ESocketMessageType;
 import com.example.chess_mobile.view_model.implementations.ChessBoardViewModel;
+import com.example.chess_mobile.view_model.implementations.OnlineChessBoardViewModel;
 import com.example.chess_mobile.view_model.interfaces.IChessViewModel;
 import com.google.gson.Gson;
 
@@ -195,7 +197,27 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
         startActivity(intent);
         this.finish();
     }
+    private void onSaveMatch(boolean isDraw) {
 
+        if(isDraw) {
+            return;
+        }
+        String result="";
+
+        if(this.main.getColor()==EPlayer.WHITE) {
+            result="WHITE_WIN";
+        }
+        else {
+            result="BLACK_WIN";
+        }
+        String type = this.matchType.toString();
+        SaveMatchRequest saveMatchRequest = new SaveMatchRequest(this.matchId,result,type);
+        Gson gson= new Gson();
+        String message = gson.toJson(saveMatchRequest);
+        SocketManager.getInstance().sendMessage(message,"/app/chess/endMatch/"+this.matchId);
+
+
+    }
     @Override
     public void onGameOver() {
         Result result= this.chessBoardFragment.getChessBoardViewModel().getResult().getValue();
@@ -211,11 +233,13 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                 }
                 else {
                     textMessage="You win!";
+                    onSaveMatch(false);
                 }
             }
             else if(blackDuration==Duration.ZERO) {
                 if(this.main.getColor()==EPlayer.WHITE) {
                     textMessage="You win!";
+                    onSaveMatch(false);
                 }
                 else {
                     textMessage="You lose!";
@@ -231,6 +255,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                 textMessage = "Draw";
             } else if ((textMessage.equals("White win") && this.main.getColor() == EPlayer.WHITE) || (textMessage.equals("Black win") && this.main.getColor() == EPlayer.BLACK)) {
                 textMessage = "You win!";
+                onSaveMatch(false);
             } else {
                 textMessage = "You lose!";
             }
