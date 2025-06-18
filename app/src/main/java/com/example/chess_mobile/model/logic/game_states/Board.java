@@ -261,4 +261,18 @@ public class Board implements Serializable {
 
         return null; // Should never happen
     }
+
+    public boolean hasKing(EPlayer player) {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Piece piece = getPiece(row, col);
+                if (piece != null &&
+                        piece.getType() == EPieceType.KING &&
+                        piece.getPlayerColor() == player) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

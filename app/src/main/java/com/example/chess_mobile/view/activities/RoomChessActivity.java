@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -17,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.dto.request.MoveRequest;
-import com.example.chess_mobile.dto.request.SaveMatchRequest;
 import com.example.chess_mobile.model.logic.game_states.Board;
 import com.example.chess_mobile.model.logic.game_states.EEndReason;
 import com.example.chess_mobile.model.logic.game_states.EPlayer;
@@ -35,7 +33,7 @@ import com.example.chess_mobile.view.fragments.PlayerCardFragment;
 import com.example.chess_mobile.view.interfaces.IGameOverListener;
 import com.example.chess_mobile.view_model.enums.ESocketMessageType;
 import com.example.chess_mobile.view_model.implementations.ChessBoardViewModel;
-import com.example.chess_mobile.view_model.implementations.OnlineChessBoardViewModel;
+import com.example.chess_mobile.view_model.implementations.LocalChessBoardViewModel;
 import com.example.chess_mobile.view_model.interfaces.IChessViewModel;
 import com.google.gson.Gson;
 
@@ -130,7 +128,7 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
     private CongratsCardFragment initCongratsCardFragment(EMatch matchType, Result result,
                                                           PlayerChess mainPlayer) {
         return switch (matchType) {
-            case AI, RANKED,PRIVATE -> OnlineCongratsCardFragment.newInstance(result, mainPlayer);
+            case RANKED,PRIVATE -> OnlineCongratsCardFragment.newInstance(result, mainPlayer);
             default -> CongratsCardFragment.newInstance(result);
         };
     }
@@ -167,6 +165,14 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                     .orElse(duration);
             blackTime = Optional.ofNullable((Duration) getIntent().getSerializableExtra("BLACK_TIME"))
                     .orElse(duration);
+
+            boolean criticalHitEnabled = getIntent().getBooleanExtra("CRITICAL_HIT_ENABLED", false);
+            boolean emotedEnabled = getIntent().getBooleanExtra("EMOTION_ENABLED", false);
+
+            if (chessBoardViewModel instanceof LocalChessBoardViewModel) {
+                ((LocalChessBoardViewModel) chessBoardViewModel).setCriticalHitEnabled(criticalHitEnabled);
+                ((LocalChessBoardViewModel) chessBoardViewModel).setEmotionEnabled(emotedEnabled);
+            }
         }
 
         chessBoardViewModel.newGame(this.matchId, EPlayer.WHITE, board.initial(), mainPlayer,
@@ -233,13 +239,11 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                 }
                 else {
                     textMessage="You win!";
-                    onSaveMatch(false);
                 }
             }
             else if(blackDuration==Duration.ZERO) {
                 if(this.main.getColor()==EPlayer.WHITE) {
                     textMessage="You win!";
-                    onSaveMatch(false);
                 }
                 else {
                     textMessage="You lose!";
@@ -255,7 +259,6 @@ public class RoomChessActivity extends AppCompatActivity implements IGameOverLis
                 textMessage = "Draw";
             } else if ((textMessage.equals("White win") && this.main.getColor() == EPlayer.WHITE) || (textMessage.equals("Black win") && this.main.getColor() == EPlayer.BLACK)) {
                 textMessage = "You win!";
-                onSaveMatch(false);
             } else {
                 textMessage = "You lose!";
             }
