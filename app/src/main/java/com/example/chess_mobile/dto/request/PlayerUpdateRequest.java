@@ -6,6 +6,7 @@ public class PlayerUpdateRequest {
 
     }
     public PlayerUpdateRequest(String playerName) {
+        this.playerName=playerName;
 
     }
     public String getPlayerName() {

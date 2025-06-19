@@ -99,6 +99,7 @@ public class EditInfoActivity extends AppCompatActivity {
                 Map<String,String> httpHeader = new HashMap<>();
                 httpHeader.put("Authorization","Bearer "+token);
                 PlayerUpdateRequest request = new PlayerUpdateRequest(EditInfoActivity.this.playerNameEditText.getText().toString());
+                //Log.d("REQUEST", request.getPlayerName());
                 Gson gson = new Gson();
                 String json = gson.toJson(request);
                 RequestBody requestBody = RequestBody.create(json,MediaType.parse("application/json; charset=utf-8"));
