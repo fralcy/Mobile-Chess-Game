@@ -5,8 +5,17 @@ import java.util.Map;
 
 public class HttpClient {
     public static String BASE_URL = "http://165.22.241.224:8080/";
-    private final OkHttpClient client = new OkHttpClient();
-
+    private final OkHttpClient client;
+    public HttpClient() {
+        this.client= new OkHttpClient();
+    }
+    public HttpClient(long timeOut) {
+        this.client = new OkHttpClient.Builder()
+                .connectTimeout(timeOut, java.util.concurrent.TimeUnit.SECONDS)
+                .readTimeout(timeOut, java.util.concurrent.TimeUnit.SECONDS)
+                .writeTimeout(timeOut, java.util.concurrent.TimeUnit.SECONDS)
+                .build();
+    }
     // GET Request
     public void get(String url, Map<String, String> headers, Callback callback) {
         Request request = buildRequest(url, headers, null, "GET");

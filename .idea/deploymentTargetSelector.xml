@@ -14,8 +14,8 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="LoginActivity">
-        <option name="selectionMode" value="DIALOG" />
-        <DropdownSelection timestamp="2025-06-05T07:18:32.746727300Z">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-06-19T06:54:46.029527500Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Admin\.android\avd\Medium_Phone_2.avd" />
@@ -40,7 +40,7 @@
       <SelectionState runConfigName="RoomChessActivity">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="LeaderboardActivity">
+      <SelectionState runConfigName="HistoryActivity">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

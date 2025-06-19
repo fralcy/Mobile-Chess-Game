@@ -146,12 +146,12 @@ public class InfoActivity extends AppCompatActivity {
         httpClient.get(url,null,callBack);
     }
     public void loadCurrentPlayer() {
-        InfoActivity.this.playerName.setText("Player Name: " +this.currentPlayer.getPlayerName());
-        InfoActivity.this.playerEmail.setText("Player Email: "+this.currentPlayer.getEmail());
-        InfoActivity.this.rank.setText("Player rank "+this.currentPlayer.getRank());
-        InfoActivity.this.elo.setText("Player Elo: "+this.currentPlayer.getScore());
-        InfoActivity.this.matches.setText("Player matches: "+this.currentPlayer.getMatches());
-        InfoActivity.this.playerId.setText("Player Id: "+this.currentPlayer.getPlayerId());
+        InfoActivity.this.playerName.setText(this.currentPlayer.getPlayerName());
+        InfoActivity.this.playerEmail.setText(this.currentPlayer.getEmail());
+        InfoActivity.this.rank.setText(Integer.toString(currentPlayer.getRank()));
+        InfoActivity.this.elo.setText(Integer.toString(this.currentPlayer.getScore()));
+        InfoActivity.this.matches.setText(Integer.toString(this.currentPlayer.getMatches()));
+        InfoActivity.this.playerId.setText("Id: "+this.currentPlayer.getPlayerId());
     }
     public void setUpPressEditButton() {
         this.editProfileButton.setOnClickListener(v->{

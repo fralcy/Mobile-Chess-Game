@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="#1e1e1e"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:gravity="center_horizontal">
+
+    <!-- Tiêu đề -->
+    <TextView
+        android:id="@+id/titleText"
+        android:text="HISTORY"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:textSize="24sp"
+        android:background="@android:color/transparent"
+        android:gravity="center" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:id="@+id/subtitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Past Matches"
+        android:textSize="14sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp"
+       
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        />
+
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/historyRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#222222"
+        android:padding="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:clipToPadding="false" />
+</LinearLayout>
