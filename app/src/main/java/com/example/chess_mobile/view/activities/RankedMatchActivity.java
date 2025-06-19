@@ -14,6 +14,9 @@ public class RankedMatchActivity extends Activity implements IRankedMatchViewMod
     private Button button10min;
     private Button button15min;
     private Button button20min;
+    private Button matchHistoriesButton;
+    private Button leaderBoardButton;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,6 +30,8 @@ public class RankedMatchActivity extends Activity implements IRankedMatchViewMod
         button10min = findViewById(R.id.rankedMatchButton10Min);
         button15min = findViewById(R.id.rankedMatchButton15Min);
         button20min = findViewById(R.id.rankedMatchButton20Min);
+        matchHistoriesButton = findViewById(R.id.rankedMatchLeaderBoard);
+        leaderBoardButton= findViewById(R.id.rankedMatchButtonHistory);
     }
     private int selectedPlayTime = 10; // mặc định
 
@@ -56,6 +61,14 @@ public class RankedMatchActivity extends Activity implements IRankedMatchViewMod
             RankedMatchActivity.this.button15min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.rounded_gray_button_bg));
             RankedMatchActivity.this.button20min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.rounded_button_bg));
             selectedPlayTime = 20;
+        });
+        matchHistoriesButton.setOnClickListener(v->{
+            Intent intent = new Intent(this, LeaderboardActivity.class);
+            startActivity(intent);
+        });
+        leaderBoardButton.setOnClickListener(v->{
+            Intent intent = new Intent(this, HistoryActivity.class);
+            startActivity(intent);
         });
 
     }
