@@ -1,10 +1,9 @@
 package com.example.chess_mobile.view.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.chess_mobile.R;
+import com.example.chess_mobile.dto.request.PlayerRegisterRequest;
 import com.example.chess_mobile.model.authentication.firebase.FirebaseAccount;
 import com.example.chess_mobile.model.authentication.firebase.FirebaseAuthenticationService;
 import com.example.chess_mobile.model.authentication.interfaces.IAuthenticationService;
@@ -24,11 +24,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class RegisterActivity extends AppCompatActivity implements IRegisterViewModel {
     IAuthenticationService authenticationService;
-    Button buttonRegister;
-    EditText txtEmail;
-    EditText txtPassword;
-    EditText txtName;
-    TextView loginLink;
     @Override
     protected void onStart() {
         super.onStart();
@@ -36,8 +31,8 @@ public class RegisterActivity extends AppCompatActivity implements IRegisterView
         if (currentUser != null) {
             Log.d("CURRENT_PLAYER", currentUser.toString());
             FirebaseAuth.getInstance().signOut();
-//            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-//            finish();
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            finish();
         }
     }
 
@@ -53,49 +48,49 @@ public class RegisterActivity extends AppCompatActivity implements IRegisterView
         });
 
         authenticationService = new FirebaseAuthenticationService();
-        bindView();
         bindEventHandler();
     }
 
-    private void register(String email, String password, String name) {
-        FirebaseAccount acc = new FirebaseAccount(email, password);
-        authenticationService.register(acc, isSuccess -> {
+    @Override
+    public void register(String email, String password, String name, Context context) {
+        PlayerRegisterRequest  req = new PlayerRegisterRequest(email, password, name);
+
+        authenticationService.register(req, (isSuccess, msg) -> {
             if(isSuccess) {
                 Toast.makeText(this, "Register success", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "Register failed", Toast.LENGTH_LONG).show();
+                FirebaseAccount acc = new FirebaseAccount(email, password);
+                authenticationService.login(acc, (isLoginSuccess, loginMsg)-> {
+                    if (isLoginSuccess) {
+                        startActivity(new Intent(this, GameModeSelectionActivity.class));
+                    } else {
+                        Log.e("REGISTER_LOGIN_ACTIVITY", msg);
+                        startActivity(new Intent(this, LoginActivity.class));
+                    }
+                });
+            }
+            else {
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
             }
         });
     }
 
     private void bindEventHandler() {
-        buttonRegister.setOnClickListener(l -> {
-            String email = txtEmail.getText().toString();
-            String password = txtPassword.getText().toString();
-            String name = txtName.getText().toString();
-
-            if (name.isEmpty()) {
-                Toast.makeText(this,  "Please enter field name. Try again!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this,  "Email or password is incorrect. Try again!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            register(email, password, name);
+        findViewById(R.id.registerButton).setOnClickListener(l -> {
+            String email = ((TextView) findViewById(R.id.registerTextEmail)).getText().toString();
+            String password = ((TextView) findViewById(R.id.registerTextPassword)).getText().toString();
+            String name = ((TextView) findViewById(R.id.registerTextName)).getText().toString();
+            onRegisterButtonClicked(name, email, password, this);
+//            if (name.isEmpty()) {
+//                Toast.makeText(this,  "Please enter field name. Try again!", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//            if (email.isEmpty() || password.isEmpty()) {
+//                Toast.makeText(this,  "Email or password is incorrect. Try again!", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//            register(email, password, name);
         });
 
-        loginLink.setOnClickListener(l -> {
-            startActivity(new Intent(this,  LoginActivity.class));
-            finish();
-        });
-    }
-
-    private void bindView() {
-        buttonRegister = findViewById(R.id.registerButton);
-        txtEmail = findViewById(R.id.registerTextEmail);
-        txtPassword = findViewById(R.id.registerTextPassword);
-        txtName = findViewById(R.id.registerTextName);
-        loginLink = findViewById(R.id.loginLink);
+        findViewById(R.id.loginLink).setOnClickListener(l -> onLoginLinkClicked(this));
     }
 }

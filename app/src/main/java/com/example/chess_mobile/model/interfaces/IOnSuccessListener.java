@@ -1,5 +1,5 @@
 package com.example.chess_mobile.model.interfaces;
 
 public interface IOnSuccessListener {
-    void onSuccess(boolean success);
+    void onSuccess(boolean success, String msg);
 }

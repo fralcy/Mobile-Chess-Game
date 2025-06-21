@@ -3,11 +3,6 @@ package com.example.chess_mobile.view_model.interfaces;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
-import com.example.chess_mobile.model.authentication.firebase.FirebaseAccount;
-import com.example.chess_mobile.model.authentication.firebase.FirebaseAuthenticationService;
-import com.example.chess_mobile.model.authentication.interfaces.IAuthenticationService;
-import com.example.chess_mobile.view.activities.GameModeSelectionActivity;
-import com.example.chess_mobile.view.activities.MainActivity;
 import com.example.chess_mobile.view.activities.RegisterActivity;
 
 public interface ILoginViewModel {
@@ -17,7 +12,7 @@ public interface ILoginViewModel {
         }
 
         showLoadingMessage(context);
-        performLogin(email, password, context);
+        login(email, password, context);
     }
 
     default void onRegisterLinkClicked(Context context) {
@@ -53,29 +48,7 @@ public interface ILoginViewModel {
         return true;
     }
 
-    default void performLogin(String email, String password, Context context) {
-        IAuthenticationService authService = new FirebaseAuthenticationService();
-        FirebaseAccount account = new FirebaseAccount(email, password);
-
-        authService.login(account, isSuccess -> {
-            if (isSuccess) {
-                onLoginSuccess(context);
-            } else {
-                onLoginFailure(context);
-            }
-        });
-    }
-
-    default void onLoginSuccess(Context context) {
-        Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(context, GameModeSelectionActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        context.startActivity(intent);
-    }
-
-    default void onLoginFailure(Context context) {
-        Toast.makeText(context, "Login failed. Please check your credentials.", Toast.LENGTH_LONG).show();
-    }
+    void login(String email, String password, Context context);
 
     default void showLoadingMessage(Context context) {
         Toast.makeText(context, "Logging in...", Toast.LENGTH_SHORT).show();

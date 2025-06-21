@@ -16,6 +16,7 @@ public class HttpClient {
                 .writeTimeout(timeOut, java.util.concurrent.TimeUnit.SECONDS)
                 .build();
     }
+
     // GET Request
     public void get(String url, Map<String, String> headers, Callback callback) {
         Request request = buildRequest(url, headers, null, "GET");

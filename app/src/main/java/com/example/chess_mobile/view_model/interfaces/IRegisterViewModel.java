@@ -3,11 +3,8 @@ package com.example.chess_mobile.view_model.interfaces;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
-import com.example.chess_mobile.model.authentication.firebase.FirebaseAccount;
-import com.example.chess_mobile.model.authentication.firebase.FirebaseAuthenticationService;
-import com.example.chess_mobile.model.authentication.interfaces.IAuthenticationService;
+
 import com.example.chess_mobile.view.activities.LoginActivity;
-import com.example.chess_mobile.view.activities.MainActivity;
 
 public interface IRegisterViewModel {
     default void onRegisterButtonClicked(String name, String email, String password, Context context) {
@@ -16,7 +13,7 @@ public interface IRegisterViewModel {
         }
 
         showLoadingMessage(context);
-        performRegister(name, email, password, context);
+        register(name, email, password, context);
     }
 
     default void onLoginLinkClicked(Context context) {
@@ -58,29 +55,7 @@ public interface IRegisterViewModel {
         return true;
     }
 
-    default void performRegister(String name, String email, String password, Context context) {
-        IAuthenticationService authService = new FirebaseAuthenticationService();
-        FirebaseAccount account = new FirebaseAccount(email, password);
-
-        authService.register(account, isSuccess -> {
-            if (isSuccess) {
-                onRegisterSuccess(context);
-            } else {
-                onRegisterFailure(context);
-            }
-        });
-    }
-
-    default void onRegisterSuccess(Context context) {
-        Toast.makeText(context, "Registration successful!", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        context.startActivity(intent);
-    }
-
-    default void onRegisterFailure(Context context) {
-        Toast.makeText(context, "Registration failed. Please try again.", Toast.LENGTH_LONG).show();
-    }
+    void register(String email, String password, String name, Context context);
 
     default void showLoadingMessage(Context context) {
         Toast.makeText(context, "Creating account...", Toast.LENGTH_SHORT).show();

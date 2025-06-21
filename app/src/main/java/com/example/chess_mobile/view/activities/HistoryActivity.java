@@ -1,31 +1,25 @@
 package com.example.chess_mobile.view.activities;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Window;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chess_mobile.R;
 import com.example.chess_mobile.adapter.HistoryAdapter;
 import com.example.chess_mobile.dto.response.MatchHistory;
-import com.example.chess_mobile.dto.response.MatchResponse;
-import com.example.chess_mobile.dto.response.MatchResponseWithPlayerName;
-import com.example.chess_mobile.model.match.EMatch;
-import com.example.chess_mobile.model.player.Player;
 import com.example.chess_mobile.services.http.HttpClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
@@ -54,9 +48,9 @@ public class HistoryActivity extends AppCompatActivity {
         this.recycleView= findViewById(R.id.historyRecyclerView);
         recycleView.setLayoutManager(new LinearLayoutManager(this));
     }
-    public void showDialog(String title, String message, Class previousActivity) {
+    public void showDialog(String title, String errMsg, Class<?extends Activity> previousActivity) {
         new AlertDialog.Builder(HistoryActivity.this).setTitle(title).
-                setMessage(message)
+                setMessage(errMsg)
                 .setCancelable(false)
                 .setPositiveButton("Back", (dialogInterface, i) -> {
                     startActivity(new Intent( HistoryActivity.this,previousActivity));
@@ -66,14 +60,22 @@ public class HistoryActivity extends AppCompatActivity {
     public void fetchListMatch() {
         FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
         if(user==null) {
-            showDialog("You need to login","Login to use this app",LoginActivity.class);
+            showDialog("You need to login","Login to use this app", LoginActivity.class);
             return;
         }
-        user.getIdToken(true).addOnCompleteListener(task->{
+        user.getIdToken(true).addOnCompleteListener(task -> {
+
+            Log.d("TOKEN_SUCCESS", "Token retrieved successfully");
             if(task.isSuccessful()) {
                 String token = task.getResult().getToken();
+
+                if (token == null || token.isEmpty()) {
+                    Log.d("HISTORY_ACTIVITY_TOKEN","Không thể lấy token xác thực");
+                    return;
+                }
+
                 HttpClient httpClient = new HttpClient(5000);
-                Log.d("TOKEN", token);
+                Log.d("HISTORY_ACTIVITY_TOKEN", token);
                 String url = HttpClient.BASE_URL + "getMatches";
                 Map<String, String> httpHeader = new HashMap<>();
                 httpHeader.put("Authorization", "Bearer " + token);
@@ -81,28 +83,41 @@ public class HistoryActivity extends AppCompatActivity {
                 Callback callback = new Callback() {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                        e.printStackTrace();
+                        Log.e("API_MATCHES_LIST_FAILURE", "Error: " + e.getMessage(), e);
                     }
 
                     @Override
-                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                        if(response.isSuccessful()) {
-                            Gson gson = new Gson();
-                            String json= response.body().string();
-                            Log.d("JSON",json);
-                            Type listType = new TypeToken<List<MatchHistory>>() {}.getType();
-                            listMatchResponse= gson.fromJson(json,listType);
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException, JsonSyntaxException {
+                        if(response.isSuccessful() && response.body() != null) {
+                            try {
+                                Gson gson = new Gson();
+                                String json= response.body().string();
+                                Log.d("API_RESPONSE", "JSON received: " + json);
 
+                                Type listType = new TypeToken<List<MatchHistory>>() {}.getType();
+                                listMatchResponse= gson.fromJson(json,listType);
 
-                            runOnUiThread(()->{
-                                List<MatchHistory> listmatch=filterMatches();
-                                recycleView.setAdapter(new HistoryAdapter(listmatch));
-                            });
-                            for(int i=0;i<listMatchResponse.size();i++) {
-                                Log.d("MATCH",listMatchResponse.get(i).getMatchId());
+                                if (listMatchResponse != null && !listMatchResponse.isEmpty()) {
+                                    runOnUiThread(()->{
+                                        List<MatchHistory> listMatch=filterMatches();
+                                        recycleView.setAdapter(new HistoryAdapter(listMatch));
+                                    });
+                                    for(int i = 0; i < listMatchResponse.size(); i++) {
+                                        MatchHistory match = listMatchResponse.get(i);
+                                        Log.d("MATCH_INFO", String.format("Match %d - ID: %s", i + 1,
+                                                match.getMatchId() != null ? match.getMatchId() : "Unknown"));
+                                    }
+                                } else {
+                                    runOnUiThread(() -> {
+                                        String errMsg = "No matches found.";
+                                        Toast.makeText(HistoryActivity.this, errMsg, Toast.LENGTH_SHORT).show();
+                                    });
+                                }
+
+                            } catch (JsonSyntaxException e) {
+                                Log.e("JSON_PARSE_ERROR", "Failed to parse JSON", e);
+                                throw e;
                             }
-
-
                         }
                         else {
                             Log.d("FAIL","FAIL");
@@ -111,14 +126,16 @@ public class HistoryActivity extends AppCompatActivity {
                     }
 
                 };
-                httpClient.get(url,httpHeader,callback);
+                httpClient.get(url, httpHeader, callback);
             }
         });
     }
     public List<MatchHistory> filterMatches() {
         List<MatchHistory> res= new ArrayList<>();
-        for(MatchHistory match:listMatchResponse) {
-            if(match.getMatchState().equals("WHITE_WIN")||match.getMatchState().equals("WHITE_WIN")||match.getMatchState().equals("DRAW")) {
+        for (MatchHistory match:listMatchResponse) {
+            if (match.getMatchState().equals("WHITE_WIN") ||
+               match.getMatchState().equals("BLACK_WIN") ||
+               match.getMatchState().equals("DRAW")) {
                 res.add(match);
             }
             //listMatchResponse.remove(match);
