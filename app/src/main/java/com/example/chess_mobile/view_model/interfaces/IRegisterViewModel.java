@@ -13,7 +13,7 @@ public interface IRegisterViewModel {
         }
 
         showLoadingMessage(context);
-        register(name, email, password, context);
+        register(email, password, name, context);
     }
 
     default void onLoginLinkClicked(Context context) {

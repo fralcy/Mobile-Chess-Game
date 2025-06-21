@@ -2,7 +2,7 @@
 <resources>
     <string name="password_text">password</string>
     <string name="login_text">login</string>
-    <string name="register_text">register</string>
+    <string name="register_text">Create a new account!</string>
     <string name="name_text">name</string>
     <string name="player_avatar">player avatar</string>
     <string name="player_name">player name</string>

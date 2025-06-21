@@ -21,6 +21,7 @@ import com.example.chess_mobile.model.authentication.interfaces.IAuthenticationS
 import com.example.chess_mobile.view_model.interfaces.IRegisterViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.Gson;
 
 public class RegisterActivity extends AppCompatActivity implements IRegisterViewModel {
     IAuthenticationService authenticationService;
@@ -54,7 +55,8 @@ public class RegisterActivity extends AppCompatActivity implements IRegisterView
     @Override
     public void register(String email, String password, String name, Context context) {
         PlayerRegisterRequest  req = new PlayerRegisterRequest(email, password, name);
-
+        String json = (new Gson()).toJson(req);
+        Log.d("REGISTER_ACTIVITY", json);
         authenticationService.register(req, (isSuccess, msg) -> {
             if(isSuccess) {
                 Toast.makeText(this, "Register success", Toast.LENGTH_LONG).show();
@@ -69,6 +71,7 @@ public class RegisterActivity extends AppCompatActivity implements IRegisterView
                 });
             }
             else {
+                Log.e("REGISTER_FAIL", msg);
                 Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
             }
         });
@@ -79,16 +82,11 @@ public class RegisterActivity extends AppCompatActivity implements IRegisterView
             String email = ((TextView) findViewById(R.id.registerTextEmail)).getText().toString();
             String password = ((TextView) findViewById(R.id.registerTextPassword)).getText().toString();
             String name = ((TextView) findViewById(R.id.registerTextName)).getText().toString();
-            onRegisterButtonClicked(name, email, password, this);
-//            if (name.isEmpty()) {
-//                Toast.makeText(this,  "Please enter field name. Try again!", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//            if (email.isEmpty() || password.isEmpty()) {
-//                Toast.makeText(this,  "Email or password is incorrect. Try again!", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//            register(email, password, name);
+            onRegisterButtonClicked(
+                    name,
+                    email,
+                    password,
+                    this);
         });
 
         findViewById(R.id.loginLink).setOnClickListener(l -> onLoginLinkClicked(this));

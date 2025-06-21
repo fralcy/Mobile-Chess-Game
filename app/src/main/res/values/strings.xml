@@ -83,7 +83,7 @@
     <string name="choose_time_for_player_white">Choose time for player White</string>
     <string name="choose_time_for_player_black">Choose time for player Black</string>
     <string name="register">Register</string>
-    <string name="already_have_an_account_login_now">Already have an account? Login now</string>
+    <string name="already_have_an_account_login_now">Already have an account?</string>
     <string name="opponent_joined_your_room">Opponent joined your room</string>
     <string name="guest">Guest</string>
     <string name="waiting_for_opponent">Waiting for Opponent</string>
