@@ -35,7 +35,7 @@
     <!-- New strings for game mode selection -->
     <string name="user_profile">User Profile</string>
     <string name="ranked_mode">Ranked Match</string>
-    <string name="create_room_mode">Friend Match</string>
+    <string name="create_room_mode">Friendly Match</string>
     <string name="ai_mode">AI Challenge</string>
     <string name="local_mode">Local Match</string>
 
