@@ -15,6 +15,7 @@ import com.example.chess_mobile.dto.request.CreateMatchRequest;
 import com.example.chess_mobile.dto.request.JoinMatchRequest;
 import com.example.chess_mobile.dto.response.MatchResponse;
 import com.example.chess_mobile.helper.GsonConfig;
+import com.example.chess_mobile.model.logic.game_states.EPlayer;
 import com.example.chess_mobile.model.match.EMatch;
 import com.example.chess_mobile.services.websocket.implementations.SocketManager;
 import com.example.chess_mobile.view.interfaces.OnErrorWebSocket;
@@ -31,9 +32,11 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
 
     private MatchResponse currentMatch;
 
+    private boolean _isRandom = false;
     //View
     private Button whiteButton;
     private Button blackButton;
+    private Button randomButton;
     private Button timeButton10;
     private Button timeButton15;
     private Button timeButton20;
@@ -65,8 +68,8 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
         bindView();
         setUpOnClickListener();
 
-        whiteButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button_bg));
-        timeButton10.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button_bg));
+        whiteButton.setBackground(ContextCompat.getDrawable(this, R.drawable.property_radius_corner_btn_green));
+        timeButton10.setBackground(ContextCompat.getDrawable(this, R.drawable.property_radius_corner_btn_green));
 
         SocketManager.getInstance().connect(() -> {
             String topic = String.format(SocketManager.USER_QUEUE_MATCH_APP_TEMPLATE);
@@ -92,6 +95,7 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
     public void bindView() {
         this.whiteButton = findViewById(R.id.friendMatchButtonWhite);
         this.blackButton = findViewById(R.id.friendMatchButtonBlack);
+        this.randomButton = findViewById(R.id.friendMatchButtonRandom);
         this.timeButton10 = findViewById(R.id.friendMatchButton10Min);
         this.timeButton15 = findViewById(R.id.friendMatchButton15Min);
         this.timeButton20= findViewById(R.id.friendMatchButton20Min);
@@ -103,37 +107,65 @@ public class FriendMatchActivity extends Activity implements IFriendMatchViewMod
         this.whiteButton.setOnClickListener(v->{
             this.getIntent().putExtra("Host_White",true);
             this.isWhite=true;
-            this.whiteButton.setBackground(ContextCompat.getDrawable(this,R.drawable.rounded_button_bg));
-            this.blackButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_gray_button_bg));
+            this.whiteButton.setBackground(null);
+            this.blackButton.setBackground(null);
+            this.randomButton.setBackground(null);
+            this.whiteButton.setBackground(ContextCompat.getDrawable(this,R.drawable.property_radius_corner_btn_green));
+            this.blackButton.setBackground(ContextCompat.getDrawable(this, R.drawable.property_radius_corner_btn_gray));
+            this.randomButton.setBackground(ContextCompat.getDrawable(this, R.drawable.property_radius_corner_btn_gray));
         });
         this.blackButton.setOnClickListener(v->{
             this.getIntent().putExtra("Host_White",false);
             this.isWhite=false;
-            this.whiteButton.setBackground(ContextCompat.getDrawable(this,R.drawable.rounded_gray_button_bg));
-            this.blackButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button_bg));
+            this.whiteButton.setBackground(null);
+            this.blackButton.setBackground(null);
+            this.randomButton.setBackground(null);
+            this.whiteButton.setBackground(ContextCompat.getDrawable(this,R.drawable.property_radius_corner_btn_gray));
+            this.randomButton.setBackground(ContextCompat.getDrawable(this,R.drawable.property_radius_corner_btn_gray));
+            this.blackButton.setBackground(ContextCompat.getDrawable(this, R.drawable.property_radius_corner_btn_green));
+
+        });
+        this.randomButton.setOnClickListener(v->{
+            this.isWhite=Math.random() < 0.5;
+            this.getIntent().putExtra("Host_White",this.isWhite);
+            this.whiteButton.setBackground(null);
+            this.blackButton.setBackground(null);
+            this.randomButton.setBackground(null);
+            this.whiteButton.setBackground(ContextCompat.getDrawable(this,R.drawable.property_radius_corner_btn_gray));
+            this.blackButton.setBackground(ContextCompat.getDrawable(this,R.drawable.property_radius_corner_btn_gray));
+            this.randomButton.setBackground(ContextCompat.getDrawable(this, R.drawable.property_radius_corner_btn_green));
 
         });
         this.timeButton10.setOnClickListener(v->{
             this.getIntent().putExtra("Friend_Play_Time",10);
             this.playTime=10;
-            this.timeButton10.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button_bg));
-            this.timeButton15.setBackground(ContextCompat.getDrawable(this,R.drawable.rounded_gray_button_bg));
-            this.timeButton20.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_gray_button_bg));
+            this.timeButton10.setBackground(null);
+            this.timeButton15.setBackground(null);
+            this.timeButton20.setBackground(null);
+            this.timeButton10.setBackground(ContextCompat.getDrawable(this, R.drawable.property_radius_corner_btn_green));
+            this.timeButton15.setBackground(ContextCompat.getDrawable(this,R.drawable.property_radius_corner_btn_gray));
+            this.timeButton20.setBackground(ContextCompat.getDrawable(this, R.drawable.property_radius_corner_btn_gray));
         });
         this.timeButton15.setOnClickListener(v->{
             this.getIntent().putExtra("Friend_Play_Time",15);
             this.playTime=15;
-            this.timeButton10.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_gray_button_bg));
-            this.timeButton15.setBackground(ContextCompat.getDrawable(this,R.drawable.rounded_button_bg));
-            this.timeButton20.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_gray_button_bg));
+            this.timeButton10.setBackground(null);
+            this.timeButton15.setBackground(null);
+            this.timeButton20.setBackground(null);
+            this.timeButton10.setBackground(ContextCompat.getDrawable(this, R.drawable.property_radius_corner_btn_gray));
+            this.timeButton15.setBackground(ContextCompat.getDrawable(this,R.drawable.property_radius_corner_btn_green));
+            this.timeButton20.setBackground(ContextCompat.getDrawable(this, R.drawable.property_radius_corner_btn_gray));
 
         });
         this.timeButton20.setOnClickListener(v->{
             this.getIntent().putExtra("Friend_Play_Time",20);
             this.playTime=20;
-            this.timeButton10.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_gray_button_bg));
-            this.timeButton15.setBackground(ContextCompat.getDrawable(this,R.drawable.rounded_gray_button_bg));
-            this.timeButton20.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button_bg));
+            this.timeButton10.setBackground(null);
+            this.timeButton15.setBackground(null);
+            this.timeButton20.setBackground(null);
+            this.timeButton10.setBackground(ContextCompat.getDrawable(this, R.drawable.property_radius_corner_btn_gray));
+            this.timeButton15.setBackground(ContextCompat.getDrawable(this,R.drawable.property_radius_corner_btn_gray));
+            this.timeButton20.setBackground(ContextCompat.getDrawable(this, R.drawable.property_radius_corner_btn_green));
         });
         this.createButton.setOnClickListener(v->{
             CreateMatchRequest createFriendMatchRequest = new CreateMatchRequest(EMatch.PRIVATE,

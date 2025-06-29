@@ -7,15 +7,12 @@ import com.example.chess_mobile.view.activities.RoomChessActivity;
 
 public interface ILocalMatchViewModel {
     default void onWhiteTimeSelected(int minutes, Context context) {
-        Toast.makeText(context, "White player time: " + minutes + " minutes", Toast.LENGTH_SHORT).show();
     }
 
     default void onBlackTimeSelected(int minutes, Context context) {
-        Toast.makeText(context, "Black player time: " + minutes + " minutes", Toast.LENGTH_SHORT).show();
     }
 
     default void onPlayButtonClicked(Context context) {
-        Toast.makeText(context, "Starting local match...", Toast.LENGTH_SHORT).show();
         initializeLocalGame(context);
     }
 

@@ -106,29 +106,29 @@ public class LocalMatchActivity extends AppCompatActivity implements ILocalMatch
 
     private void updateWhiteTimeButtons(int selectedMinutes) {
         // Reset all buttons
-        buttonWhite10.setBackgroundResource(R.drawable.rounded_gray_button_bg);
-        buttonWhite15.setBackgroundResource(R.drawable.rounded_gray_button_bg);
-        buttonWhite20.setBackgroundResource(R.drawable.rounded_gray_button_bg);
+        buttonWhite10.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
+        buttonWhite15.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
+        buttonWhite20.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
 
         // Highlight selected
         switch (selectedMinutes) {
-            case 10 -> buttonWhite10.setBackgroundResource(R.drawable.rounded_button_bg);
-            case 15 -> buttonWhite15.setBackgroundResource(R.drawable.rounded_button_bg);
-            case 20 -> buttonWhite20.setBackgroundResource(R.drawable.rounded_button_bg);
+            case 10 -> buttonWhite10.setBackgroundResource(R.drawable.property_radius_corner_btn_green);
+            case 15 -> buttonWhite15.setBackgroundResource(R.drawable.property_radius_corner_btn_green);
+            case 20 -> buttonWhite20.setBackgroundResource(R.drawable.property_radius_corner_btn_green);
         }
     }
 
     private void updateBlackTimeButtons(int selectedMinutes) {
         // Reset all buttons
-        buttonBlack10.setBackgroundResource(R.drawable.rounded_gray_button_bg);
-        buttonBlack15.setBackgroundResource(R.drawable.rounded_gray_button_bg);
-        buttonBlack20.setBackgroundResource(R.drawable.rounded_gray_button_bg);
+        buttonBlack10.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
+        buttonBlack15.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
+        buttonBlack20.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
 
         // Highlight selected
         switch (selectedMinutes) {
-            case 10 -> buttonBlack10.setBackgroundResource(R.drawable.rounded_button_bg);
-            case 15 -> buttonBlack15.setBackgroundResource(R.drawable.rounded_button_bg);
-            case 20 -> buttonBlack20.setBackgroundResource(R.drawable.rounded_button_bg);
+            case 10 -> buttonBlack10.setBackgroundResource(R.drawable.property_radius_corner_btn_green);
+            case 15 -> buttonBlack15.setBackgroundResource(R.drawable.property_radius_corner_btn_green);
+            case 20 -> buttonBlack20.setBackgroundResource(R.drawable.property_radius_corner_btn_green);
         }
     }
 

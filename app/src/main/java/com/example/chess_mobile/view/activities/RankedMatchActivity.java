@@ -45,21 +45,21 @@ public class RankedMatchActivity extends Activity implements IRankedMatchViewMod
             startActivity(intent);
         });
         button10min.setOnClickListener(v->{
-            RankedMatchActivity.this.button10min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.rounded_button_bg));
-            RankedMatchActivity.this.button15min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.rounded_gray_button_bg));
-            RankedMatchActivity.this.button20min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.rounded_gray_button_bg));
+            RankedMatchActivity.this.button10min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.property_radius_corner_btn_green));
+            RankedMatchActivity.this.button15min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.property_radius_corner_btn_gray));
+            RankedMatchActivity.this.button20min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.property_radius_corner_btn_gray));
             selectedPlayTime = 10;
         });
         button15min.setOnClickListener(v->{
-            RankedMatchActivity.this.button10min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.rounded_gray_button_bg));
-            RankedMatchActivity.this.button15min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.rounded_button_bg));
-            RankedMatchActivity.this.button20min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.rounded_gray_button_bg));
+            RankedMatchActivity.this.button10min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.property_radius_corner_btn_gray));
+            RankedMatchActivity.this.button15min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.property_radius_corner_btn_green));
+            RankedMatchActivity.this.button20min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.property_radius_corner_btn_gray));
             selectedPlayTime = 15;
         });
         button20min.setOnClickListener(v->{
-            RankedMatchActivity.this.button10min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.rounded_gray_button_bg));
-            RankedMatchActivity.this.button15min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.rounded_gray_button_bg));
-            RankedMatchActivity.this.button20min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.rounded_button_bg));
+            RankedMatchActivity.this.button10min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.property_radius_corner_btn_gray));
+            RankedMatchActivity.this.button15min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.property_radius_corner_btn_gray));
+            RankedMatchActivity.this.button20min.setBackground(ContextCompat.getDrawable(RankedMatchActivity.this,R.drawable.property_radius_corner_btn_green));
             selectedPlayTime = 20;
         });
         matchHistoriesButton.setOnClickListener(v->{

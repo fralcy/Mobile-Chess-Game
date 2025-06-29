@@ -50,7 +50,9 @@
         app:layout_constraintTop_toBottomOf="@+id/localMatchTextChooseTimeWhite">
 
         <!-- 10:00 Button for White -->
-        <Button
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:backgroundTint="@null"
             android:id="@+id/localMatchWhiteButton10Min"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -63,7 +65,9 @@
             android:textSize="16sp" />
 
         <!-- 15:00 Button for White -->
-        <Button
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:backgroundTint="@null"
             android:id="@+id/localMatchWhiteButton15Min"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -77,7 +81,9 @@
             android:textSize="16sp" />
 
         <!-- 20:00 Button for White -->
-        <Button
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:backgroundTint="@null"
             android:id="@+id/localMatchWhiteButton20Min"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -118,7 +124,9 @@
         app:layout_constraintTop_toBottomOf="@+id/localMatchTextChooseTimeBlack">
 
         <!-- 10:00 Button for Black -->
-        <Button
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:backgroundTint="@null"
             android:id="@+id/localMatchBlackButton10Min"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -131,7 +139,9 @@
             android:textSize="16sp" />
 
         <!-- 15:00 Button for Black -->
-        <Button
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:backgroundTint="@null"
             android:id="@+id/localMatchBlackButton15Min"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -145,7 +155,9 @@
             android:textSize="16sp" />
 
         <!-- 20:00 Button for Black -->
-        <Button
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:backgroundTint="@null"
             android:id="@+id/localMatchBlackButton20Min"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -225,7 +237,9 @@
 
 
     <!-- Play Button -->
-    <Button
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:backgroundTint="@null"
         android:id="@+id/localMatchButtonPlay"
         android:layout_width="0dp"
         android:layout_height="56dp"

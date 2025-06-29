@@ -36,15 +36,15 @@ public interface IAIMatchViewModel {
     // New methods for better UI management
     default void updateColorButtons(EPlayer selectedColor, View buttonWhite, View buttonRandom, View buttonBlack) {
         // Reset all color buttons
-        buttonWhite.setBackgroundResource(R.drawable.rounded_gray_button_bg);
-        buttonRandom.setBackgroundResource(R.drawable.rounded_gray_button_bg);
-        buttonBlack.setBackgroundResource(R.drawable.rounded_gray_button_bg);
+        buttonWhite.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
+        buttonRandom.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
+        buttonBlack.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
 
         // Highlight selected color
         switch (selectedColor) {
-            case WHITE -> buttonWhite.setBackgroundResource(R.drawable.rounded_button_bg);
-            case BLACK -> buttonBlack.setBackgroundResource(R.drawable.rounded_button_bg);
-            case NONE -> buttonRandom.setBackgroundResource(R.drawable.rounded_button_bg);
+            case WHITE -> buttonWhite.setBackgroundResource(R.drawable.property_radius_corner_btn_green);
+            case BLACK -> buttonBlack.setBackgroundResource(R.drawable.property_radius_corner_btn_green);
+            case NONE -> buttonRandom.setBackgroundResource(R.drawable.property_radius_corner_btn_green);
         }
     }
 
@@ -54,12 +54,12 @@ public interface IAIMatchViewModel {
         // Reset all difficulty buttons
         View[] buttons = {button1, button2, button3, button4, button5};
         for (View button : buttons) {
-            button.setBackgroundResource(R.drawable.rounded_gray_button_bg);
+            button.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
         }
 
         // Highlight selected difficulty
         if (selectedDifficulty >= 1 && selectedDifficulty <= 5) {
-            buttons[selectedDifficulty - 1].setBackgroundResource(R.drawable.rounded_button_bg);
+            buttons[selectedDifficulty - 1].setBackgroundResource(R.drawable.property_radius_corner_btn_green);
         }
     }
 

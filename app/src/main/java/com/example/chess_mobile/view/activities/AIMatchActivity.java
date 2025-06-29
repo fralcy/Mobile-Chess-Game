@@ -17,7 +17,7 @@ import java.time.Duration;
 public class AIMatchActivity extends AppCompatActivity {
     private EPlayer _selectedColor = EPlayer.WHITE;
     private int _selectedDifficulty = 1;
-
+    private boolean _isRandom = false;
     private Button _buttonWhite, _buttonRandom, _buttonBlack;
     private Button _buttonLevel1, _buttonLevel2, _buttonLevel3, _buttonLevel4, _buttonLevel5;
 
@@ -51,16 +51,19 @@ public class AIMatchActivity extends AppCompatActivity {
 
     private void setupColorButtons() {
         _buttonWhite.setOnClickListener(v -> {
+            _isRandom = false;
             _selectedColor = EPlayer.WHITE;
             updateColorButtons();
         });
 
         _buttonRandom.setOnClickListener(v -> {
+            _isRandom = true;
             _selectedColor = Math.random() < 0.5 ? EPlayer.WHITE : EPlayer.BLACK;
             updateColorButtons();
         });
 
         _buttonBlack.setOnClickListener(v -> {
+            _isRandom = false;
             _selectedColor = EPlayer.BLACK;
             updateColorButtons();
         });
@@ -99,17 +102,17 @@ public class AIMatchActivity extends AppCompatActivity {
 
     private void updateColorButtons() {
         // Reset all
-        _buttonWhite.setBackgroundResource(R.drawable.rounded_gray_button_bg);
-        _buttonRandom.setBackgroundResource(R.drawable.rounded_gray_button_bg);
-        _buttonBlack.setBackgroundResource(R.drawable.rounded_gray_button_bg);
+        _buttonWhite.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
+        _buttonRandom.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
+        _buttonBlack.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
 
         // Highlight selected
-        if (_selectedColor == EPlayer.WHITE) {
-            _buttonWhite.setBackgroundResource(R.drawable.rounded_button_bg);
-        } else if (_selectedColor == EPlayer.BLACK) {
-            _buttonBlack.setBackgroundResource(R.drawable.rounded_button_bg);
+        if (_isRandom) {
+            _buttonRandom.setBackgroundResource(R.drawable.property_radius_corner_btn_green);
+        } else if (_selectedColor == EPlayer.WHITE) {
+            _buttonWhite.setBackgroundResource(R.drawable.property_radius_corner_btn_green);
         } else {
-            _buttonRandom.setBackgroundResource(R.drawable.rounded_button_bg);
+            _buttonBlack.setBackgroundResource(R.drawable.property_radius_corner_btn_green);
         }
     }
 
@@ -118,12 +121,12 @@ public class AIMatchActivity extends AppCompatActivity {
 
         // Reset all
         for (Button button : buttons) {
-            button.setBackgroundResource(R.drawable.rounded_gray_button_bg);
+            button.setBackgroundResource(R.drawable.property_radius_corner_btn_gray);
         }
 
         // Highlight selected
         if (_selectedDifficulty >= 1 && _selectedDifficulty <= 5) {
-            buttons[_selectedDifficulty - 1].setBackgroundResource(R.drawable.rounded_button_bg);
+            buttons[_selectedDifficulty - 1].setBackgroundResource(R.drawable.property_radius_corner_btn_green);
         }
     }
 
