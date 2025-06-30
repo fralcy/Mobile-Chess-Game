@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#222222"
@@ -74,9 +75,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:baselineAligned="false"
                 android:orientation="horizontal"
-                android:weightSum="3"
-                android:baselineAligned="false">
+                android:weightSum="3">
 
                 <!-- Rank -->
                 <LinearLayout
@@ -158,12 +159,12 @@
 
     <!-- Edit Info Button -->
     <androidx.appcompat.widget.AppCompatButton
-        android:backgroundTint="@null"
         android:id="@+id/btnEditInfo"
         android:layout_width="280dp"
         android:layout_height="56dp"
         android:layout_marginTop="50dp"
         android:background="@drawable/property_radius_corner_btn_green"
+        android:backgroundTint="@null"
         android:minHeight="48dp"
         android:text="@string/edit_profile"
         android:textColor="#FFFFFF"
@@ -174,20 +175,38 @@
         app:layout_constraintTop_toBottomOf="@+id/profileCard" />
 
     <!-- Logout Button -->
+
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnColorInfo"
+        android:layout_width="280dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/property_radius_corner_btn_green"
         android:backgroundTint="@null"
+        android:minHeight="48dp"
+        android:text="Color Setting"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnEditInfo" />
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnLogout"
         android:layout_width="280dp"
         android:layout_height="56dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="36dp"
         android:background="@drawable/rounded_gray_button_bg"
+        android:backgroundTint="@null"
         android:minHeight="48dp"
         android:text="@string/_logout"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnEditInfo" />
+        app:layout_constraintTop_toBottomOf="@+id/btnColorInfo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

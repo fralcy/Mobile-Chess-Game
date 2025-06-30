@@ -5,12 +5,12 @@ import android.graphics.Color;
 import com.example.chess_mobile.model.logic.moves.Move;
 
 public class BoardColorAbstract implements IBoardColorTheme {
-    private final int blackCell;
-    private final int whiteCell;
-    private final int selectedPositionCell;
-    private final int lastMoveCell;
-    private final int highlightCell;
-    private final int highlightCaptureCell;
+    private int blackCell;
+    private int whiteCell;
+    private int selectedPositionCell;
+    private int lastMoveCell;
+    private int highlightCell;
+    private int highlightCaptureCell;
 
     public BoardColorAbstract () {
         blackCell = Color.parseColor("#4E4E4E");
@@ -42,19 +42,34 @@ public class BoardColorAbstract implements IBoardColorTheme {
         return isWhite ? blackCell : whiteCell;
     }
 
+
+    @Override
+    public int getCellHighlightCapturedColor() {
+        return highlightCaptureCell;
+    }
+
+    @Override
+    public int getCellHighlightColor() {
+        return highlightCell;
+    }
     @Override
     public void setLastMoveCellColor(int color) {
-
+        lastMoveCell = color;
     }
 
     @Override
     public void setSelectedCellHighlightColor(int color) {
-
+        selectedPositionCell = color;
     }
 
     @Override
-    public void setCellHighlightColor(int color, Move move) {
+    public void setCellHighlightCapturedMoveColor(int color) {
+        highlightCaptureCell = color;
+    }
 
+    @Override
+    public void setCellHighlightColor(int color) {
+        highlightCell = color;
     }
 
     @Override

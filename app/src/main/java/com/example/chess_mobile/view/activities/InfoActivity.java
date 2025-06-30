@@ -65,6 +65,8 @@ public class InfoActivity extends AppCompatActivity {
         this.editProfileButton = findViewById(R.id.btnEditInfo);
         this.logoutButton = findViewById(R.id.btnLogout);
 
+        ((Button) findViewById(R.id.btnColorInfo)).setOnClickListener(v -> startActivity(new Intent(InfoActivity.this, ColorSelectActivity.class)));
+
     }
     public void setUpLogoutButton() {
         this.logoutButton.setOnClickListener(v->{

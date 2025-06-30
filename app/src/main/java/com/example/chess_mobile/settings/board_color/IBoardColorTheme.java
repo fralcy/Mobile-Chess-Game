@@ -6,11 +6,14 @@ public interface IBoardColorTheme {
     int getLastMoveCellColor();
     int getSelectedCellHighlightColor();
     int getCellHighlightColor(Move move);
+    int getCellHighlightColor();
+    int getCellHighlightCapturedColor();
     int getCellBackgroundColor(boolean isWhite);
 
 
     void setLastMoveCellColor(int color);
     void setSelectedCellHighlightColor(int color);
-    void setCellHighlightColor(int color, Move move);
+    void setCellHighlightColor(int color);
+    void setCellHighlightCapturedMoveColor(int color);
     void setCellBackgroundColor(int color, boolean isWhite);
 }

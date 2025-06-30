@@ -34,8 +34,23 @@ public class BoardColorInstance implements IBoardColorTheme{
     }
 
     @Override
-    public void setCellHighlightColor(int color, Move move) {
-        getInstance().boardColorTheme.setCellHighlightColor(color, move);
+    public int getCellHighlightCapturedColor() {
+        return getInstance().boardColorTheme.getCellHighlightCapturedColor();
+    }
+
+    @Override
+    public int getCellHighlightColor() {
+        return getInstance().boardColorTheme.getCellHighlightColor();
+    }
+
+    @Override
+    public void setCellHighlightCapturedMoveColor(int color) {
+        getInstance().boardColorTheme.setCellHighlightCapturedMoveColor(color);
+    }
+
+    @Override
+    public void setCellHighlightColor(int color) {
+        getInstance().boardColorTheme.setCellHighlightColor(color);
     }
 
     @Override
