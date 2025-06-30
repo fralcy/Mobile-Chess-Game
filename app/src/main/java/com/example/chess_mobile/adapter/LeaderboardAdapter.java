@@ -21,13 +21,15 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textRank, textName, textScoreWinRate;
+        TextView textRank, textName, textScoreWinRate, statsScore;
 
         public ViewHolder(View itemView) {
             super(itemView);
             textRank = itemView.findViewById(R.id.textRank);
             textName = itemView.findViewById(R.id.textName);
             textScoreWinRate = itemView.findViewById(R.id.textScoreWinRate);
+            statsScore = itemView.findViewById(R.id.statsScore);
+
         }
     }
 
@@ -43,7 +45,9 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         Player player = players.get(position);
         holder.textRank.setText(String.valueOf(position + 1));
         holder.textName.setText(player.getPlayerName());
-        holder.textScoreWinRate.setText("Điểm: " + player.getScore() + " • Tỉ lệ thắng: 0%");
+        holder.statsScore.setText("" + player.getScore());
+//        holder.textScoreWinRate.setText("Điểm: " + player.getScore());
+        holder.textScoreWinRate.setText("");
     }
 
     @Override

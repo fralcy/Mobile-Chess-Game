@@ -29,9 +29,9 @@ public class LeaderboardActivity extends Activity {
     private RecyclerView recyclerView;
     private void getTop10() {
         List<Player> res = new ArrayList<>();
-        Collections.sort(listPlayer);
-        res= listPlayer.subList(0,10);
-        this.listPlayer=res;
+        Collections.sort(listPlayer, (p1, p2) -> Integer.compare(p2.getScore(), p1.getScore()));
+//        res= listPlayer.subList(0,10);
+//        this.listPlayer=res;
     }
 
 

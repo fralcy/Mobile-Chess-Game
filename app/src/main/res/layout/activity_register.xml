@@ -87,7 +87,8 @@
             android:autofillHints="password" />
 
         <!-- Register Button - Match the ID in RegisterActivity.java -->
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
+            android:backgroundTint="@null"
             android:id="@+id/registerButton"
             android:layout_width="match_parent"
             android:layout_height="60dp"

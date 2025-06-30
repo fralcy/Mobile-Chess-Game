@@ -83,7 +83,8 @@
             android:autofillHints="password" />
 
         <!-- Login Button - Keep original ID for Java code compatibility -->
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
+            android:backgroundTint="@null"
             android:id="@+id/loginButton"
             android:layout_width="match_parent"
             android:layout_height="60dp"
