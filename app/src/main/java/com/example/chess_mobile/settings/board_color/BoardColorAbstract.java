@@ -15,6 +15,7 @@ public class BoardColorAbstract implements IBoardColorTheme {
     public BoardColorAbstract () {
         blackCell = Color.parseColor("#4E4E4E");
         whiteCell = Color.parseColor("#FAFAFA");
+
         selectedPositionCell = Color.parseColor("#FFD54F");
         lastMoveCell = Color.parseColor("#FFEB3B");
         highlightCell = Color.parseColor("#4CAF50");
@@ -39,5 +40,25 @@ public class BoardColorAbstract implements IBoardColorTheme {
     @Override
     public int getCellBackgroundColor(boolean isWhite) {
         return isWhite ? blackCell : whiteCell;
+    }
+
+    @Override
+    public void setLastMoveCellColor(int color) {
+
+    }
+
+    @Override
+    public void setSelectedCellHighlightColor(int color) {
+
+    }
+
+    @Override
+    public void setCellHighlightColor(int color, Move move) {
+
+    }
+
+    @Override
+    public void setCellBackgroundColor(int color, boolean isWhite) {
+
     }
 }
