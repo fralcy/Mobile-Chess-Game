@@ -157,12 +157,13 @@
     </androidx.cardview.widget.CardView>
 
     <!-- Edit Info Button -->
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
+        android:backgroundTint="@null"
         android:id="@+id/btnEditInfo"
         android:layout_width="280dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/rounded_button_bg"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/property_radius_corner_btn_green"
         android:minHeight="48dp"
         android:text="@string/edit_profile"
         android:textColor="#FFFFFF"
@@ -173,7 +174,8 @@
         app:layout_constraintTop_toBottomOf="@+id/profileCard" />
 
     <!-- Logout Button -->
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
+        android:backgroundTint="@null"
         android:id="@+id/btnLogout"
         android:layout_width="280dp"
         android:layout_height="56dp"
